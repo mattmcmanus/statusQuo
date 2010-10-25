@@ -7,7 +7,7 @@
     :each server in servers
       %h2= server.name
       %ul
-      :each site in server.sites
-        %li 
-          = site.name
-          %em= site.status
+        :each site in server.sites
+          %li 
+            = site.name
+            %em pinging...
