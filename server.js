@@ -12,7 +12,7 @@ var serversConfig = JSON.parse(fs.readFileSync('./config.js', 'utf8'));
 //	});
 //});
 app.set('views', __dirname + '/views');
-app.set('view engine', 'haml');
+app.set('view engine', 'jade');
 app.set('view options', {layout: false});
 
 app.get('/', function(req, res){
