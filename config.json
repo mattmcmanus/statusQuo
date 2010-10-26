@@ -1,0 +1,37 @@
+[
+  {
+    "name": "dreamhost",
+    "sites": [
+      {
+        "id": "cvai",
+        "name": "CVAI",
+        "url": "cvai.org" 
+      },
+      {
+        "id": "wid",
+        "name": "WordinDeed",
+        "url": "wordindeedministries.org" 
+      } 
+    ] 
+  },
+  {
+    "name": "rackspace",
+    "sites": [
+      {
+        "id": "ablegray",
+        "name": "ableGray",
+        "url": "ablegray.com" 
+      },
+      {
+        "id": "mm",
+        "name": "mattmcman.us",
+        "url": "mattmcman.us" 
+      },
+      {
+        "id": "ba",
+        "name": "BeerAdvent",
+        "url": "beeradvent.com" 
+      } 
+    ] 
+  }
+]
