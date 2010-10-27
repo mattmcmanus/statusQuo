@@ -76,7 +76,7 @@ app.get('/ping/:site', loadSite, function(req, res){
   var request = http.createClient(80, req.site.url).request('GET', '/', {'host': req.site.url});
     request.end();
     request.on('response', function (response) {
-      res.send(' '+response.statusCode);
+      res.send(response.statusCode.toString());
     });
 })
 

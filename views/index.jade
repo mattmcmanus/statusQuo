@@ -1,9 +1,8 @@
-h1 StatusQuo
 -each server in servers
   .server
     h2= server.name
-    ul.sites
+    section.sites
       -each site in server.sites
-        li(id = site.id, class=site) 
-          = site.name
+        .site(id = site.id) 
+          h3= site.name
           em  pinging...
