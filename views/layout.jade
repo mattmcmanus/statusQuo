@@ -1,12 +1,13 @@
 !!! 5
 html(lang="en")
   head
-    title StatusQuo
+    title= title || "statusQuo"
     // Javscripts
     script(type = "text/javascript",src = "http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js")
     script(type = "text/javascript",src = "http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js")
     script(type = "text/javascript",src = "/statusQuo.js")
     // Stylesheets
+    link(rel="stylesheet", href="/stylesheets/reset.css")
     link(rel="stylesheet", href="/stylesheets/base.css")
   body
     #page!= body
