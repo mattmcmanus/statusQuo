@@ -13,10 +13,10 @@
         "url": "wordindeedministries.org" 
       },
       {
-        "id": "bork",
-        "name": "Borked",
-        "url": "dwadawd.org" 
-      }
+        "id": "sdaq",
+        "name": "It's up",
+        "url": "dwadds90igwa.com" 
+      } 
     ] 
   },
   {
@@ -28,6 +28,11 @@
         "url": "ablegray.com" 
       },
       {
+        "id": "sq",
+        "name": "statusQuo",
+        "url": "statusquo.ablegray.com" 
+      },
+      {
         "id": "mm",
         "name": "mattmcman.us",
         "url": "mattmcman.us" 
@@ -36,7 +41,7 @@
         "id": "ba",
         "name": "BeerAdvent",
         "url": "beeradvent.com" 
-      } 
+      }
     ] 
   }
 ]

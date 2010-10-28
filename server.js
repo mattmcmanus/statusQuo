@@ -9,6 +9,7 @@ var fs = require('fs'),
     express = require('express'),
     less = require('less'),
     sys = require('sys'),
+    io = require('socket.io'),
     app = express.createServer(
       express.compiler({ src: pub, enable: ['less'] }),
       express.staticProvider(pub)
@@ -61,23 +62,31 @@ function loadSite(req, res, next) {
   }
 }
 
+function checkSite(url){
+  var request = http.createClient(80, url).request('GET', '/', {'host': url});
+  request.end();
+  return request;
+}
+
+function pingSite(){
+  
+}
 
 // ------ ROUTES --------
 app.get('/', function(req, res){
   res.render('index',{
-        locals: {
-          title: "Dashboard",
-          servers: serversConfig
-        }
-    })
+    locals: {
+      title: "Dashboard",
+      servers: serversConfig
+    }
+  })
 });
 
 app.get('/ping/:site', loadSite, function(req, res){
-  var request = http.createClient(80, req.site.url).request('GET', '/', {'host': req.site.url});
-    request.end();
-    request.on('response', function (response) {
-      res.send(response.statusCode.toString());
-    });
+  var request = checkSite(req.site.url);
+  request.on('response', function (response) {
+    res.send({status: response.statusCode.toString()});
+  });
 })
 
 app.get('/500', function(req, res, next){
@@ -87,10 +96,21 @@ app.get('/500', function(req, res, next){
 app.listen('8000');
 console.log('Express server started on port %s', app.address().port);
 
+
+
+
+
 // socket.io 
-//var socket = io.listen(server); 
+
+
+//var socket = io.listen(app); 
 //socket.on('connection', function(client){ 
-//  // new client is here! 
-//  client.on('message', function(){ … }) 
-//  client.on('disconnect', function(){ … }) 
+//  console.log('SOCKETED!')
+//  client.on('message', function(){ 
+//      
+//  }) 
+//  client.on('disconnect', function(){
+//      
+//  
+//  }) 
 //});
