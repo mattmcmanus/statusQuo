@@ -1,15 +1,4 @@
-@import 'reset.css';
-@import 'webkit.css';
-
-@sprites: url(../images/icons.png);
-
-//Status Colors
-@ok: #090;
-@ok-text: @ok + #ccc;
-@warning: #009;
-@warning-text:@warning + #ccc;
-@error: #900;
-@error-text: @error + #ccc;
+@import "reset.css";
 
 // MIXINS
 
@@ -67,6 +56,18 @@
 	-o-transform: @transform;
 	transform: @transform;
 }
+
+@sprites: url(../images/icons.png);
+
+//Status Colors
+@ok: #090;
+@ok-text: @ok + #ccc; 
+@warning: #009;
+@warning-text:@warning + #ccc;
+@error: #900;
+@error-text: @error + #ccc;
+
+
 @font-face {
 	font-family: 'StMarieWebThin';
 	src: url('../type/stmarie-thin_web-webfont.eot');
@@ -74,9 +75,6 @@
 	font-weight: normal;
 	font-style: normal;
 }
-
-
-
 
 /*
 	Typography presets

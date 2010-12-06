@@ -1,46 +1,54 @@
 [
   {
-    "name": "dreamhost",
+    "name": "sangreal",
+    "IP": "172.30.10.29",
     "sites": [
       {
-        "id": "cvai",
-        "name": "CVAI",
-        "url": "cvai.org" 
+        "id": "search",
+        "name": "Library",
+        "url": "search.arcadia.edu" 
       },
       {
-        "id": "wid",
-        "name": "WordinDeed",
-        "url": "wordindeedministries.org" 
+        "id": "alumni",
+        "name": "Arcadia Magazine",
+        "url": "magazine.arcadia.edu" 
       },
       {
-        "id": "sdaq",
-        "name": "It's up",
-        "url": "dwadds90igwa.com" 
-      } 
+        "id": "pt",
+        "name": "PT Cal",
+        "url": "pt.arcadia.edu" 
+      }
     ] 
   },
   {
-    "name": "rackspace",
+    "name": "sangreal-dev",
+    "IP": "172.30.10.8",
     "sites": [
       {
-        "id": "ablegray",
-        "name": "ableGray",
-        "url": "ablegray.com" 
+        "id": "it",
+        "name": "Drupal Aegir",
+        "url": "it.arcadia.edu" 
       },
       {
-        "id": "sq",
-        "name": "statusQuo",
-        "url": "statusquo.ablegray.com" 
+        "id": "dev-search",
+        "name": "Library Dev",
+        "url": "dev-search.arcadia.edu" 
       },
       {
-        "id": "mm",
-        "name": "mattmcman.us",
-        "url": "mattmcman.us" 
-      },
+        "id": "ezproxy2",
+        "name": "Ezproxy Dev",
+        "url": "ezproxy2.arcadia.edu" 
+      }
+    ] 
+  },
+  {
+    "name": "newgladius",
+    "IP": "172.25.220.4",
+    "sites": [
       {
-        "id": "ba",
-        "name": "BeerAdvent",
-        "url": "beeradvent.com" 
+        "id": "arcadia",
+        "name": "Arcadia.edu",
+        "url": "www.arcadia.edu" 
       }
     ] 
   }

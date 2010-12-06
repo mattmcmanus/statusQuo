@@ -3,9 +3,9 @@
     h2= server.name
     section.sites
       -each site in server.sites
-        .site.pinging(id = site.id)
+        .site.checking(id = site.id)
           ul
             li.name
               h3= site.name
             li.url= site.url
-            li.statusCode  pinging...
+            li.statusCode  Checking...

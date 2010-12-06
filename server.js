@@ -2,47 +2,79 @@ require('./lib/underscore.js')
 
 var pub = __dirname + '/public';
 
-// Auto-compile sass to css with "compiler"
-// and then serve with connect's staticProvider
 var fs = require('fs'),
     http = require('http'),
     express = require('express'),
     less = require('less'),
     sys = require('sys'),
-    io = require('socket.io'),
     app = express.createServer(
       express.compiler({ src: pub, enable: ['less'] }),
       express.staticProvider(pub)
     );
     
-    //app.use(express.logger({ format: '":method :url" :status' }));
-    app.use(express.bodyDecoder());
     
-    // "app.router" positions our routes 
-    // specifically above the middleware
-    // assigned below
+    app.configure(function(){
+      app.use(express.logger({ format: '":method :url" :status' }));
+      app.use(express.bodyDecoder());
+      app.use(app.router);
+      app.set('views', __dirname + '/views');
+      app.set('view engine', 'jade');
+      app.use(express.errorHandler({ dumpExceptions: true }));
+      //app.use(function(req, res, next){
+      //  next(new NotFound(req.url));
+      //});
+    });
+    
+    function NotFound(path){
+        this.name = 'NotFound';
+        if (path) {
+            Error.call(this, 'Cannot find ' + path);
+            this.path = path;
+        } else {
+            Error.call(this, 'Not Found');
+        }
+        Error.captureStackTrace(this, arguments.callee);
+    }
+    
+    sys.inherits(NotFound, Error);
+    
+    process.on('uncaughtException', function (err) {
+      console.error('uncaughtException: ' + err);
+    });
+// We can call app.error() several times as shown below.
+// Here we check for an instanceof NotFound and show the
+// 404 page, or we pass on to the next error handler.
 
-    app.use(app.router);
+// These handlers could potentially be defined within
+// configure() blocks to provide introspection when
+// in the development environment.
 
-    // When no more middleware require execution, aka
-    // our router is finished and did not respond, we
-    // can assume that it is "not found". Instead of
-    // letting Connect deal with this, we define our
-    // custom middleware here to simply pass a NotFound
-    // exception
-    
-    app.set('views', __dirname + '/views');
-    app.set('view engine', 'jade');
-    
-    //app.error(function(err, req, res){
-    //  res.render('500', {
-    //    status: 500,
-    //    locals: {
-    //      title: "Everything is broken, NOTHING IS FINE",
-    //      error: err
-    //    } 
-    //  });
-    //});
+app.error(function(err, req, res, next){
+  if (err instanceof NotFound) {
+    res.render('404', {
+      status: 404,
+      locals: {
+        title: "Listen, Whatever the heck you are looking for is not here",
+        error: err
+      }
+    });
+  } else {
+    next(err);
+  }
+});
+
+// Here we assume all errors as 500 for the simplicity of
+// this demo, however you can choose whatever you like
+
+app.error(function(err, req, res){
+  res.render('500', {
+    status: 500,
+    locals: {
+      title: "Da server asplode",
+      error: err
+    }
+  });
+});
     
 //Read the config file
 var serversConfig = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
@@ -62,15 +94,21 @@ function loadSite(req, res, next) {
   }
 }
 
-function checkSite(url){
-  var request = http.createClient(80, url).request('GET', '/', {'host': url});
-  request.end();
-  return request;
-}
+  function checkSite(url){
+    var site = http.createClient(80, url);
+    site.on('error', function(err) {
+        sys.debug('unable to connect to ' + url);
+    });
 
-function pingSite(){
-  
-}
+    
+    var request = site.request('GET', '/', {'host': url});
+    request.end();
+    return request;
+  }
+
+//function pingServer(){
+//  
+//}
 
 // ------ ROUTES --------
 app.get('/', function(req, res){
@@ -82,7 +120,7 @@ app.get('/', function(req, res){
   })
 });
 
-app.get('/ping/:site', loadSite, function(req, res){
+app.get('/check/:site', loadSite, function(req, res){
   var request = checkSite(req.site.url);
   request.on('response', function (response) {
     res.send({status: response.statusCode.toString()});
