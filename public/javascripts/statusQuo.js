@@ -9,7 +9,7 @@ $(document).ready(function() {
     var id = $(this).attr('id');
     var context = $(this);
     $.ajax({ url:'/check/'+id, context:context, success: function(data){
-      $(this).addClass('s'+data.status).removeClass('checking').find('.statusCode').text(data.status)
+      $(this).addClass('s'+data.statusCode).removeClass('checking').find('.statusCode').text(data.message)
     }});
   })
 });
