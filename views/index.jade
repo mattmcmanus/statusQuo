@@ -1,11 +1,1 @@
--each server in servers
-  .server
-    h2= server.name
-    section.sites
-      -each site in server.sites
-        .site.checking(id = site.id)
-          ul
-            li.name
-              h3= site.name
-            li.url= site.url
-            li.statusCode  Checking...
+!=partial('server', servers)

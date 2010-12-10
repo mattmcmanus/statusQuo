@@ -94,18 +94,6 @@ function loadSite(req, res, next) {
   }
 }
 
-  function checkSite(url){
-    var site = http.createClient(80, url);
-    site.on('error', function(err) {
-        sys.debug('unable to connect to ' + url);
-    });
-
-    
-    var request = site.request('GET', '/', {'host': url});
-    request.end();
-    return request;
-  }
-
 //function pingServer(){
 //  
 //}
@@ -120,10 +108,22 @@ app.get('/', function(req, res){
   })
 });
 
+app.get('/getConfig', function(req, res){
+  res.send(serversConfig);
+});
+
 app.get('/check/:site', loadSite, function(req, res){
-  var request = checkSite(req.site.url);
+  var site = http.createClient(80, req.site.url);
+  site.on('error', function(err) {
+    sys.debug('unable to connect to ' + req.site.url);
+    console.log(err)
+    res.send({statusCode: '500', message:err.message});
+  });
+    
+  var request = site.request('GET', '/', {'host': req.site.url});
+  request.end();
   request.on('response', function (response) {
-    res.send({status: response.statusCode.toString()});
+    res.send({statusCode: response.statusCode.toString(), message: response.statusCode.toString() });
   });
 })
 
