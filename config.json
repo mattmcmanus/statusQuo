@@ -51,5 +51,27 @@
         "url": "www.arcadia.edu" 
       }
     ] 
+  },
+  {
+    "name": "my3",
+    "sites": [
+      {
+        "id": "my3",
+        "name": "my3",
+        "url": "my3.arcadia.edu",
+        "secure": true
+      }
+    ] 
+  },
+  {
+    "name": "my4",
+    "sites": [
+      {
+        "id": "my4",
+        "name": "my4",
+        "url": "my4.arcadia.edu",
+        "secure": true
+      }
+    ] 
   }
 ]

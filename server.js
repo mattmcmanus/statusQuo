@@ -113,17 +113,17 @@ app.get('/getConfig', function(req, res){
 });
 
 app.get('/check/:site', loadSite, function(req, res){
-  var site = http.createClient(80, req.site.url);
+  var secure = (req.site.secure)?req.site.secure:false;
+  var site = http.createClient((secure)?443:80, req.site.url, secure);
   site.on('error', function(err) {
     sys.debug('unable to connect to ' + req.site.url);
-    console.log(err)
-    res.send({statusCode: '500', message:err.message});
+    res.send({statusCode: '500', message: err.message.substr(err.message.indexOf(',')+1)});
   });
     
   var request = site.request('GET', '/', {'host': req.site.url});
   request.end();
   request.on('response', function (response) {
-    res.send({statusCode: response.statusCode.toString(), message: response.statusCode.toString() });
+    res.send({statusCode: response.statusCode.toString(), message: "OK" });
   });
 })
 

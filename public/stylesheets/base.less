@@ -8,6 +8,24 @@
   border-radius: @radius;
   //behavior: e(%("url(%s/core/production/framework/css3/PIE.txt.htc)", @setup_framework_path));
 }
+.border_top_radius(@radius: 10px) {
+  -webkit-border-top-left-radius: @radius;
+  -moz-border-top-left-radius: @radius;
+  border-top-left-radius: @radius;
+  -webkit-border-top-right-radius: @radius;
+  -moz-border-top-right-radius: @radius;
+  border-top-right-radius: @radius;
+  //behavior: e(%("url(%s/core/production/framework/css3/PIE.txt.htc)", @setup_framework_path));
+}
+.border_bottom_radius(@radius: 10px) {
+  -webkit-border-bottom-left-radius: @radius;
+  -moz-border-bottom-left-radius: @radius;
+  border-bottom-left-radius: @radius;
+  -webkit-border-bottom-right-radius: @radius;
+  -moz-border-bottom-right-radius: @radius;
+  border-bottom-right-radius: @radius;
+  //behavior: e(%("url(%s/core/production/framework/css3/PIE.txt.htc)", @setup_framework_path));
+}
 .linear_gradient(@start_color: #ccc, @end_color: #eee, @start: center top, @degree: -90deg, @end: center bottom) {
   background: -moz-linear-gradient(@start @degree, @start_color, @end_color); 
   background: -webkit-gradient(linear, @start, @end, color-stop(0, @start_color), color-stop(1, @end_color));
@@ -61,19 +79,26 @@
 
 //Status Colors
 @ok: #090;
-@ok-text: @ok + #ccc; 
-@warning: #009;
-@warning-text:@warning + #ccc;
+@warning: #990;
 @error: #900;
-@error-text: @error + #ccc;
 
-
-@font-face {
-	font-family: 'StMarieWebThin';
-	src: url('../type/stmarie-thin_web-webfont.eot');
-	src: url('../type/stmarie-thin_web-webfont.woff') format('woff'), url('../type/stmarie-thin_web-webfont.svg#webfontHNmhr3jr') format('svg');
-	font-weight: normal;
-	font-style: normal;
+// Status Code COLORS!
+.ok_text() {
+  color:@ok + #ccc;
+  text-shadow:@ok 0 0 3px;
+}
+.warning_text() {
+  color:@warning + #ccc;
+  text-shadow:@warning 0 0 3px;
+}
+.error_text() {
+  color:@error + #ccc;
+  text-shadow:@error 0 0 3px;
+  -webkit-animation-name: pulse;
+  -webkit-animation-duration: 2s;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-direction: alternate;
+  -webkit-animation-timing-function: ease-in-out;
 }
 
 /*
@@ -81,8 +106,7 @@
 	------------------
 */
 
-h1 {
-  font-family:StMarieWebThin, Helvetica, sans-serif;
+h1, h2, h3, h4, h5 {
 }
 .gigantic {
 	font-size: 105px;
@@ -100,6 +124,7 @@ h1 {
 	font-size: 42px;
 	line-height: 48px;
 	letter-spacing: -1px;
+	font-weight:400;
 }
 
 .big, h3 {
@@ -147,77 +172,98 @@ header {
   padding:15px 8px 8px;
   border-bottom:1px solid #161616;
   h1 {
-    font-family:StMarieWebThin, Helvetica, sans-serif;
-    font-size:1.5em;
-    margin:0 0 0  1em;
-    line-height:.5em;
-    em {
-      font-size:.6em;
-      position:relative;
-      top:-8px;
-      font-style:normal;
-      text-shadow:none;
-    }
+    margin:0;
+    display:block;
+    text-indent:-9999px;
+    height:29px;width:209px;
+    background:url(../images/statusQuo.png) no-repeat;
   }
   
 }
 
 #page {
+  padding:0 1em;
   .server {
-    .border_radius(10px);
-    border:1px solid #ccc;
-    background:rgba(255,255,255,.05);
-    margin:1em;
-    padding:8px 12px;
-    .box_shadow(inset 0px 0px 40px rgba(34,34,34,.75));
-    display:inline-block;
     
+    margin:1em;
+    display:inline-block;
+    min-width:200px;
+    max-width:275px;
     h2 {
-      margin:.5em 0;
+      margin:.5em;
       font-size:1.5em;
-      padding:0 0 0 30px;
       line-height:1.2em;
+      
     }
     section {
-      margin:.5em 0;
+      .border_radius(7px);
+      .transition(all);
+      border:1px solid #262626;
+      .box_shadow(0 2px 7px rgba(0,0,0,.25));
       .site {
-        display:inline-block;
+        border-top:1px solid #333;
+        border-bottom:1px solid #222;
+        .linear_gradient(#333,#222);
         .transition(color);
         padding:5px 10px;
+        position:relative;
+        .loader {
+          position:absolute;
+          top:0;left:0;
+          width:100%;
+          height:60px;
+          z-index:50;
+          background:rgba(34,34,34,.9) url(../images/ajax-loader.gif) no-repeat center center;
+          .transition(opacity, .5s);
+          opacity:0;
+        }
         ul {} 
         li {
           list-style:none;
-          margin:0 1em;
           &.name h3{
             font-size:1.3em;
             line-height:1.1em;
             width:120px
           }
-          &.statusCode {
+          &.url {
+            font-size:.9em
+          }
+          &.message {
             text-align:center;
+            font-weight:700;
+            font-size:1.2em;
+            text-overflow: ellipsis-word;
+            height:29px;
           }
         }
+        &.checking .loader{
+          opacity:1;
+        }
+        &:first-child {.border_top_radius(7px);}
+        &:last-child {.border_bottom_radius(7px);}
+        &:only-child {.border_radius(7px);}
+      }
+    }
+    &.error {
+      h2 {
+        .error_text();
+      }
+      section {
+        .box_shadow(0px 1px 10px rgba(221,102,102,.5))
       }
     }
   }
+    
 }
 // Status Code COLORS!
   .s200 {
-    color:@ok-text;
-    text-shadow:@ok 0 0 3px;
+    .ok_text();
   }
   .s300,.s301 {
-    color:@warning-text;
-    text-shadow:@warning 0 0 3px;
+    .warning_text();
   }
   .s404,.s500 {
-    color:@error-text;
-    text-shadow:@error 0 0 3px;
-    -webkit-animation-name: pulse;
-    -webkit-animation-duration: 2s;
-    -webkit-animation-iteration-count: infinite;
-    -webkit-animation-direction: alternate;
-    -webkit-animation-timing-function: ease-in-out;
+    .error_text();
   }
 
 /* 
@@ -234,12 +280,7 @@ header {
 	}
 	#page {
 	  .server {
-	    .box(vertical);
-	    section {
-	      width:auto;
-	      border:none;
-        border-top:1px solid rgba(222,222,222,.3);
-      }
+	    
 	  }
 	}
 	

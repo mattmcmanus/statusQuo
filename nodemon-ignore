@@ -1,3 +1,5 @@
 *.haml
 *.css
 lib/*
+public/javascripts/*
+public/images/*
