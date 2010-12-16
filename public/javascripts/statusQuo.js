@@ -6,7 +6,7 @@
 if(typeof window.statusQuo === "undefined") {
   var statusQuo = function (params) {
     this.servers = null;
-    this.checkOnLoad = true || params.checkOnLoad;
+    this.checkOnLoad = params.checkOnLoad || false;
     
     this.getConfig();
   };
@@ -15,10 +15,10 @@ if(typeof window.statusQuo === "undefined") {
     setupPage: function() {
       this.bindButtons();
       if (this.checkOnLoad) {
+        console.log(this.checkOnLoad)
         var context = this;
-        $('.sites').each(function(site){
-          var id = $(this).attr('id');
-          context.check(id);
+        $('.server').each(function(site){
+          context.checkServer($(this));
         })
       }
     },
@@ -31,32 +31,41 @@ if(typeof window.statusQuo === "undefined") {
     },
     
     bindButtons: function() {
+      var context = this;
       //Bind server refresh action
       $('.server a.refresh').click(function(){
-        $(this).parent().next().children().each(function(){
-          sq.check($(this).attr('id'))
-        });
+        context.checkServer($(this).parents('.server'));
       });
     },
     
-    check: function(id){
-      var context = $("#"+id);
-      $(context).addClass('checking');
-      $.ajax({ url:'/check/'+id, context:context, success: function(data){
+    checkServer: function(server) {
+      var context = this;
+      $(server).addClass("checking").find('.site').each(function(){
+        context.checkSite($(this));
+      });
+    },
+    
+    checkSite: function(site){
+      $(site).addClass('checking');
+      $.ajax({ url:'/check/'+$(site).attr('id'), context:site, success: function(data){
         $(this).addClass('s'+data.statusCode).removeClass('checking').find('.message').text(data.message)
         if(data.statusCode == 500)
           $(this).parents('.server').addClass('error');
+        if ($(this).siblings('.site:not(.checking)').length == $(this).siblings('.site').length)
+          $(this).parents(".server").removeClass("checking");
       }});
     }
   }
 };
 
-sq = new statusQuo({
-  "checkOnLoad":false
-});
+
 
 
 $(document).ready(function() {
+  sq = new statusQuo({
+    "checkOnLoad":true
+  });
+  
   sq.setupPage();
   
   
