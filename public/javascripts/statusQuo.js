@@ -8,6 +8,7 @@ if(typeof window.statusQuo === "undefined") {
     this.servers = null;
     this.checkOnLoad = params.checkOnLoad || false;
     
+    this.socket = new io.Socket(null, {port: 8000, rememberTransport: false});
     this.getConfig();
   };
   
@@ -15,7 +16,6 @@ if(typeof window.statusQuo === "undefined") {
     setupPage: function() {
       this.bindButtons();
       if (this.checkOnLoad) {
-        console.log(this.checkOnLoad)
         var context = this;
         $('.server').each(function(site){
           context.checkServer($(this));
@@ -36,6 +36,16 @@ if(typeof window.statusQuo === "undefined") {
       $('.server a.refresh').click(function(){
         context.checkServer($(this).parents('.server'));
       });
+      
+      //Bind server ping action
+      $('.server a.ping').click(function(){
+        context.pingServer($(this).parents('.server'));
+      });
+      
+      //Bind server ping stop action
+      $('.console a.stopPing').click(function(){
+        context.stopPing($(this).parents('.server'));
+      });
     },
     
     checkServer: function(server) {
@@ -54,6 +64,25 @@ if(typeof window.statusQuo === "undefined") {
         if ($(this).siblings('.site:not(.checking)').length == $(this).siblings('.site').length)
           $(this).parents(".server").removeClass("checking");
       }});
+    },
+    
+    pingServer: function(server) {
+      var context = this;
+      $(server).addClass("pinging");
+      $(server).find('.console').slideDown(150)
+      //context.socket.connect();
+      //context.socket.on('connect', function(){ 
+      //  console.log("Client: Connecting")
+      //})
+      //context.socket.send({'ping':$(server).attr('id')});
+      //context.socket.on('message', function(obj){
+      //  console.log(obj)
+      //});
+        
+    },
+    
+    stopPing: function(server) {
+      server.children('.console').slideUp(150)
     }
   }
 };
@@ -63,10 +92,8 @@ if(typeof window.statusQuo === "undefined") {
 
 $(document).ready(function() {
   sq = new statusQuo({
-    "checkOnLoad":true
+    "checkOnLoad":false
   });
   
   sq.setupPage();
-  
-  
 });

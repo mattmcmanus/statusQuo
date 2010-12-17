@@ -7,6 +7,7 @@ var fs = require('fs'),
     express = require('express'),
     less = require('less'),
     sys = require('sys'),
+    io = require('socket.io'),
     app = express.createServer(
       express.compiler({ src: pub, enable: ['less'] }),
       express.staticProvider(pub)
@@ -108,9 +109,11 @@ app.get('/', function(req, res){
   })
 });
 
+
 app.get('/getConfig', function(req, res){
   res.send(serversConfig);
 });
+
 
 app.get('/check/:site', loadSite, function(req, res){
   var secure = (req.site.secure)?req.site.secure:false;
@@ -127,28 +130,73 @@ app.get('/check/:site', loadSite, function(req, res){
   });
 })
 
+
 app.get('/500', function(req, res, next){
     next(new Error('keyboard cat!'));
 });
+
 
 app.listen('8000');
 console.log('Express server started on port %s', app.address().port);
 
 
-
-
-
-// socket.io 
-
-
-//var socket = io.listen(app); 
-//socket.on('connection', function(client){ 
-//  console.log('SOCKETED!')
-//  client.on('message', function(){ 
-//      
-//  }) 
-//  client.on('disconnect', function(){
-//      
-//  
-//  }) 
-//});
+// - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//                 socket.io 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - 
+var socket = io.listen(app); 
+socket.on('connection', function(client){ 
+  client.on('message', function(commands){ 
+    _.each(commands,function(action, command){
+      if (command == 'ping') {
+        // Set things up
+        var buffer = [],
+        ip,
+        exec = require('child_process').exec,
+        ping;
+        
+        // Load up the servers IP
+        _.each(serversConfig,function(server){
+          if (ip == null && server.name == action) {
+            if (server.ip) {
+              ip = server.ip;
+            } else {
+              //TODO: Throw a proper error
+            };
+          }
+        })
+        // It's time to ping!
+        //var ping = spawn('ping ' + ip );
+        //ping.stdout.on('data', function (data) {
+        //  console.log('stdout: ' + data);
+        //});
+        
+        //ping.stderr.on('data', function (data) {
+        //  console.log('stderr: ' + data);
+        //});
+        
+        //ping.on('exit', function (code) {
+        //  console.log('child process exited with code ' + code);
+        //});
+        console.log("pinging: "+ ip);
+        //ping = exec('ping ' + ip, 
+        //  function (error, stdout, stderr) {
+        //    console.log('stdout: ' + stdout);
+        //    console.log('stderr: ' + stderr);
+        //    if (error !== null) {
+        //      console.log('exec error: ' + error);
+        //    }
+        //});
+        
+        // Stop this
+        //setTimeout(ping.kill(),1000)
+        //
+      }
+      
+    });
+  });
+  
+  client.on('disconnect', function(){
+    console.log('socket.io: DISCONNECTED!')
+  }) 
+  
+});

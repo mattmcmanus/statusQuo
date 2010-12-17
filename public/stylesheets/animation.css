@@ -7,3 +7,13 @@
     -webkit-transform: rotate(10800deg);
   }
 }
+
+@-webkit-keyframes pulse {
+  from {
+    opacity:.75;
+  }
+  
+  to {
+    opacity:1;
+  }
+}
