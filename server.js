@@ -1,5 +1,6 @@
 require('./lib/underscore.js')
 
+// Some setup
 var pub = __dirname + '/public';
 
 var fs = require('fs'),
@@ -13,17 +14,18 @@ var fs = require('fs'),
       express.staticProvider(pub)
     );
     
-    
     app.configure(function(){
+      //Basic setup
       app.use(express.logger({ format: '":method :url" :status' }));
       app.use(express.bodyDecoder());
       app.use(app.router);
+      app.use(express.errorHandler({ dumpExceptions: true }));
+      //Session Support
+      app.use(express.cookieDecoder());
+      app.use(express.session({key:'statusQuo',secret:'st@tu$Qu0'}));
+      //Templating Setup
       app.set('views', __dirname + '/views');
       app.set('view engine', 'jade');
-      app.use(express.errorHandler({ dumpExceptions: true }));
-      //app.use(function(req, res, next){
-      //  next(new NotFound(req.url));
-      //});
     });
     
     function NotFound(path){
@@ -63,10 +65,8 @@ app.error(function(err, req, res, next){
     next(err);
   }
 });
-
 // Here we assume all errors as 500 for the simplicity of
 // this demo, however you can choose whatever you like
-
 app.error(function(err, req, res){
   res.render('500', {
     status: 500,
@@ -76,7 +76,9 @@ app.error(function(err, req, res){
     }
   });
 });
-    
+   
+   
+ 
 //Read the config file
 var serversConfig = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
 
@@ -130,6 +132,17 @@ app.get('/check/:site', loadSite, function(req, res){
   });
 })
 
+app.get('/login', function(req, res){
+  var twitter = require('twitter-connect').createClient({
+    consumerKey:    'KZHCsJ6yIpWQbmI2Adkrg',
+    consumerSecret: 'ZusgzvUah75KmHVsIatjAWw0SconKzdyuc4B5vDL4'
+  });
+  twitter.authorize(req, res, function(error, api) {
+    api.get('/account/verify_credentials.json', function(error, data) {
+      response.send('DATA: ' + sys.inspect(data))
+    });
+  });
+});
 
 app.get('/500', function(req, res, next){
     next(new Error('keyboard cat!'));
