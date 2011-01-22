@@ -3,3 +3,4 @@
 lib/*
 public/javascripts/*
 public/images/*
+node_modules/*
