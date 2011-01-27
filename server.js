@@ -11,7 +11,11 @@ var fs = require('fs'),
     io = require('socket.io'),
     app = express.createServer(
       express.compiler({ src: pub, enable: ['less'] }),
-      express.staticProvider(pub)
+      express.staticProvider(pub),
+      express.favicon(),
+      //Session support
+      express.cookieDecoder(),
+      express.session({secret:'St@tu$Qu0'})
     );
     
     app.configure(function(){
@@ -20,51 +24,15 @@ var fs = require('fs'),
       app.use(express.bodyDecoder());
       app.use(app.router);
       app.use(express.errorHandler({ dumpExceptions: true }));
-      //Session Support
-      app.use(express.cookieDecoder());
-      app.use(express.session({key:'statusQuo',secret:'st@tu$Qu0'}));
+            
       //Templating Setup
       app.set('views', __dirname + '/views');
       app.set('view engine', 'jade');
     });
-    
-    function NotFound(path){
-        this.name = 'NotFound';
-        if (path) {
-            Error.call(this, 'Cannot find ' + path);
-            this.path = path;
-        } else {
-            Error.call(this, 'Not Found');
-        }
-        Error.captureStackTrace(this, arguments.callee);
-    }
-    
-    sys.inherits(NotFound, Error);
-    
-    process.on('uncaughtException', function (err) {
-      console.error('uncaughtException: ' + err);
-    });
-// We can call app.error() several times as shown below.
-// Here we check for an instanceof NotFound and show the
-// 404 page, or we pass on to the next error handler.
-
-// These handlers could potentially be defined within
-// configure() blocks to provide introspection when
-// in the development environment.
-
-app.error(function(err, req, res, next){
-  if (err instanceof NotFound) {
-    res.render('404', {
-      status: 404,
-      locals: {
-        title: "Listen, Whatever the heck you are looking for is not here",
-        error: err
-      }
-    });
-  } else {
-    next(err);
-  }
-});
+      
+    //process.on('uncaughtException', function (err) {
+    //  console.error('uncaughtException: ' + err);
+    //});
 // Here we assume all errors as 500 for the simplicity of
 // this demo, however you can choose whatever you like
 app.error(function(err, req, res){
@@ -82,7 +50,26 @@ app.error(function(err, req, res){
 //Read the config file
 var serversConfig = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
 
-// Route Middleware
+
+//                      Dynamic Helpers
+// - - - - - - - - - - - - - - - - - - - - - - - - - - -
+//app.dynamicHelpers({
+//  messages: function(req, res){
+//    return function(){
+//      var messages = req.flash();
+//      return res.partial('messages', {
+//        object: messages,
+//        as: 'types',
+//        locals: { hasMessages: Object.keys(messages).length },
+//        dynamicHelpers: false
+//      });
+//    }
+//  }
+//});
+
+
+//                      Route Middleware
+// - - - - - - - - - - - - - - - - - - - - - - - - - - -
 function loadSite(req, res, next) {
   var site = null;
   _.each(serversConfig,function(server){
@@ -97,26 +84,28 @@ function loadSite(req, res, next) {
   }
 }
 
-//function pingServer(){
-//  
-//}
-
-// ------ ROUTES --------
+// - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - -
+//                  The Routes, THE ROUTES!
+// - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - -
 app.get('/', function(req, res){
-  res.render('index',{
+  res.render('index', {
     locals: {
       title: "Dashboard",
       servers: serversConfig
     }
-  })
+  });
 });
 
-
+//                      Load the config
+// - - - - - - - - - - - - - - - - - - - - - - - - - - -
 app.get('/getConfig', function(req, res){
   res.send(serversConfig);
 });
 
-
+//                      Check a Site
+// - - - - - - - - - - - - - - - - - - - - - - - - - - -
 app.get('/check/:site', loadSite, function(req, res){
   var secure = (req.site.secure)?req.site.secure:false;
   var site = http.createClient((secure)?443:80, req.site.url, secure);
@@ -132,18 +121,64 @@ app.get('/check/:site', loadSite, function(req, res){
   });
 })
 
+//                      LOGIN
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 app.get('/login', function(req, res){
-  var twitter = require('twitter-connect').createClient({
-    consumerKey:    'KZHCsJ6yIpWQbmI2Adkrg',
-    consumerSecret: 'ZusgzvUah75KmHVsIatjAWw0SconKzdyuc4B5vDL4'
-  });
-  twitter.authorize(req, res, function(error, api) {
-    api.get('/account/verify_credentials.json', function(error, data) {
-      response.send('DATA: ' + sys.inspect(data))
+  if (!req.session.user) {
+    var OAuth= require('oauth').OAuth,
+    consumerKey=    'KZHCsJ6yIpWQbmI2Adkrg',
+    consumerSecret= 'ZusgzvUah75KmHVsIatjAWw0SconKzdyuc4B5vDL4',
+    oa= new OAuth("https://twitter.com/oauth/request_token",
+                     "https://twitter.com/oauth/access_token", 
+                     consumerKey, consumerSecret, 
+                     "1.0A", "http://statusquo.ablegray.com:8000/oauth/callback", "HMAC-SHA1");
+    
+    //oa.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, results){
+    //  if(error) sys.puts('error :' + JSON.stringify(error))
+    //   else { 
+    //     sys.puts('oauth_token: ' + oauth_token)
+    //     sys.puts('oauth_token_secret: ' + oauth_token_secret)
+    //     sys.puts('requestoken results: ' + sys.inspect(results))
+    //     sys.puts("Requesting access token")
+    //   }
+    //});
+    
+    var access_token= '14528708-zm7pKtXLlq5HqSdQSiUX4d1h8Plfwd5OZDfFaqjR8',
+    access_token_secret= 'ZRGBOU2ZyrloludBLbrw8e0yrv88QdrcxDDQexbbE';
+    oa.get("http://api.twitter.com/1/account/verify_credentials.json", access_token, access_token_secret, function(error, data) {
+      req.session.regenerate(function(){
+        req.session.user = JSON.parse(data);
+        res.redirect('/user')
+      });
     });
-  });
+  } else {
+    res.redirect('/user')
+  }
 });
 
+app.get('/user', function(req, res){
+  if (req.session.user) {
+    console.log(req.session.user.name);
+    res.render('user', {
+      locals: {
+        title:"Your Account",
+        user:req.session.user
+      }
+    });
+  } else {
+    res.redirect('/login')
+  }
+});
+
+//                      Oauth callback
+// - - - - - - - - - - - - - - - - - - - - - - - - - - -
+app.get('/oauth/callback', function(req, res){
+    console.log("CALLBACK!");
+    res.end();
+});
+
+//                      500 Error
+// - - - - - - - - - - - - - - - - - - - - - - - - - - -
 app.get('/500', function(req, res, next){
     next(new Error('keyboard cat!'));
 });

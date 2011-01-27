@@ -1,7 +1,10 @@
 !!! 5
 html(lang="en")
   head
-    title= title || "statusQuo"
+    -if (title)
+      title= title
+    -else
+      title StatusQuo
     
     //Meta
     meta(charset="utf-8")
@@ -9,7 +12,6 @@ html(lang="en")
     
     // Javscripts
     script(type = "text/javascript",src = "http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js")
-    //script(type = "text/javascript",src = "http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js")
     script(type = "text/javascript",src = "/javascripts/modernizr-1.6.min.js")
     script(type = "text/javascript",src = "/socket.io/socket.io.js")
     script(type = "text/javascript",src = "/javascripts/statusQuo.js")
@@ -21,4 +23,7 @@ html(lang="en")
       h1.ok
         em the
         | StatusQuo
+      nav#eyebrow
+        a(href="http://api.twitter.com/oauth/authenticate")
+          img(src="http://a0.twimg.com/images/dev/buttons/sign-in-with-twitter-d.png")
     #page!= body
