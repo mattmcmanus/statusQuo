@@ -9,6 +9,13 @@ var fs = require('fs'),
     less = require('less'),
     sys = require('sys'),
     io = require('socket.io'),
+    OAuth= require('oauth').OAuth,
+    consumerKey=    'KZHCsJ6yIpWQbmI2Adkrg',
+    consumerSecret= 'ZusgzvUah75KmHVsIatjAWw0SconKzdyuc4B5vDL4',
+    oa= new OAuth("https://twitter.com/oauth/request_token",
+                     "https://twitter.com/oauth/access_token", 
+                     consumerKey, consumerSecret, 
+                     "1.0A", "http://statusquo.ablegray.com:8000/oauth/callback", "HMAC-SHA1"),
     app = express.createServer(
       express.compiler({ src: pub, enable: ['less'] }),
       express.staticProvider(pub),
@@ -53,19 +60,22 @@ var serversConfig = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
 
 //                      Dynamic Helpers
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
-//app.dynamicHelpers({
-//  messages: function(req, res){
-//    return function(){
-//      var messages = req.flash();
-//      return res.partial('messages', {
-//        object: messages,
-//        as: 'types',
-//        locals: { hasMessages: Object.keys(messages).length },
-//        dynamicHelpers: false
-//      });
-//    }
-//  }
-//});
+app.dynamicHelpers({
+  messages: function(req, res){
+    return function(){
+      var messages = req.flash();
+      return res.partial('messages', {
+        object: messages,
+        as: 'types',
+        locals: { hasMessages: Object.keys(messages).length },
+        dynamicHelpers: false
+      });
+    }
+  },
+  loggedIn: function(req, res){
+    return (req.session.user)?'science':false;
+  }
+});
 
 
 //                      Route Middleware
@@ -125,56 +135,58 @@ app.get('/check/:site', loadSite, function(req, res){
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 app.get('/login', function(req, res){
   if (!req.session.user) {
-    var OAuth= require('oauth').OAuth,
-    consumerKey=    'KZHCsJ6yIpWQbmI2Adkrg',
-    consumerSecret= 'ZusgzvUah75KmHVsIatjAWw0SconKzdyuc4B5vDL4',
-    oa= new OAuth("https://twitter.com/oauth/request_token",
-                     "https://twitter.com/oauth/access_token", 
-                     consumerKey, consumerSecret, 
-                     "1.0A", "http://statusquo.ablegray.com:8000/oauth/callback", "HMAC-SHA1");
-    
-    //oa.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, results){
-    //  if(error) sys.puts('error :' + JSON.stringify(error))
-    //   else { 
-    //     sys.puts('oauth_token: ' + oauth_token)
-    //     sys.puts('oauth_token_secret: ' + oauth_token_secret)
-    //     sys.puts('requestoken results: ' + sys.inspect(results))
-    //     sys.puts("Requesting access token")
-    //   }
-    //});
-    
-    var access_token= '14528708-zm7pKtXLlq5HqSdQSiUX4d1h8Plfwd5OZDfFaqjR8',
-    access_token_secret= 'ZRGBOU2ZyrloludBLbrw8e0yrv88QdrcxDDQexbbE';
-    oa.get("http://api.twitter.com/1/account/verify_credentials.json", access_token, access_token_secret, function(error, data) {
-      req.session.regenerate(function(){
-        req.session.user = JSON.parse(data);
-        res.redirect('/user')
-      });
+    if (!req.session.oauth) req.session.oauth = {};
+    oa.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, results){
+      if(error) sys.puts('error :' + JSON.stringify(error))
+      else { 
+        req.session.oauth.token = oauth_token;
+        req.session.oauth.token_secret = oauth_token_secret;
+        res.redirect('https://twitter.com/oauth/authenticate?oauth_token='+oauth_token);
+       }
     });
+    
+    //var access_token= '14528708-zm7pKtXLlq5HqSdQSiUX4d1h8Plfwd5OZDfFaqjR8',
+    //access_token_secret= 'ZRGBOU2ZyrloludBLbrw8e0yrv88QdrcxDDQexbbE';
   } else {
+    console.log('/login: Session already created')
     res.redirect('/user')
   }
 });
 
-app.get('/user', function(req, res){
-  if (req.session.user) {
-    console.log(req.session.user.name);
-    res.render('user', {
-      locals: {
-        title:"Your Account",
-        user:req.session.user
-      }
-    });
-  } else {
-    res.redirect('/login')
-  }
+app.get('/oauth/callback', function(req, res){
+    if (req.session.oauth) {
+      req.session.oauth.verifier = req.query.oauth_verifier
+      
+      var oauth = req.session.oauth;
+      oa.getOAuthAccessToken(oauth.token,oauth.token_secret,oauth.verifier, 
+        function(error, oauth_access_token, oauth_access_token_secret, results){
+          req.session.oauth.access_token = oauth_access_token;
+          req.session.oauth.access_token_secret = oauth_access_token_secret;
+          
+          res.cookie('loggedIn', '1', { path: '/', expires: new Date(Date.now() + 900000), httpOnly: true });
+          
+          res.redirect('/user');
+        }
+      );
+    }
 });
 
-//                      Oauth callback
-// - - - - - - - - - - - - - - - - - - - - - - - - - - -
-app.get('/oauth/callback', function(req, res){
-    console.log("CALLBACK!");
-    res.end();
+app.get('/user', function(req, res){
+  if (req.cookies.loggedin && req.session.oauth) {
+    oa.get("http://api.twitter.com/1/account/verify_credentials.json", req.session.oauth.access_token, req.session.oauth.access_token_secret, function(error, data) {
+      req.session.user = JSON.parse(data);
+      
+      res.render('user', {
+        locals: {
+          title:"Your Account",
+          user:req.session.user
+        }
+      });
+    });
+  } else {
+    console.log('/user: No session info, redirecting to login');
+    res.redirect('/login')
+  }
 });
 
 //                      500 Error
