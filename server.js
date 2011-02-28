@@ -73,7 +73,7 @@ app.dynamicHelpers({
     }
   },
   loggedIn: function(req, res){
-    return (req.session.user)?'science':false;
+    return (!!req.session.user);
   }
 });
 

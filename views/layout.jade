@@ -24,10 +24,10 @@ html(lang="en")
         em the
         | StatusQuo
       nav#eyebrow
-        - if (loggedIn() == 'science')
-          a(href="/logout")
-            logout
-        - else
-          a(href="http://api.twitter.com/oauth/authenticate")
-            img(src="http://a0.twimg.com/images/dev/buttons/sign-in-with-twitter-d.png")
+        //- if loggedIn()
+        //  a(href="/logout")
+        //    logout
+        //- else
+        a(href="http://api.twitter.com/oauth/authenticate")
+          img(src="http://a0.twimg.com/images/dev/buttons/sign-in-with-twitter-d.png")
     #page!= body
