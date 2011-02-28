@@ -1,0 +1,261 @@
+@import "reset.css"
+@import "css3"
+
+// Variables
+sprites = url(../images/icons.png)
+
+//Status Colors
+ok = #090
+warning = #990
+error = #900
+
+// Status Code COLORS!
+ok_text()
+  color ok + #ccc
+  text-shadow ok 0 0 3px
+
+warning_text()
+  color warning + #ccc
+  text-shadow warning 0 0 3px
+
+error_text()
+  color error + #ccc
+  text-shadow error 0 0 3px
+
+.s200
+  ok_text
+ 
+.s300,.s301
+  warning_text
+
+.s404,.s500
+  error_text
+  
+
+
+
+.button
+  color #fff
+  font-size .8em
+  font-weight 700
+  text-decoration none
+  display inline-block
+  margin 0 auto
+  padding 5px 15px
+  border 1px solid #222
+  border-radius 5px
+  text-align center
+  text-shadow -1px -1px 1px rgba(255,255,255,.3)
+  linear-gradient #444,#222 
+  box-shadow inset 0px 0px 10px rgba(34,34,34,.5)
+ 
+  &:hover
+    linear-gradient #ccc,#999
+    color #333
+ 
+
+ 
+/*
+	Typography presets
+	------------------
+*/
+h1, h2, h3, h4, h5  {}
+h1
+	font-size  68px
+	line-height  72px
+	letter-spacing  -2px
+
+h2
+	font-size  42px
+	line-height  48px
+	letter-spacing  -1px
+	font-weight 400
+
+h3
+	font-size  26px
+	line-height  36px
+	font-weight 400
+
+body
+	font  16px/1.5 Helvetica, Arial, sans-serif
+
+small
+	font-size  13px
+	line-height  18px
+
+selection
+  background rgb(255,255,0)
+-moz-selection
+  background rgb(255,255,0)
+
+
+/*
+	Default 5-column, 768 px layout for iPads, netbooks, and IE
+	(All other layouts inherit styles from this layout)
+	-----------------------------------------------------------
+	1      2      3      4      5    
+	120px  264px  408px  552px  696px   (24px gutters)
+*/
+body
+	background #222 url(../images/bg.png) repeat
+	padding  0
+	margin 0 auto
+	color #fff
+	-webkit-font-smoothing  antialiased
+
+header
+  background #515151  /* old browsers */
+  background -moz-linear-gradient(top, #515151 0%, #262626 51%, #1c1c1c 52%, #0e0e0e 100%)  /* firefox */
+  background -webkit-gradient(linear, left top, left bottom, color-stop(0%,#515151), color-stop(51%,#262626), color-stop(52%,#1c1c1c), color-stop(100%,#0e0e0e))  /* webkit */
+  box-shadow 0 1px 2px rgba(255,255,255,.1)
+  padding 10px 1em 8px
+  border-bottom 1px solid #161616
+  
+  h1
+    margin 0
+    display block
+    font-size 1.2em
+    line-height 1em
+    font-weight 400
+    em font-size .8em
+ 
+  #eyebrow
+    position absolute 
+    right 0 
+    top 0
+    padding 7px 10px
+ 
+ 
+
+
+#page
+  padding 0 1em
+
+.server
+  color #fff
+  margin 1em
+  float left
+  min-width 200px
+  max-width 275px
+  border-radius 7px
+  box-shadow(0 2px 7px rgba(0,0,0,.25))
+  border 1px solid #262626
+  position relative
+ 
+  header
+    border-top-radius 7px
+    linear-gradient #222222,#161616
+    padding 1px 5px
+    height 25px
+    position relative
+   
+    h2
+      margin 5px .25em 0
+      font-size 1em
+      line-height 1em
+      font-weight 700
+      text-shadow 0 -1px 2px #111
+   
+    nav
+      position absolute 
+      right 2px 
+      top 4px
+      a
+        overflow hidden
+        display inline-block
+        text-indent -9999px
+        height 20px
+        width 20px
+        background transparent no-repeat center center
+        margin 2px
+        opacity .25
+        transition(opacity,.25s)
+       
+        &.refresh
+          height 14px
+          width 15px
+          background url(../images/server_refresh.png) no-repeat 0 0
+       
+        &.ping
+          background-image url(../images/server_ping.png)
+       
+        &:hover
+          opacity 1
+ 
+  .console
+    display none
+    position absolute  
+    top 28px 
+    left 0
+    z-index 100
+    width 99%
+    height 200px
+    border-bottom-radius 7px
+    border 1px solid #363636
+    border-top none
+    linear-gradient(#262626, #161616)
+   
+    .button
+      position absolute  
+      bottom 5px  
+      left 40%
+   
+ 
+   
+  section
+    .site
+      border-top 1px solid #333
+      border-bottom 1px solid #222
+      linear-gradient(#333333,#222222)
+      padding 5px 10px
+      position relative
+      .loader
+        display none
+        opacity 0
+        position absolute
+        top 0 
+        left 0
+        width 100%
+        height 60px
+        z-index 50
+        background rgba(34,34,34,.75) url(../images/ajax-loader.gif) no-repeat center center
+        transition opacity .25s ease-in-out
+     
+      li
+        list-style none
+        &.name h3
+          font-size 1.3em
+          line-height 1.1em
+          width 120px
+        &.url
+          font-size 0.9em
+        &.message
+          text-align  center
+          font-weight 700
+          font-size 1.2em
+          text-overflow ellipsis-word
+          height 29px
+     
+      &.checking 
+        .loader
+          opacity 1
+      &:last-child
+        border-bottom-radius 7px
+   
+.server 
+  &.error 
+    box-shadow 0px 1px 10px rgba(221,102,102,.5)
+    -webkit-animation-name  pulse
+    -webkit-animation-duration 1s
+    -webkit-animation-iteration-count infinite
+    -webkit-animation-direction alternate
+    -webkit-animation-timing-function ease-in-out
+  
+  &.checking
+    a.refresh
+      opacity 1
+      -webkit-animation-name rotate
+      -webkit-animation-duration 7s
+      -webkit-animation-iteration-count infinite
+      -webkit-animation-direction normal
+      -webkit-animation-timing-function ease-in
