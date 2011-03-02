@@ -1,3 +1,5 @@
+var config = JSON.parse(require('fs').readFileSync('./config.json', 'utf8'));
+
 exports.index = function(req, res){
   res.render('index', {
     locals: {
@@ -8,6 +10,6 @@ exports.index = function(req, res){
 };
 
 exports.config = function(req, res, next){
-  req.config = JSON.parse(require('fs').readFileSync('./config.json', 'utf8'));
+  req.config = config;
   next();
 }

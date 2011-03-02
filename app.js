@@ -11,7 +11,8 @@ var sys = require('sys'),
     // Load server and routes
     app = express.createServer(),
     site = require('./site'),
-    service = require('./service');
+    service = require('./service'),
+    server = require('./server');
 
 function compile(str, path, fn) {
   stylus(str)
@@ -71,8 +72,13 @@ app.dynamicHelpers({
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 app.get('/', site.config, site.index);
 
-//                      Check a Site
-// - - - - - - - - - - - - - - - - - - - - - - - - - - -
+app.get('/server/add', server.add);
+app.post('/server/add', server.create)
+app.get('/server/:id', server.view);
+app.get('/server/:id/edit', server.edit);
+app.post('/server/:id/edit', server.update);
+
+// Check a Site
 app.all('/check/:id', site.config, service.load);
 app.get('/check/:id', service.check)
 
