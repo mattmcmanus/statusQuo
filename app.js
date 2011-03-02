@@ -1,15 +1,17 @@
 require('./lib/underscore.js')
 
-// Some setup
-var pub = __dirname + '/public',
-    views = __dirname + '/views';
-
-
 var sys = require('sys'),
     fs = require('fs'),
     http = require('http'),
     express = require('express'),
-    stylus = require('stylus');
+    stylus = require('stylus'),
+    // Some Basic variable setting
+    pub = __dirname + '/public',
+    views = __dirname + '/views',
+    // Load server and routes
+    app = express.createServer(),
+    site = require('./site'),
+    service = require('./service');
 
 function compile(str, path, fn) {
   stylus(str)
@@ -18,24 +20,19 @@ function compile(str, path, fn) {
     .render(fn);
 }
 
-var app = express.createServer(
-  stylus.middleware({
-      src: views,
-      dest: pub,
-      compile: compile
-  }),
-  express.staticProvider(pub),
-  express.favicon(),
-  express.logger({ format: '":method :url" :status' }),
-  express.cookieDecoder(),
-  express.bodyDecoder(),
-  express.errorHandler({ dumpExceptions: true })
-);
-    
 app.configure(function(){
-  //Templating Setup
+  // Templating Setup
   app.set('views', views);
   app.set('view engine', 'jade');
+  app.use(stylus.middleware({src: views,dest: pub,compile: compile}));
+  // Files
+  app.use(express.staticProvider(pub));
+  app.use(express.favicon());
+  
+  app.use(express.logger({ format: '":method :url" :status' }));
+  app.use(express.cookieDecoder());
+  app.use(express.bodyDecoder());
+  app.use(express.errorHandler({ dumpExceptions: true }));
 });
 
 // Here we assume all errors as 500 for the simplicity of
@@ -52,10 +49,6 @@ app.error(function(err, req, res){
    
    
  
-//Read the config file
-var serversConfig = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
-
-
 //                      Dynamic Helpers
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 app.dynamicHelpers({
@@ -73,64 +66,15 @@ app.dynamicHelpers({
 });
 
 
-//                      Route Middleware
-// - - - - - - - - - - - - - - - - - - - - - - - - - - -
-function loadSite(req, res, next) {
-  var site = null;
-  _.each(serversConfig,function(server){
-    if (site == null)
-      site = _.detect(server.sites, function(s){ return s.id == req.params.site })
-  })
-  if (site) {
-    req.site = site;
-    next();
-  } else {
-    next(new Error('Failed to load site ' + req.params.site));
-  }
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 //                  The Routes, THE ROUTES!
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// - - - - - - - - - - - - - - - - - - - - - - - - - - -
-app.get('/', function(req, res){
-  res.render('index', {
-    locals: {
-      title: "Dashboard",
-      servers: serversConfig
-    }
-  });
-});
-
-//                      Load the config
-// - - - - - - - - - - - - - - - - - - - - - - - - - - -
-app.get('/getConfig', function(req, res){
-  res.send(serversConfig);
-});
+app.get('/', site.config, site.index);
 
 //                      Check a Site
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
-app.get('/check/:site', loadSite, function(req, res){
-  var secure = (req.site.secure)?req.site.secure:false;
-  var site = http.createClient((secure)?443:80, req.site.url, secure);
-  site.on('error', function(err) {
-    sys.debug('unable to connect to ' + req.site.url);
-    res.send({statusCode: '500', message: err.message.substr(err.message.indexOf(',')+1)});
-  });
-    
-  var request = site.request('GET', '/', {'host': req.site.url});
-  request.end();
-  request.on('response', function (response) {
-    res.send({statusCode: response.statusCode.toString(), message: "OK" });
-  });
-})
-//                      500 Error
-// - - - - - - - - - - - - - - - - - - - - - - - - - - -
-app.get('/500', function(req, res, next){
-    next(new Error('keyboard cat!'));
-});
-
+app.all('/check/:id', site.config, service.load);
+app.get('/check/:id', service.check)
 
 app.listen('8000');
 console.log('Express server started on port %s', app.address().port);

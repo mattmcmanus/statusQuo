@@ -9,7 +9,7 @@ if(typeof window.statusQuo === "undefined") {
     this.checkOnLoad = params.checkOnLoad || false;
     
     //this.socket = new io.Socket(null, {port: 8000, rememberTransport: false});
-    this.getConfig();
+    //this.getConfig();
   };
   
   statusQuo.prototype = {
