@@ -21,11 +21,11 @@ border-bottom-radius()
   -moz-border-bottom-right-radius arguments
   border-bottom-right-radius arguments
 
-linear-gradient(start_color, end_color, start = top, end = bottom)
-  background -moz-linear-gradient(start, start_color 0%, end_color 100%)
+linear-gradient(start_color, end_color, start = left top, end = left bottom)
+  mozstart = top if start = left top
+  background -moz-linear-gradient(mozstart, start_color 0%, end_color 100%)
   background -webkit-gradient(linear, start, end, color-stop(0%, start_color), color-stop(100%, end_color))
   -webkit-background-origin padding-box
-  //filter: progid:DXImageTransform.Microsoft.gradient( startColorstr=start_color, endColorstr=end_color,GradientType=0 );
 
 box-shadow(arguments) 
   -moz-box-shadow arguments
