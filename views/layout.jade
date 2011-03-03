@@ -16,7 +16,7 @@ html(lang="en")
     script(type = "text/javascript",src = "/javascripts/statusQuo.js")
     // Stylesheets
     link(rel="stylesheet", href="/stylesheets/base.css")
-  body
+  body(class = body_classes)
     header
       h1.ok
         em the
@@ -27,6 +27,6 @@ html(lang="en")
         //    logout
         //- else
         a#server_add.button(href="/server/add") Add Server
-        a(href="/login")
+        a#login(href="/login")
           img(src="http://a0.twimg.com/images/dev/buttons/sign-in-with-twitter-d.png")
     #page!= body

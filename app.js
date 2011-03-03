@@ -53,15 +53,15 @@ app.error(function(err, req, res){
 //                      Dynamic Helpers
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 app.dynamicHelpers({
-  messages: function(req, res){
-    return function(){
-      var messages = req.flash();
-      return res.partial('messages', {
-        object: messages,
-        as: 'types',
-        locals: { hasMessages: Object.keys(messages).length },
-        dynamicHelpers: false
-      });
+  body_classes: function(req, res) {
+    var path = require('url').parse(req.url).pathname;
+    if (path == '/')
+      return 'front'
+    else {
+      classes = path.substr(1).split('/');
+      classes[0] = 'type-' + classes[0];
+      if (classes[1] != 'add') classes[1] = 'service'+classes[1];
+      return classes.join(' ');
     }
   }
 });
