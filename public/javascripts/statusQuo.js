@@ -8,8 +8,8 @@ if(typeof window.statusQuo === "undefined") {
     this.servers = null;
     this.checkOnLoad = params.checkOnLoad || false;
     
-    this.socket = new io.Socket(null, {port: 8000, rememberTransport: false});
-    this.getConfig();
+    //this.socket = new io.Socket(null, {port: 8000, rememberTransport: false});
+    //this.getConfig();
   };
   
   statusQuo.prototype = {
@@ -50,6 +50,7 @@ if(typeof window.statusQuo === "undefined") {
     
     checkServer: function(server) {
       var context = this;
+      $(server).find('.site').show()
       $(server).addClass("checking").find('.site').each(function(){
         context.checkSite($(this));
       });
