@@ -10,9 +10,10 @@ var sys = require('sys'),
     views = __dirname + '/views',
     // Load server and routes
     app = express.createServer(),
-    site = require('./site'),
-    service = require('./service'),
-    server = require('./server');
+      site = require('./site'),
+      user = require('./user'),
+      service = require('./service'),
+      server = require('./server');
 
 function compile(str, path, fn) {
   stylus(str)
@@ -34,7 +35,7 @@ app.configure(function(){
   app.use(express.cookieDecoder());
   app.use(express.bodyDecoder());
   app.use(express.errorHandler({ dumpExceptions: true }));
-  app.use(express.session({secret:'St@tu$Qu0'}));
+  app.use(express.session({secret:'St@tu$Qu0', cookie: { maxAge: 1209600 }}));
 });
 
 // Here we assume all errors as 500
@@ -47,8 +48,7 @@ app.error(function(err, req, res){
     }
   });
 });
-   
-   
+  
  
 //                      Dynamic Helpers
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -60,7 +60,9 @@ app.dynamicHelpers({
     else {
       classes = path.substr(1).split('/');
       classes[0] = 'type-' + classes[0];
-      if (classes[1] != 'add') classes[1] = 'service'+classes[1];
+      if (classes[1] && classes[1] != 'add') 
+        classes[1] = 'service'+classes[1];
+      classes.push('page');
       return classes.join(' ');
     }
   }
@@ -71,9 +73,12 @@ app.dynamicHelpers({
 //                  The Routes, THE ROUTES!
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 app.get('/', site.config, site.index);
-app.get('/login', site.login);
-app.get('/oauth/callback', site.oauthCallback);
-app.get('/user', site.user);
+
+app.get('/login', user.login);
+app.get('/oauth/callback', user.oauthCallback, user.verify);
+app.get('/setup', user.setup);
+app.post('/setup', user.create)
+app.get('/user', user.view);
 
 app.get('/server/add', server.add);
 app.post('/server/add', server.create)
