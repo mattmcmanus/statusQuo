@@ -34,10 +34,10 @@ app.configure(function(){
   app.use(express.cookieDecoder());
   app.use(express.bodyDecoder());
   app.use(express.errorHandler({ dumpExceptions: true }));
+  app.use(express.session({secret:'St@tu$Qu0'}));
 });
 
-// Here we assume all errors as 500 for the simplicity of
-// this demo, however you can choose whatever you like
+// Here we assume all errors as 500
 app.error(function(err, req, res){
   res.render('500', {
     status: 500,
@@ -71,6 +71,9 @@ app.dynamicHelpers({
 //                  The Routes, THE ROUTES!
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 app.get('/', site.config, site.index);
+app.get('/login', site.login);
+app.get('/oauth/callback', site.oauthCallback);
+app.get('/user', site.user);
 
 app.get('/server/add', server.add);
 app.post('/server/add', server.create)
@@ -81,6 +84,7 @@ app.post('/server/:id/edit', server.update);
 // Check a Site
 app.all('/check/:id', site.config, service.load);
 app.get('/check/:id', service.check)
+
 
 app.listen('8000');
 console.log('Express server started on port %s', app.address().port);
