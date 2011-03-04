@@ -1,18 +1,15 @@
-var consumerKey=    'KZHCsJ6yIpWQbmI2Adkrg',
-    consumerSecret= 'ZusgzvUah75KmHVsIatjAWw0SconKzdyuc4B5vDL4',
-    OAuth= require('oauth').OAuth,
-    oa= new OAuth("https://twitter.com/oauth/request_token",
+var consumerKey = 'KZHCsJ6yIpWQbmI2Adkrg',
+    consumerSecret = 'ZusgzvUah75KmHVsIatjAWw0SconKzdyuc4B5vDL4',
+    OAuth = require('oauth').OAuth,
+    oa = new OAuth("https://twitter.com/oauth/request_token",
                   "https://twitter.com/oauth/access_token", 
                   consumerKey, consumerSecret, 
                   "1.0A", "http://172.25.68.218:8000/oauth/callback", "HMAC-SHA1"),
     users = {
-      default: {
+      template: {
           name: '',
           email: '',
-          url: '',
-          profile_image_url: '',
-          token: '',
-          token_secret: ''
+          picture: '',
           access_token: '',
           access_token_secret: ''
       }
@@ -21,62 +18,84 @@ var consumerKey=    'KZHCsJ6yIpWQbmI2Adkrg',
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 //                  AUTH ATTACK!
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
+exports.authenticated = function(req, res, next) {
+  if (req.session && req.session.user) {
+    next();
+  } else {
+    res.redirect('/login');
+  }  
+}
+
+exports.login = function(req, res){
+  if (!req.session.oauth) req.session.oauth = {};
+  oa.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, results){
+    if (error) new Error(error.data)
+    else {
+      req.session.oauth.token = oauth_token;
+      req.session.oauth.token_secret = oauth_token_secret;
+      res.redirect('https://twitter.com/oauth/authenticate?oauth_token='+oauth_token);
+     }
+  });
+};
+
+exports.oauthCallback = function(req, res, next){
+  if (req.session.oauth) {
+    req.session.oauth.verifier = req.query.oauth_verifier
+    var oauth = req.session.oauth;
+    oa.getOAuthAccessToken(oauth.token,oauth.token_secret,oauth.verifier, 
+      function(error, oauth_access_token, oauth_access_token_secret, results){
+        req.session.oauth.access_token = oauth_access_token;
+        req.session.oauth.access_token_secret = oauth_access_token_secret;
+        next();
+      }
+    );
+    
+  } else {
+    next(new Error('No OAuth information stored in the session. How did you get here?'));
+  }
+};
 exports.verify = function(req, res) {
   oa.get("http://api.twitter.com/1/account/verify_credentials.json", req.session.oauth.access_token, req.session.oauth.access_token_secret, function(error, data) {
-    req.session.user = JSON.parse(data);
-    var user = users[req.session.user.screen_name];
-    if (user)
-      res.redirect('/setup')
-    else
-      res.redirect('/user')
+    if (data) {
+      req.session.twitter = JSON.parse(data);
+      var user = users[req.session.twitter.screen_name];
+      if (user) {
+        req.session.user = user;
+        res.redirect('/user')
+      } else {
+        res.redirect('/setup')
+      }
+    } else {
+      console.log('Unable to verify user')
+    }
   });
 };
 
 exports.setup= function(req, res) {
-  res.render('user/setup', {
-    locals: {
-      title:"Welcome! Please verify you informaiton"
-    }
-  });
-};
-
-exports.create = function(req, res) {
-  
-};
-
-exports.login = function(req, res){
-  if (req.session && !req.session.user) {
-    if (!req.session.oauth) req.session.oauth = {};
-    oa.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, results){
-      if(error) sys.puts('error :' + JSON.stringify(error))
-      else { 
-        req.session.oauth.token = oauth_token;
-        req.session.oauth.token_secret = oauth_token_secret;
-        res.redirect('https://twitter.com/oauth/authenticate?oauth_token='+oauth_token);
-       }
+  if (req.session.twitter) {
+      res.render('user/setup', {
+      locals: {
+        title:"Welcome! Please verify you information",
+        user: req.session.twitter
+      }
     });
   } else {
-    console.log('/login: Session already created')
-    res.redirect('/user')
+    res.redirect('/login')
   }
 };
 
-exports.oauthCallback = function(req, res, next){
-    if (req.session.oauth) {
-      req.session.oauth.verifier = req.query.oauth_verifier
-      
-      var oauth = req.session.oauth;
-      oa.getOAuthAccessToken(oauth.token,oauth.token_secret,oauth.verifier, 
-        function(error, oauth_access_token, oauth_access_token_secret, results){
-          req.session.oauth.access_token = oauth_access_token;
-          req.session.oauth.access_token_secret = oauth_access_token_secret;
-          res.redirect('/user');
-        }
-      );
-      next();
-    } else {
-      next(new Error('No OAuth information stored in the session. How did you get here?'));
-    }
+exports.create = function(req, res) {
+  var form = req.body.user;
+  users[form.username] = {
+    username: form.username,
+    name: form.name,
+    email: form.email,
+    picture: form.picture,
+    access_token: req.session.oauth.access_token,
+    access_token_secret: req.session.oauth.access_token_secret
+  }
+  req.session.user = users[form.username];
+  res.redirect('/user')
 };
 
 exports.logout = function(req, res) {
@@ -92,15 +111,10 @@ exports.logout = function(req, res) {
 }
 
 exports.view = function(req, res){
-  if (req.session && req.session.user) {
-    res.render('user/view', {
-      locals: {
-        title:"Your Account",
-        user:req.session.user
-      }
-    });
-  } else {
-    console.log('/user: No session info, redirecting to login');
-    res.redirect('/login')
-  }
+  res.render('user/view', {
+    locals: {
+      title:"Your Account",
+      user:req.session.user
+    }
+  });
 };

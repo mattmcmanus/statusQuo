@@ -65,6 +65,9 @@ app.dynamicHelpers({
       classes.push('page');
       return classes.join(' ');
     }
+  },
+  session: function(req,res) {
+    return req.session;
   }
 });
 
@@ -78,12 +81,12 @@ app.get('/login', user.login);
 app.get('/oauth/callback', user.oauthCallback, user.verify);
 app.get('/setup', user.setup);
 app.post('/setup', user.create)
-app.get('/user', user.view);
+app.get('/user', user.authenticated, user.view);
 
-app.get('/server/add', server.add);
+app.get('/server/add', user.authenticated, server.add);
 app.post('/server/add', server.create)
-app.get('/server/:id', server.view);
-app.get('/server/:id/edit', server.edit);
+app.get('/server/:id', user.authenticated, server.view);
+app.get('/server/:id/edit', user.authenticated, server.edit);
 app.post('/server/:id/edit', server.update);
 
 // Check a Site

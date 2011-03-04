@@ -30,51 +30,29 @@ error_text()
 
 .s404,.s500
   error_text
-  
 
-.button
-  color #fff
-  font-size .8em
-  font-weight 700
-  text-decoration none
-  display inline-block
-  margin 0 auto
-  padding 5px 15px
-  border 1px solid #222
-  border-radius 7px
-  text-align center
-  text-shadow 0 -1px 1px rgba(255,255,255,.3)
-  linear-gradient #262626,#060606 
-  box-shadow inset 0px 0px 10px rgba(34,34,34,.5)
- 
-  &:hover
-    linear-gradient #444,#222
-    color #eee
-    cursor pointer
-    text-shadow 0 -1px 2px rgba(34,34,34,.5)
- 
 
- 
+
 /*
 	Typography presets
 	------------------
 */
 h1, h2, h3, h4, h5  {}
 h1
-	font-size  68px
-	line-height  72px
+	font-size  42px
+	line-height  46px
 	letter-spacing  -1px
 	font-weight 700
 
 h2
-	font-size  42px
-	line-height  48px
+	font-size  24px
+	line-height  28px
 	letter-spacing  -1px
 	font-weight 400
 
 h3
-	font-size  26px
-	line-height  36px
+	font-size  16px
+	line-height  20px
 	font-weight 400
 
 body
@@ -88,8 +66,41 @@ selection
   background rgb(255,255,0)
 -moz-selection
   background rgb(255,255,0)
+  
+a, a:link 
+  text-decoration none
+  &:hover
+    text-decoration underline
 
 
+
+.button
+  color #fff
+  font-size .8em
+  font-weight 700
+  text-decoration none
+  display inline-block
+  margin 3px 10px 3px 0
+  padding 5px 15px
+  border 1px solid #222
+  border-radius 7px
+  text-align center
+  text-shadow 0 -1px 1px rgba(255,255,255,.3)
+  linear-gradient #262626,#060606 
+  box-shadow(inset 0px 0px 5px rgba(34,34,34,.5))
+  &:hover
+    linear-gradient #444,#222
+    color #eee
+    cursor pointer
+    text-shadow 0 -1px 2px rgba(34,34,34,.5)
+  &.save
+    linear-gradient #114411,#002200
+    &:hover 
+      linear-gradient #226622,#114411
+.cancel
+  color #666
+  font-size .8em
+ 
 /*
 	Default 5-column, 768 px layout for iPads, netbooks, and IE
 	(All other layouts inherit styles from this layout)
@@ -115,7 +126,6 @@ header
   
   h1
     margin 0
-    display block
     font-size 1.2em
     line-height 1em
     font-weight 400
@@ -285,6 +295,24 @@ form
     margin 1em 0
   label
     display block
+    font-size .9em
+    font-weight 700
+  input[type=text],input[type=email]
+    width 225px
+    
+form#account_setup
+  .screen_name
+    .profile_picture, h2
+      display inline-block
+    .profile_picture
+      padding 3px
+      background rgba(255,255,255,.1)
+      border 1px solid #555
+    h2
+      font-weight 700
+      position relative
+      top -13px
+      left 10px
     
 .page #page
   width 600px
@@ -303,5 +331,5 @@ form
     h1
       font-size 1.3em
       text-shadow 0 1px 2px rgba(255,255,255,.5)
-      padding .25em 24px
+      padding .25em 16px
       font-weight 700
