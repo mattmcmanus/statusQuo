@@ -24,16 +24,15 @@ function compile(str, path, fn) {
 
 app.configure(function(){
   // Templating Setup
-  app.set('views', views);
   app.set('view engine', 'jade');
   app.use(stylus.middleware({src: views,dest: pub,compile: compile}));
   // Files
-  app.use(express.staticProvider(pub));
+  app.use(express.static(pub));
   app.use(express.favicon());
   
   app.use(express.logger({ format: '":method :url" :status' }));
-  app.use(express.cookieDecoder());
-  app.use(express.bodyDecoder());
+  app.use(express.cookieParser());
+  app.use(express.bodyParser());
   app.use(express.errorHandler({ dumpExceptions: true }));
   app.use(express.session({secret:'St@tu$Qu0', cookie: { maxAge: 1209600 }}));
 });
@@ -69,6 +68,7 @@ app.dynamicHelpers({
   session: function(req,res) {
     return req.session;
   }
+  
 });
 
 

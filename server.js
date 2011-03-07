@@ -1,8 +1,6 @@
 exports.add = function(req, res){
   res.render('server/add', {
-    locals: {
-      title: "Add a server"
-    }
+    title: "Add a server"
   });
 };
 

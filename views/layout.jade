@@ -22,11 +22,11 @@ html(lang="en")
         em the
         | StatusQuo
       nav#eyebrow
-        //- if loggedIn()
-        //  a(href="/logout")
-        //    logout
-        //- else
-        a#server_add.button(href="/server/add") Add Server
-        a#login(href="/login")
-          img(src="http://a0.twimg.com/images/dev/buttons/sign-in-with-twitter-d.png")
+        - if (session &&session.user)
+          img.picture(src=session.user.picture, alt=session.user.name)
+          span Hello #{session.user.name}!
+          a(href="/logout") logout
+        - else
+          a#login(href="/login")
+            img(src="http://a0.twimg.com/images/dev/buttons/sign-in-with-twitter-d.png")
     #page!= body

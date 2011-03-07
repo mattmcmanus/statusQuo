@@ -73,11 +73,9 @@ exports.verify = function(req, res) {
 
 exports.setup= function(req, res) {
   if (req.session.twitter) {
-      res.render('user/setup', {
-      locals: {
-        title:"Welcome! Please verify you information",
-        user: req.session.twitter
-      }
+    res.render('user/setup', {
+      title:"Welcome! Please verify you information",
+      user: req.session.twitter
     });
   } else {
     res.redirect('/login')
@@ -104,17 +102,13 @@ exports.logout = function(req, res) {
   else 
     title = "You are already logged out";
   res.render('user/logout', {
-    locals: {
-      title:title
-    }
+    title:title
   });
 }
 
 exports.view = function(req, res){
   res.render('user/view', {
-    locals: {
-      title:"Your Account",
-      user:req.session.user
-    }
+    title:"Your Account",
+    user:req.session.user
   });
 };
