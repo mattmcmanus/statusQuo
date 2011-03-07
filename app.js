@@ -18,7 +18,7 @@ var sys = require('sys'),
 function compile(str, path, fn) {
   stylus(str)
     .set('filename', path)
-    .set('compress', true)
+    .set('compress', false)
     .render(fn);
 }
 
@@ -67,6 +67,32 @@ app.dynamicHelpers({
   },
   session: function(req,res) {
     return req.session;
+  },
+  page: function(req, res){
+    return req.url;
+  }, 
+  messages: function(req, res){
+    var buf = []
+      , messages = req.flash()
+      , types = Object.keys(messages)
+      , len = types.length;
+    if (!len) return '';
+    buf.push('<div id="messages">');
+    
+    for (var i = 0; i < len; ++i) {
+      var type = types[i]
+        , msgs = messages[type];
+      if (msgs) {
+        buf.push('  <ul class="' + type + '">');
+        for (var j = 0, len = msgs.length; j < len; ++j) {
+          var msg = msgs[j];
+          buf.push('    <li>' + msg + '</li>');
+        }
+        buf.push('  </ul>');
+      }
+    }
+    buf.push('</div>');
+    return buf.join('\n');
   }
   
 });

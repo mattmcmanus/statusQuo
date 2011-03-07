@@ -30,37 +30,33 @@ error_text()
 
 .s404,.s500
   error_text
+  
+//  Typography presets
+//  -----------------
 
-
-
-/*
-	Typography presets
-	------------------
-*/
-h1, h2, h3, h4, h5  {}
 h1
-	font-size  42px
-	line-height  46px
-	letter-spacing  -1px
-	font-weight 700
+  font-size  42px
+  line-height  46px
+  letter-spacing  -1px
+  font-weight 700
 
 h2
-	font-size  24px
-	line-height  28px
-	letter-spacing  -1px
-	font-weight 400
+  font-size  24px
+  line-height  28px
+  letter-spacing  -1px
+  font-weight 400
 
 h3
-	font-size  16px
-	line-height  20px
-	font-weight 400
+  font-size  16px
+  line-height  20px
+  font-weight 400
 
 body
-	font  16px/1.5 Helvetica, Arial, sans-serif
+  font  16px/1.5 Helvetica, Arial, sans-serif
 
 small
-	font-size  13px
-	line-height  18px
+  font-size  13px
+  line-height  18px
 
 selection
   background rgb(255,255,0)
@@ -69,10 +65,10 @@ selection
   
 a, a:link 
   text-decoration none
-  &:hover
-    text-decoration underline
-
-
+  color #900
+  
+a:hover
+  text-decoration underline
 
 .button
   color #fff
@@ -100,21 +96,40 @@ a, a:link
 .cancel
   color #666
   font-size .8em
+  
+#messages
+  width 600px
+  margin 0 auto
+  padding 8px 15px
+  ul
+    &.success
+      li
+        ok_text()
+    &.info
+      li
+        warning_text()
+    &.error
+      li
+        error_text()
+  li
+    padding 3px
+    
+  
  
 /*
-	Default 5-column, 768 px layout for iPads, netbooks, and IE
-	(All other layouts inherit styles from this layout)
-	-----------------------------------------------------------
-	1      2      3      4      5    
-	120px  264px  408px  552px  696px   (24px gutters)
+  Default 5-column, 768 px layout for iPads, netbooks, and IE
+  (All other layouts inherit styles from this layout)
+  -----------------------------------------------------------
+  1      2      3      4      5    
+  120px  264px  408px  552px  696px   (24px gutters)
 */
 body
-	background #222 url(../images/bg.png) repeat
-	font-family Helvetica, sans-serif
-	padding  0
-	margin 0 auto
-	color #fff
-	-webkit-font-smoothing  antialiased
+  background #222 url(../images/bg.png) repeat
+  font-family Helvetica, sans-serif
+  padding  0
+  margin 0 auto
+  color #fff
+  -webkit-font-smoothing  antialiased
 
 header
   background #515151  /* old browsers */
@@ -124,12 +139,15 @@ header
   padding 10px 1em 8px
   border-bottom 1px solid #161616
   
-  h1
+  h1#logo
     margin 0
     font-size 1.2em
     line-height 1em
     font-weight 400
     em font-size .8em
+    
+    a
+      color #fff
  
   #eyebrow
     position absolute 

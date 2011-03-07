@@ -18,9 +18,10 @@ html(lang="en")
     link(rel="stylesheet", href="/stylesheets/base.css")
   body(class = body_classes)
     header
-      h1.ok
-        em the
-        | StatusQuo
+      h1#logo.ok
+        a(href='/',title="Go home")
+          em the
+          | StatusQuo
       nav#eyebrow
         - if (session &&session.user)
           img.picture(src=session.user.picture, alt=session.user.name)
@@ -29,4 +30,5 @@ html(lang="en")
         - else
           a#login(href="/login")
             img(src="http://a0.twimg.com/images/dev/buttons/sign-in-with-twitter-d.png")
+    !=messages
     #page!= body
