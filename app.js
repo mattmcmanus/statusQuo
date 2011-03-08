@@ -12,16 +12,8 @@ var sys = require('sys')
   , User
   , db
   // Load server and routes
-  , app = module.exports = express.createServer()
-  , models = require('./models');
-
-//function compile(str, path, fn) {
-//  stylus(str)
-//    .set('filename', path)
-//    .set('compress', false)
-//    .render(fn);
-//}
-
+  , app = module.exports = express.createServer();
+  
 app.configure(function(){
   // Templating Setup
   app.set('view engine', 'jade');
@@ -38,11 +30,15 @@ app.configure(function(){
 
 app.configure('development', function() {
   app.set('db-uri', 'mongodb://localhost/sq_dev');
-  app.use(express.errorHandler({ dumpExceptions: true }));
+  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
-models.defineModels(mongoose, function() {
+//                      Models
+// - - - - - - - - - - - - - - - - - - - - - - - - - - -
+require('./models').defineModels(mongoose, function() {
   app.User = User = mongoose.model('User');
+  app.Service = Service = mongoose.model('Service');
+  app.Server = Server = mongoose.model('Server');
   db = mongoose.connect(app.set('db-uri'));
 })
  
@@ -61,13 +57,13 @@ app.error(function(err, req, res){
     }
   });
 });
-// - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 //                  The Routes, THE ROUTES!
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 require('./app_site')(app);
 require('./app_user')(app, User);
 require('./app_service')(app);
-require('./app_server')(app);
+require('./app_server')(app, Server);
 
 
 app.listen('8000');

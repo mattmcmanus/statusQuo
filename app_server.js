@@ -1,4 +1,4 @@
-module.exports = function(app){
+module.exports = function(app, Server){
   app.get('/server/add', function(req, res){
     res.render('server/add', {
       title: "Add a server"
