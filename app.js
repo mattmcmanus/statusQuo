@@ -1,31 +1,30 @@
 require('./lib/underscore.js')
 
-var sys = require('sys'),
-    fs = require('fs'),
-    http = require('http'),
-    express = require('express'),
-    stylus = require('stylus'),
-    // Some Basic variable setting
-    pub = __dirname + '/public',
-    views = __dirname + '/views',
-    // Load server and routes
-    app = express.createServer(),
-      site = require('./site'),
-      user = require('./user'),
-      service = require('./service'),
-      server = require('./server');
+var sys = require('sys')
+  , fs = require('fs')
+  , http = require('http')
+  , express = require('express')
+  , stylus = require('stylus')
+  , mongoose = require('mongoose')
+  // Some Basic variable setting
+  , pub = __dirname + '/public'
+  , views = __dirname + '/views'
+  , User
+  // Load server and routes
+  , app = module.exports = express.createServer()
+  , models = require('./models');
 
-function compile(str, path, fn) {
-  stylus(str)
-    .set('filename', path)
-    .set('compress', false)
-    .render(fn);
-}
+//function compile(str, path, fn) {
+//  stylus(str)
+//    .set('filename', path)
+//    .set('compress', false)
+//    .render(fn);
+//}
 
 app.configure(function(){
   // Templating Setup
   app.set('view engine', 'jade');
-  app.use(stylus.middleware({src: views,dest: pub,compile: compile}));
+  app.use(stylus.middleware({src: views,dest: pub}));
   // Files
   app.use(express.static(pub));
   app.use(express.favicon());
@@ -33,11 +32,25 @@ app.configure(function(){
   app.use(express.logger({ format: '":method :url" :status' }));
   app.use(express.cookieParser());
   app.use(express.bodyParser());
-  app.use(express.errorHandler({ dumpExceptions: true }));
   app.use(express.session({secret:'St@tu$Qu0', cookie: { maxAge: 1209600 }}));
 });
 
-// Here we assume all errors as 500
+app.configure('development', function() {
+  app.set('db-uri', 'mongodb://localhost/statusquo-development');
+  app.use(express.errorHandler({ dumpExceptions: true }));
+});
+
+models.defineModels(mongoose, function() {
+  app.User = User = mongoose.model('User');
+  db = mongoose.connect(app.set('db-uri'));
+})
+ 
+//                      Dynamic Helpers
+// - - - - - - - - - - - - - - - - - - - - - - - - - - -
+app.dynamicHelpers(require('./helpers.js').dynamicHelpers);
+
+//                      Errors
+// - - - - - - - - - - - - - - - - - - - - - - - - - - -
 app.error(function(err, req, res){
   res.render('500', {
     status: 500,
@@ -47,77 +60,13 @@ app.error(function(err, req, res){
     }
   });
 });
-  
- 
-//                      Dynamic Helpers
-// - - - - - - - - - - - - - - - - - - - - - - - - - - -
-app.dynamicHelpers({
-  body_classes: function(req, res) {
-    var path = require('url').parse(req.url).pathname;
-    if (path == '/')
-      return 'front'
-    else {
-      classes = path.substr(1).split('/');
-      classes[0] = 'type-' + classes[0];
-      if (classes[1] && classes[1] != 'add') 
-        classes[1] = 'service'+classes[1];
-      classes.push('page');
-      return classes.join(' ');
-    }
-  },
-  session: function(req,res) {
-    return req.session;
-  },
-  page: function(req, res){
-    return req.url;
-  }, 
-  messages: function(req, res){
-    var buf = []
-      , messages = req.flash()
-      , types = Object.keys(messages)
-      , len = types.length;
-    if (!len) return '';
-    buf.push('<div id="messages">');
-    
-    for (var i = 0; i < len; ++i) {
-      var type = types[i]
-        , msgs = messages[type];
-      if (msgs) {
-        buf.push('  <ul class="' + type + '">');
-        for (var j = 0, len = msgs.length; j < len; ++j) {
-          var msg = msgs[j];
-          buf.push('    <li>' + msg + '</li>');
-        }
-        buf.push('  </ul>');
-      }
-    }
-    buf.push('</div>');
-    return buf.join('\n');
-  }
-  
-});
-
-
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 //                  The Routes, THE ROUTES!
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
-app.get('/', site.config, site.index);
-
-app.get('/login', user.login);
-app.get('/oauth/callback', user.oauthCallback, user.verify);
-app.get('/setup', user.setup);
-app.post('/setup', user.create)
-app.get('/user', user.authenticated, user.view);
-
-app.get('/server/add', user.authenticated, server.add);
-app.post('/server/add', server.create)
-app.get('/server/:id', user.authenticated, server.view);
-app.get('/server/:id/edit', user.authenticated, server.edit);
-app.post('/server/:id/edit', server.update);
-
-// Check a Site
-app.all('/check/:id', site.config, service.load);
-app.get('/check/:id', service.check)
+require('./app_site')(app);
+require('./app_user')(app);
+require('./app_service')(app);
+require('./app_server')(app);
 
 
 app.listen('8000');
