@@ -1,4 +1,22 @@
+var global = require('./routes/global');
+
 module.exports = function(app, Server){
+  app.get('/', function(req, res){
+    if (req.session.user) {
+      Server.find({user_id: req.session.user.id}, function(err, servers){
+        res.render('server/index', {
+          title: "Dashboard",
+          servers: servers
+        })
+      })
+    } else {
+      res.render('index', {
+        title: "Status Quo"
+      })
+    }
+    
+  })
+  
   app.get('/server/add', function(req, res){
     res.render('server/add', {
       title: "Add a server"

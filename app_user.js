@@ -1,6 +1,7 @@
 var consumerKey = 'KZHCsJ6yIpWQbmI2Adkrg'
   , consumerSecret = 'ZusgzvUah75KmHVsIatjAWw0SconKzdyuc4B5vDL4'
   , OAuth = require('oauth').OAuth
+  , global = require('./routes/global')
   , oa = new OAuth("https://twitter.com/oauth/request_token"
                 ,  "https://twitter.com/oauth/access_token"
                 ,   consumerKey
@@ -9,6 +10,14 @@ var consumerKey = 'KZHCsJ6yIpWQbmI2Adkrg'
 
 
 module.exports = function(app, User){
+  function authenticated(req, res, next) {
+    if (req.session && req.session.user) {
+      next()
+    } else {
+      res.redirect('/login')
+    }  
+  }
+  
   app.get('/login', function(req, res){
     if (!req.session.oauth) 
       req.session.oauth = {}
@@ -95,7 +104,7 @@ module.exports = function(app, User){
     
   })
   
-  app.get('/user', authenticated, function(req, res){
+  app.get('/user', global.authenticated, function(req, res){
     res.render('user/view', {
       title:"Your Account",
       user:req.session.user
