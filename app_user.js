@@ -9,14 +9,6 @@ var consumerKey = 'KZHCsJ6yIpWQbmI2Adkrg'
 
 
 module.exports = function(app, User){
-  function authenticated(req, res, next) {
-    if (req.session && req.session.user) {
-      next()
-    } else {
-      res.redirect('/login')
-    }  
-  }
-  
   app.get('/login', function(req, res){
     if (!req.session.oauth) 
       req.session.oauth = {}

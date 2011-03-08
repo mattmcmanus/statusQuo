@@ -58,6 +58,15 @@ app.error(function(err, req, res){
   });
 });
 
+function authenticated(req, res, next) {
+  if (req.session && req.session.user) {
+    next()
+  } else {
+    res.redirect('/login')
+  }  
+}
+
+
 //                  The Routes, THE ROUTES!
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 require('./app_site')(app);
