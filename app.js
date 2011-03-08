@@ -10,6 +10,7 @@ var sys = require('sys')
   , pub = __dirname + '/public'
   , views = __dirname + '/views'
   , User
+  , db
   // Load server and routes
   , app = module.exports = express.createServer()
   , models = require('./models');
@@ -36,7 +37,7 @@ app.configure(function(){
 });
 
 app.configure('development', function() {
-  app.set('db-uri', 'mongodb://localhost/statusquo-development');
+  app.set('db-uri', 'mongodb://localhost/sq_dev');
   app.use(express.errorHandler({ dumpExceptions: true }));
 });
 
@@ -64,7 +65,7 @@ app.error(function(err, req, res){
 //                  The Routes, THE ROUTES!
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 require('./app_site')(app);
-require('./app_user')(app);
+require('./app_user')(app, User);
 require('./app_service')(app);
 require('./app_server')(app);
 

@@ -1,7 +1,6 @@
 var consumerKey = 'KZHCsJ6yIpWQbmI2Adkrg'
   , consumerSecret = 'ZusgzvUah75KmHVsIatjAWw0SconKzdyuc4B5vDL4'
   , OAuth = require('oauth').OAuth
-  , users = {}
   , oa = new OAuth("https://twitter.com/oauth/request_token"
                 ,  "https://twitter.com/oauth/access_token"
                 ,   consumerKey
@@ -9,7 +8,7 @@ var consumerKey = 'KZHCsJ6yIpWQbmI2Adkrg'
                 ,  "1.0A", "http://172.25.68.218:8000/oauth/callback", "HMAC-SHA1");
 
 
-module.exports = function(app){
+module.exports = function(app, User){
   function authenticated(req, res, next) {
     if (req.session && req.session.user) {
       next()
@@ -56,15 +55,18 @@ module.exports = function(app){
           oa.get("http://api.twitter.com/1/account/verify_credentials.json", req.session.oauth.access_token, req.session.oauth.access_token_secret, function(error, data) {
             if (data) {
               req.session.twitter = JSON.parse(data)
-              var user = users[req.session.twitter.screen_name]
-              if (user) {
-                req.session.user = user
-                req.flash('success', 'You\'ve successfully logged in!')
-                res.redirect('/')
-              } else {
-                req.flash('info', 'It appears this is your first time logging in! Please fill out the remaining below to steup your account')
-                res.redirect('/user/setup')
-              }
+              
+              User.findOne({username: req.session.twitter.screen_name }, function(err, u) {
+                if (u) {
+                  req.session.user = u
+                  req.flash('success', 'You\'ve successfully logged in!')
+                  res.redirect('/')
+                } else {
+                  req.flash('info', 'It appears this is your first time logging in! Please fill out the remaining below to steup your account')
+                  res.redirect('/user/setup')
+                }
+              });
+              
             } else {
               console.log('Unable to verify user')
             }
@@ -87,18 +89,18 @@ module.exports = function(app){
   });
   
   app.post('/user/setup', function(req, res) {
-    var form = req.body.user;
-    users[form.username] = {
-      username: form.username,
-      name: form.name,
-      email: form.email,
-      picture: form.picture,
-      access_token: req.session.oauth.access_token,
-      access_token_secret: req.session.oauth.access_token_secret
-    }
-    req.session.user = users[form.username]
-    req.flash('success', 'You\'re account has been created!')
-    res.redirect('/')
+    var user = new User(req.body.user);
+    user.save(function(err){
+      if (!err) {
+        req.flash('success', 'You\'re account has been created!')
+      } else {
+        req.flash('error', 'Err, Something broke when we tried to save your account')
+        console.log(err)
+      }
+      res.redirect('/')
+      
+    });
+    
   })
   
   app.get('/user', authenticated, function(req, res){
