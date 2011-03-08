@@ -17,6 +17,11 @@ exports.defineModels = function(mongoose, fn) {
     , access_token  : String
     , access_token_secret: String
   });
+  
+  User.virtual('id')
+    .get(function() {
+      return this._id.toHexString();
+    });
     
   mongoose.model('User', User);
   
