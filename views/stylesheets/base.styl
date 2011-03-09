@@ -89,13 +89,16 @@ a:hover
     color #eee
     cursor pointer
     text-shadow 0 -1px 2px rgba(34,34,34,.5)
+    text-decoration none
   &.save
     linear-gradient #114411,#002200
     &:hover 
       linear-gradient #226622,#114411
-.cancel
-  color #666
-  font-size .8em
+a.cancel
+  color #ccc
+  text-shadow 0 1px 1px rgba(34,34,34,.4)
+  linear-gradient #444,#333 
+  font-size .75em
   
 #messages
   width 600px
@@ -311,15 +314,23 @@ ul
     list-style none
     
 form
-  padding 0 24px
   li
-    margin 1em 0
+    padding .75em 2em 1em
+    linear-gradient #333333,#262626
+    &.checkboxes, li
+      background transparent
+    li
+      padding .5em
   label
     display block
     font-size .9em
-    font-weight 700
+    font-weight 400
   input[type=text],input[type=email]
     width 225px
+    background rgba(255,255,255,.5)
+    border 1px solid #222
+    &:focus
+      background #fff
     
 form#account_setup
   .screen_name

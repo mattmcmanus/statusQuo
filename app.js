@@ -10,6 +10,8 @@ var sys = require('sys')
   , pub = __dirname + '/public'
   , views = __dirname + '/views'
   , User
+  , Server
+  , Service
   , db
   // Load server and routes
   , app = module.exports = express.createServer();
@@ -60,10 +62,10 @@ app.error(function(err, req, res){
 
 //                  The Routes, THE ROUTES!
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
-require('./app_site')(app);
-require('./app_user')(app, User);
-require('./app_service')(app);
-require('./app_server')(app, Server);
+require('./routes/site')(app);
+require('./routes/user')(app);
+require('./routes/service')(app);
+require('./routes/server')(app);
 
 
 app.listen('8000');

@@ -1,7 +1,7 @@
 var consumerKey = 'KZHCsJ6yIpWQbmI2Adkrg'
   , consumerSecret = 'ZusgzvUah75KmHVsIatjAWw0SconKzdyuc4B5vDL4'
   , OAuth = require('oauth').OAuth
-  , global = require('./routes/global')
+  , global = require('./global')
   , oa = new OAuth("https://twitter.com/oauth/request_token"
                 ,  "https://twitter.com/oauth/access_token"
                 ,   consumerKey
@@ -9,7 +9,7 @@ var consumerKey = 'KZHCsJ6yIpWQbmI2Adkrg'
                 ,  "1.0A", "http://172.25.68.218:8000/oauth/callback", "HMAC-SHA1");
 
 
-module.exports = function(app, User){
+module.exports = function(app){
   function authenticated(req, res, next) {
     if (req.session && req.session.user) {
       next()
@@ -57,7 +57,7 @@ module.exports = function(app, User){
             if (data) {
               req.session.twitter = JSON.parse(data)
               
-              User.findOne({username: req.session.twitter.screen_name }, function(err, u) {
+              app.User.findOne({username: req.session.twitter.screen_name }, function(err, u) {
                 if (u) {
                   req.session.user = u
                   req.flash('success', 'You\'ve successfully logged in!')
@@ -90,7 +90,7 @@ module.exports = function(app, User){
   });
   
   app.post('/user/setup', function(req, res) {
-    var user = new User(req.body.user);
+    var user = new app.User(req.body.user);
     user.save(function(err){
       if (!err) {
         req.flash('success', 'You\'re account has been created!')

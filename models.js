@@ -49,7 +49,7 @@ exports.defineModels = function(mongoose, fn) {
     , ip              :  { type: String, index: { unique: true } }
     , hostname        :  String
     , os              :  String
-    , type            :  String
+    , type            :  [String]
     , Services        :  [Services] 
   })
   
