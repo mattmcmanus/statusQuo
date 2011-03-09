@@ -1,10 +1,14 @@
-.server(id=server.name)
+.server(id=server.id)
   header
-    h2= server.name
+    h2= server.hostname
     nav
       a.ping(href="javascript:void(0)") Ping Server
       a.refresh(href="javascript:void(0)") Refresh Sites
   .console
     a.button.stopPing(href="javascript:void(0)") OK
+  section.info
+    ul
+      li= server.ip
+      li= server.os
   section.sites
     !=partial('_site', server.sites)

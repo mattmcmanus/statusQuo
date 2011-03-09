@@ -3,7 +3,8 @@ var global = require('./global');
 module.exports = function(app){
   app.get('/', function(req, res){
     if (req.session.user) {
-      Server.find({user_id: req.session.user.id}, function(err, servers){
+      app.Server.find({user_id: req.session.user.id}, function(err, servers){
+        console.log(servers)
         res.render('server/index', {
           title: "Dashboard",
           servers: servers
@@ -17,15 +18,23 @@ module.exports = function(app){
     
   });
   
-  app.get('/server/new', function(req, res){
+  app.get('/server/new', global.authenticated, function(req, res){
     res.render('server/new', {
       server: new app.Server()
     });
   });
   
   app.post('/server/new', function(req, res){
-    console.log(req.body.server);
-    res.redirect('back');
+    var server = new app.Server(req.body.server);
+    server.save(function(err){
+      if (!err) {
+        req.flash('success', 'You\'re server has been created')
+      } else {
+        req.flash('error', 'Err, Something broke when we tried to save your server. Sorry!')
+        console.log(err)
+      }
+      res.redirect('/')
+    });
   });
   
   app.get('/server/:id', function(req, res){

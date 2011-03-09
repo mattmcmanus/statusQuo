@@ -6,7 +6,7 @@ exports.dynamicHelpers = {
     else {
       classes = path.substr(1).split('/');
       classes[0] = 'type-' + classes[0];
-      if (classes[1] && classes[1] != 'add') 
+      if (classes[1] && classes[1] != 'new') 
         classes[1] = 'service'+classes[1];
       classes.push('page');
       return classes.join(' ');

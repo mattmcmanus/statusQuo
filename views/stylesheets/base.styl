@@ -108,7 +108,7 @@ a.cancel
     &.success
       li
         ok_text()
-    &.info
+    &.warning
       li
         warning_text()
     &.error
@@ -327,7 +327,7 @@ form
     font-weight 400
   input[type=text],input[type=email]
     width 225px
-    background rgba(255,255,255,.5)
+    background rgba(255,255,255,.75)
     border 1px solid #222
     &:focus
       background #fff
@@ -365,3 +365,5 @@ form#account_setup
       text-shadow 0 1px 2px rgba(255,255,255,.5)
       padding .25em 16px
       font-weight 700
+  .content
+    padding .5em 1em 1em
