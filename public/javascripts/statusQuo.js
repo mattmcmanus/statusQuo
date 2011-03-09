@@ -97,4 +97,6 @@ $(document).ready(function() {
   });
   
   sq.setupPage();
+  
+  $('#messages .success').delay(3000).slideUp(100)
 });

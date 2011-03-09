@@ -2,8 +2,9 @@
   header
     h2= server.hostname
     nav
-      a.ping(href="javascript:void(0)") Ping Server
-      a.refresh(href="javascript:void(0)") Refresh Sites
+      a.edit(href="/server/"+server.id+"/edit") Edit
+      a.ping(href="javascript:void(0)") Ping
+      a.refresh(href="javascript:void(0)") Refresh
   .console
     a.button.stopPing(href="javascript:void(0)") OK
   section.info

@@ -14,6 +14,7 @@ html(lang="en")
     // Stylesheets
     link(rel="stylesheet", href="/stylesheets/base.css")
   body(class = body_classes)
+    !=messages
     header
       h1#logo.ok
         a(href='/',title="Go home")
@@ -22,10 +23,11 @@ html(lang="en")
       nav#eyebrow
         - if (session &&session.user)
           img.picture(src=session.user.picture, alt=session.user.name)
-          span Hello #{session.user.name}!
-          a(href="/logout") logout
+          span= session.user.name
+          a(href='/') Dashboard
+          a(href='/user') Account Settings
+          a(href="/logout") Log Out
         - else
           a#login(href="/login")
             img(src="http://a0.twimg.com/images/dev/buttons/sign-in-with-twitter-d.png")
-    !=messages
     #page!= body
