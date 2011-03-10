@@ -67,4 +67,20 @@ module.exports = function(app){
     });
     })
   });
+  
+  app.del('/server/:id', function(req, res, next){
+    app.Server.findOne({_id: req.params.id}, function(err, server) {
+      if(!server) return next(new NotFound('That server disappeared!'));
+      
+      server.remove(function(err){
+      if (!err) {
+        req.flash('success', 'Server removed')
+      } else {
+        req.flash('error', 'Err, Something broke when we tried to delete your server. Sorry!')
+        console.log(err)
+      }
+      res.redirect('/')
+    });
+    })
+  });
 };

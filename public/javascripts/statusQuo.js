@@ -46,6 +46,23 @@ if(typeof window.statusQuo === "undefined") {
       $('.console a.stopPing').click(function(){
         context.stopPing($(this).parents('.server'));
       });
+      
+      $('a.button.delete').click(function(){
+        var confirm = $('<div class="confirm">Whoa! Are you sure?</div>').hide();
+        $('<a class="button yes">Yes</a>').click(function(){
+          $("form.delete").submit();
+        }).appendTo(confirm);
+        $('<a class="button no">No</a>').click(function(){
+          $(".confirm").remove();
+          $('.button').fadeTo(100,1)
+          $('.buttons').removeClass('confirming')
+        }).appendTo(confirm);
+        $('.buttons').addClass('confirming');
+        $('.button').fadeTo(300,.2)
+        $(this).fadeTo(100,0).after(confirm).next().fadeIn(400)
+        
+        return false;
+      });
     },
     
     checkServer: function(server) {

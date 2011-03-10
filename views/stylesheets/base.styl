@@ -33,6 +33,8 @@ error_text()
   
 //  Typography presets
 //  -----------------
+body
+  font  14px/1.5 Helvetica, Arial, sans-serif
 
 h1
   font-size  42px
@@ -50,9 +52,6 @@ h3
   font-size  16px
   line-height  20px
   font-weight 400
-
-body
-  font  16px/1.5 Helvetica, Arial, sans-serif
 
 small
   font-size  13px
@@ -72,8 +71,9 @@ a:hover
 
 .button
   color #fff
-  font-size .8em
+  font-size .9em
   font-weight 700
+  text-transform small-caps
   text-decoration none
   display inline-block
   margin 3px 10px 3px 0
@@ -99,9 +99,11 @@ a.cancel
   text-shadow 0 1px 1px rgba(34,34,34,.4)
   linear-gradient #444,#333 
   font-size .75em
-a.delete
+a.delete, .confirm .yes
   color #fff
   linear-gradient #500,#300 
+  &:hover
+    linear-gradient #700,#500 
   
 /*
   Default 5-column, 768 px layout for iPads, netbooks, and IE
@@ -166,7 +168,7 @@ header
     right 0 
     top 0
     padding 7px 10px
-    font-size .8em
+    font-size .9em
     font-weight 700
     a
       display inline-block
@@ -337,7 +339,7 @@ ul
     
 form
   li
-    padding .75em 2em 1em
+    padding .75em 18px 1em
     linear-gradient #333333,#292929
     &.checkboxes
       li
@@ -356,6 +358,21 @@ form
     border 1px solid #222
     &:focus
       background #fff
+  .buttons
+    border-radius 0 0 7px 7px
+    padding 12px 18px
+    position relative
+    &.confirming
+      linear-gradient #300 #200
+    .delete, .confirm
+      position absolute
+      right 8px
+      top 12px
+    .confirm
+      font-weight 700
+      .yes
+        margin-left 8px
+      
     
 form#account_setup
   .screen_name
@@ -388,7 +405,7 @@ form#account_setup
     h1
       font-size 1.3em
       text-shadow 0 1px 2px rgba(255,255,255,.5)
-      padding .25em 16px
+      padding .25em 18px
       font-weight 700
   .content
     padding .5em 1em 1em
