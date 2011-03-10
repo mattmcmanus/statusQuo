@@ -49,9 +49,8 @@ module.exports = function(app){
   });
   
   app.put('/server/:id', function(req, res, next){
-    console.log(req.params)
     app.Server.findOne({_id: req.params.id}, function(err, server) {
-      if(!s) return next(new NotFound('That server disappeared!'));
+      if(!server) return next(new NotFound('That server disappeared!'));
       server.update = Date.now;
       server.ip = req.body.server.ip;
       server.hostname = req.body.server.hostname;

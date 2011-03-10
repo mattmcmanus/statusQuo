@@ -27,6 +27,7 @@ app.configure(function(){
   app.use(express.logger({ format: '":method :url" :status' }));
   app.use(express.cookieParser());
   app.use(express.bodyParser());
+  app.use(express.methodOverride());
   app.use(express.session({secret:'St@tu$Qu0', cookie: { maxAge: 1209600 }}));
 });
 
@@ -66,7 +67,6 @@ require('./routes/site')(app);
 require('./routes/user')(app);
 require('./routes/service')(app);
 require('./routes/server')(app);
-
 
 app.listen('8000');
 console.log('Express server started on port %s', app.address().port);

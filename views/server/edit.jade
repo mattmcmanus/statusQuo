@@ -7,5 +7,5 @@ form.server_new(method='post',action='/server/'+server.id)
     !=partial('_form')
     li.buttons
       input.button(type="submit", value="Save Changes")
-      a.button.delete(href="/server/"+server.id+"/delete") Cancel
+      a.button.delete(href="/server/"+server.id+"/delete") Delete
       a.button.cancel(href="/") Cancel
