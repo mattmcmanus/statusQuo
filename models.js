@@ -50,7 +50,7 @@ exports.defineModels = function(mongoose, fn) {
     , hostname        :  String
     , os              :  String
     , type            :  [String]
-    , Services        :  [Services] 
+    , services        :  [Services] 
   })
   
   Server.virtual('id')
@@ -60,7 +60,6 @@ exports.defineModels = function(mongoose, fn) {
   
   
   mongoose.model('User', User);
-  mongoose.model('Service', Services);
   mongoose.model('Server', Server);
   
   fn();

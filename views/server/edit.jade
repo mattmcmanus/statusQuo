@@ -1,10 +1,10 @@
 header
   h1 Edit #{server.hostname}
-form.server_new(method='post',action='/server/'+server.id)
+form.server.edit(method='post',action='/server/'+server.id)
   input(type='hidden', name='_method', value='put')
   input(name='server[id]', value=server.id, type='hidden')
+  !=partial('_form')
   ul
-    !=partial('_form')
     li.buttons
       input.button(type="submit", value="Save Changes")
       a.button.cancel(href="/") Cancel

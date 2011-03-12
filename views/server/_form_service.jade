@@ -1,0 +1,22 @@
+li(id=service.id)
+  ul
+    li.name
+      label(for='server[services]['+indexInCollection +'][name]') Name
+      input(type="text", name='server[services]['+indexInCollection +'][name]', value='')
+    li.type.checkboxes
+      span.label Type
+      ul
+        li
+          label
+            input(type="radio", name='server[services]['+indexInCollection +'][type]', value="web") 
+            | Website
+        li
+          label
+            input(type="radio", name='server[services]['+indexInCollection +'][type]', value="db")
+            | Application
+    li.url
+      label(for='server[services]['+indexInCollection +'][url]') Url
+      input(type="url", name='server[services]['+indexInCollection +'][url]', value='')
+    li.port
+      label(for='server[services]['+indexInCollection +'][port]') Port
+      input(type="number", name='server[services]['+indexInCollection +'][port]', value='')

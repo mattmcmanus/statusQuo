@@ -36,6 +36,9 @@ error_text()
 body
   font  14px/1.5 Helvetica, Arial, sans-serif
 
+p
+  margin 0 0 1em
+
 h1
   font-size  42px
   line-height  46px
@@ -79,7 +82,7 @@ a:hover
   margin 3px 10px 3px 0
   padding 5px 15px
   border 1px solid #222
-  border-radius 10px
+  border-radius 6px
   text-align center
   text-shadow 0 -1px 1px rgba(255,255,255,.3)
   linear-gradient #262626,#060606 
@@ -102,6 +105,8 @@ a.cancel
 a.delete, .confirm .yes
   color #fff
   linear-gradient #500,#300 
+  border-color #400
+  box-shadow(0 2px 7px rgba(64,0,0,.5))
   &:hover
     linear-gradient #700,#500 
   
@@ -198,7 +203,7 @@ header
     background-position center center
  
  
-.server
+div.server
   color #fff
   margin 1em
   float left
@@ -270,10 +275,11 @@ header
       bottom 5px  
       left 40%
    
- 
+  section.info
+    display none
    
   section
-    .site
+    .service
       border-top 1px solid #333
       border-bottom 1px solid #222
       linear-gradient(#333333,#222222)
@@ -348,11 +354,12 @@ form
       padding .5em 0
       margin-right 1em
       background transparent
-  label
+  label,.label
     display block
     font-size .9em
-    font-weight 400
-  input[type=text],input[type=email]
+    font-weight 700
+    color #bbb
+  input[type=text],input[type=email],input[type=number],input[type=url]
     width 225px
     background rgba(255,255,255,.75)
     border 1px solid #222
@@ -373,7 +380,6 @@ form
       .yes
         margin-left 8px
       
-    
 form#account_setup
   .screen_name
     .profile_picture, h2
@@ -387,14 +393,25 @@ form#account_setup
       position relative
       top -13px
       left 10px
-    
-.page #page
+
+form.server
+  .services
+    .name,.type,.url,.port
+      display inline-block
+    .port
+      input
+        width 50px
+      
+
+.page #page, .front.not-logged-in #page
   width 600px
-  margin 1em auto
   border-radius 7px
   box-shadow(0 2px 7px rgba(0,0,0,.25))
   border 1px solid #262626
   linear-gradient #333333,#222222
+    
+#page
+  margin 1em auto
   
   header
     border-top-radius 7px
@@ -403,9 +420,17 @@ form#account_setup
     position relative
     
     h1
-      font-size 1.3em
+      font-size 1.4em
       text-shadow 0 1px 2px rgba(255,255,255,.5)
       padding .25em 18px
       font-weight 700
+  
+  h2
+    linear-gradient #222222,#161616
+    font-size 1.2em
+    text-shadow 0 1px 2px rgba(255,255,255,.5)
+    padding .25em 18px
+    font-weight 700
+    
   .content
-    padding .5em 1em 1em
+    padding .5em 1em

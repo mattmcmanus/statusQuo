@@ -1,14 +1,21 @@
+exports.helpers = {
+  serviceCounter: 0
+}
+
 exports.dynamicHelpers = {
   body_classes: function(req, res) {
-    var path = require('url').parse(req.url).pathname;
+    var classes = []
+      , path = require('url').parse(req.url).pathname;
     if (path == '/')
-      return 'front'
+      classes.push('front');
     else {
       classes = path.substr(1).split('/');
       classes[0] = 'type-' + classes[0];
       classes.push('page');
-      return classes.join(' ');
     }
+    classes.push((req.session.user)?'logged-in':'not-logged-in');
+    
+    return classes.join(' ');
   },
   
   session: function(req,res) {

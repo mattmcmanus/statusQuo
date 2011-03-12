@@ -1,20 +1,26 @@
-li
-  label(for='server[ip]') Server IP
-  input(type="text", name='server[ip]', 'autofocus', value=server.ip || '')
-li
-  label(for='server[hostname]') Hostname
-  input(type="text", name='server[hostname]', value=server.hostname || '')
-li
-  label(for='server[os]') Operating System
-  input(type="text", name='server[os]', value=server.os || '')
-li.checkboxes
-  span.label Server type
-  ul
-    li
-      label
-        input(type="checkbox", name='server[type]', value="[web]") 
-        | Web server
-    li
-      label
-        input(type="checkbox", name='server[type]', value="[db]")
-        | Database Server
+ul
+  li.ip
+    label(for='server[ip]') Server IP
+    input(type="text", name='server[ip]', 'autofocus', value=server.ip)
+  li.hostname
+    label(for='server[hostname]') Hostname
+    input(type="text", name='server[hostname]', value=server.hostname)
+  li.os
+    label(for='server[os]') Operating System
+    input(type="text", name='server[os]', value=server.os)
+  li.checkboxes.type
+    span.label Server type
+    ul
+      li
+        label
+          input(type="checkbox", name='server[type][]', value="web") 
+          | Web server
+      li
+        label
+          input(type="checkbox", name='server[type][]', value="db")
+          | Database Server
+h2 Services to monitor
+ul.services
+  !=partial('_form_service', server.services)
+  li
+    a(href='javascript:void(0)') Add Another

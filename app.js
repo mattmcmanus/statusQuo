@@ -36,18 +36,18 @@ app.configure('development', function() {
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
+//                      Dynamic Helpers
+// - - - - - - - - - - - - - - - - - - - - - - - - - - -
+app.helpers(require('./helpers.js').helpers);
+app.dynamicHelpers(require('./helpers.js').dynamicHelpers);
+
 //                      Models
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 require('./models').defineModels(mongoose, function() {
   app.User = User = mongoose.model('User');
-  app.Service = Service = mongoose.model('Service');
   app.Server = Server = mongoose.model('Server');
   db = mongoose.connect(app.set('db-uri'));
 })
- 
-//                      Dynamic Helpers
-// - - - - - - - - - - - - - - - - - - - - - - - - - - -
-app.dynamicHelpers(require('./helpers.js').dynamicHelpers);
 
 //                      Errors
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
