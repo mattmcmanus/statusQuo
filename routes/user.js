@@ -10,14 +10,6 @@ var consumerKey = 'KZHCsJ6yIpWQbmI2Adkrg'
 
 
 module.exports = function(app){
-  function authenticated(req, res, next) {
-    if (req.session && req.session.user) {
-      next()
-    } else {
-      res.redirect('/login')
-    }  
-  }
-  
   app.get('/login', function(req, res){
     if (!req.session.oauth) req.session.oauth = {}
     
@@ -52,23 +44,14 @@ module.exports = function(app){
           req.session.oauth.access_token = oauth_access_token
           req.session.oauth.access_token_secret = oauth_access_token_secret
           
-          oa.get("http://api.twitter.com/1/account/verify_credentials.json", req.session.oauth.access_token, req.session.oauth.access_token_secret, function(error, data) {
-            if (data) {
-              req.session.twitter = JSON.parse(data)
-              
-              app.User.findOne({username: req.session.twitter.screen_name }, function(err, u) {
-                if (u) {
-                  req.session.user = u
-                  req.flash('success', 'You\'ve successfully logged in!')
-                  res.redirect('/')
-                } else {
-                  req.flash('info', 'It appears this is your first time logging in! Please fill out the remaining below to steup your account')
-                  res.redirect('/user/setup')
-                }
-              });
-              
+          app.User.findOne({username: results.screen_name }, function(err, user) {
+            if (user) {
+              req.session.user = user
+              req.flash('success', 'You\'ve successfully logged in!')
+              res.redirect('/')
             } else {
-              console.log('Unable to verify user')
+              req.flash('info', 'It appears this is your first time logging in! Please fill out the remaining below to steup your account')
+              res.redirect('/user/setup')
             }
           });
         }
@@ -78,14 +61,16 @@ module.exports = function(app){
   });
   
   app.get('/user/setup', function(req, res) {
-    if (req.session.twitter) {
-      res.render('user/setup', {
-        title:"Welcome! Please verify you information",
-        user: req.session.twitter
-      });
-    } else {
-      res.redirect('/login')
-    }
+    oa.get("http://api.twitter.com/1/account/verify_credentials.json", req.session.oauth.access_token, req.session.oauth.access_token_secret, function(error, data) {
+      if (data) {
+        res.render('user/setup', {
+          title:"Welcome! Please verify you information",
+          user: data
+        });
+      } else {
+        console.log('Unable to verify user')
+      }
+    });
   });
   
   app.post('/user/setup', function(req, res) {

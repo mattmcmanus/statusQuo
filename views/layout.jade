@@ -21,7 +21,7 @@ html(lang="en")
           em the
           | StatusQuo
       nav#eyebrow
-        - if (session &&session.user)
+        - if (session.user)
           img.picture(src=session.user.picture, alt=session.user.name)
           span= session.user.name
           a(href='/') Dashboard
