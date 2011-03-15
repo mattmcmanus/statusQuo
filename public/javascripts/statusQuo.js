@@ -69,21 +69,18 @@ if(typeof window.statusQuo === "undefined") {
           $("form.delete").submit();
         }).appendTo(confirmDelete);
         // No button
-        
         no.clone().click(function(){
           $(".confirm").remove();
-          $('.button').fadeTo(100,1)
           $('.buttons').removeClass('confirming')
         }).appendTo(confirmDelete);
         $('.buttons').addClass('confirming');
-        $('.button').fadeTo(300,.2)
-        $(this).fadeTo(100,0).after(confirmDelete).next().fadeIn(400)
+        $(this).after(confirmDelete).next().fadeIn(400)
         return false;
       });
       
       $('.service a.delete').live("click",function(){
         var confirmDelete = confirmDialog.clone();
-        
+        // yess
         yes.clone().click(function(){
           var service = $(this).parents(".service")
           if (service.attr("id") != "") {
@@ -96,16 +93,14 @@ if(typeof window.statusQuo === "undefined") {
             service.remove()
           }
         }).appendTo(confirmDelete);
-        
+        // no
         no.clone().click(function(){
           var service = $(this).parents(".service");
-          service.find(".confirm").remove();
           service.removeClass('confirming')
-                 .find('li').fadeTo(100,1)
+                 .find(".confirm").remove();
         }).appendTo(confirmDelete);
-        console.log(confirmDelete)
-        $(this).parent().siblings().fadeTo(300,.1)
-               .parents('.service').addClass('confirming').append(confirmDelete);
+        
+        $(this).parents('.service').addClass('confirming').append(confirmDelete);
         $(".confirm").fadeIn(400)
         return false;
       });

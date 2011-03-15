@@ -27,7 +27,6 @@ exports.defineModels = function(mongoose, fn) {
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
   var Services = new Schema({
       name              :  String
-    , type              :  String
     , url               :  String
     , port              :  { type: Number, default: 80}
   })

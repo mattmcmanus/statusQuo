@@ -87,6 +87,7 @@ a:hover
   text-shadow 0 -1px 1px rgba(34,34,34,.3)
   linear-gradient #262626,#060606 
   box-shadow(inset 0px 0px 5px rgba(34,34,34,.5), 0 1px 7px rgba(34,34,34,.5))
+  transition opacity 200ms ease-out
   &:hover
     linear-gradient #333,#111
     color #eee
@@ -346,6 +347,7 @@ form
   li
     padding .75em 18px 1em
     linear-gradient #333333,#292929
+    
     &.checkboxes
       ul, li
         display inline-block
@@ -357,12 +359,14 @@ form
       background transparent
     &.confirming, &.deleted
       linear-gradient #300 #200
+      li, & > a, & > input
+        opacity .1
   label,.label
     display inline-block
     font-size .9em
     font-weight 700
-    width 150px
-  input[type=text],input[type=email],input[type=number],input[type=url]
+    width 125px
+  input[type=text],input[type=email],input[type=url]
     width 225px
     background rgba(255,255,255,.75)
     border 1px solid #222
@@ -421,17 +425,19 @@ form.server
       display block
       padding 0
       margin 0
+      li
+        padding 0
     .name, .url
       input
         width 200px
     .port
       input
-        width 50px
+        width 35px
     .type.checkboxes
       .label
         width auto
     a.delete
-      opacity .5
+      opacity .35
       display inline-block
       text-indent -9999px
       background url(/images/delete.png) no-repeat center center

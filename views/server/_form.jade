@@ -26,17 +26,6 @@ ul.services
       input.delete(type="hidden", name="server[services]["+indexInCollection +"][delete]", value="false")
       .message
       ul
-        li.type.checkboxes
-          span.label Type
-          ul
-            li
-              label
-                input(type="radio", name='server[services]['+indexInCollection +'][type]', checked=(service.type === 'web')?"checked":"", value="web") 
-                | Website
-            li
-              label
-                input(type="radio", name='server[services]['+indexInCollection +'][type]', checked=(service.type === 'application')?"checked":"", value="db")
-                | Application
         li.name
           input(type="text", placeholder="Service Name", name='server[services]['+indexInCollection +'][name]', value=service.name)
         li.url
@@ -50,23 +39,12 @@ ul
     input.delete(type="hidden", name="server[services][index][delete]", value="false")
     .message
     ul
-      li.type.checkboxes
-        span.label Type
-        ul
-          li
-            label
-              input(type="radio", name='server[services][index][type]', checked, value="web") 
-              | Website
-          li
-            label
-              input(type="radio", name='server[services][index][type]', value="db")
-              | Application
       li.name
         input(type="text", placeholder="Service Name", name='server[services][index][name]', value='')
       li.url
         input(type="url", placeholder="URL", name='server[services][index][url]', value='')
       li.port
-        input(type="number", placeholder="Port", name='server[services][index][port]', value='80')
+        input(type="text", placeholder="Port", name='server[services][index][port]', value='80')
       li
         a.delete(href="javascript:void(0)") Delete Service
   li
