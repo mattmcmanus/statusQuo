@@ -75,7 +75,6 @@ module.exports = function(app){
       server.name = req.body.server.name;
       server.os = req.body.server.os;
       
-      var push = [];
       for (var num = _.size(req.body.server.services) - 1; num >= 0; num--){
         if (server.services[num]) {
           if (req.body.server.services[num].delete == "true") {

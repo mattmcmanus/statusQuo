@@ -47,6 +47,7 @@ if(typeof window.statusQuo === "undefined") {
         context.stopPing($(this).parents('.server'));
       });
       
+      // Add a service button
       $('.server a.add').click(function(){
         var servicesNum = $('.service').size()-1,
         service = $('.service.default').clone().removeClass('default').show();
@@ -56,43 +57,55 @@ if(typeof window.statusQuo === "undefined") {
         service.appendTo('.services')
       })
       
+      var confirmDialog = $('<div class="confirm">Whoa! Are you sure?</div>').hide()
+        , yes = $('<a class="button yes">Yes</a>')
+        , no = $('<a class="button no">No</a>');
+      
+      
       $('.buttons a.delete').live("click",function(){
-        var confirm = $('<div class="confirm">Whoa! Are you sure?</div>').hide();
+        var confirmDelete = confirmDialog.clone();
         // yes button
-        $('<a class="button yes">Yes</a>').click(function(){
+        yes.clone().click(function(){
           $("form.delete").submit();
-        }).appendTo(confirm);
+        }).appendTo(confirmDelete);
         // No button
-        $('<a class="button no">No</a>').click(function(){
+        
+        no.clone().click(function(){
           $(".confirm").remove();
           $('.button').fadeTo(100,1)
           $('.buttons').removeClass('confirming')
-        }).appendTo(confirm);
+        }).appendTo(confirmDelete);
         $('.buttons').addClass('confirming');
         $('.button').fadeTo(300,.2)
-        $(this).fadeTo(100,0).after(confirm).next().fadeIn(400)
+        $(this).fadeTo(100,0).after(confirmDelete).next().fadeIn(400)
         return false;
       });
       
       $('.service a.delete').live("click",function(){
-        var confirm = $('<div class="confirm">Whoa! Are you sure?</div>').hide();
-        $('<a class="button yes">Yes</a>').click(function(){
-          var service = $(".service.confirming")
+        var confirmDelete = confirmDialog.clone();
+        
+        yes.clone().click(function(){
+          var service = $(this).parents(".service")
           if (service.attr("id") != "") {
-            service.removeClass('confirming').addClass('deleted').children("input.delete").val('true');
-            service.find(".message").html('Service will be deleted. (<a href="javascript:void(0)" class="undo")>undo?</a>)').show()
-            $(".confirm").remove();
+            service.removeClass('confirming')
+                   .addClass('deleted')
+                   .children("input.delete").val('true');
+            service.find(".message").html('Service will be deleted when you save. (<a href="javascript:void(0)" class="undo")>undo?</a>)').show()
+            service.find(".confirm").remove();
           } else {
             service.remove()
           }
-        }).appendTo(confirm);
-        $('<a class="button no">No</a>').click(function(){
-          $(".confirm").remove();
-          $('.service li').fadeTo(100,1)
-          $('.service').removeClass('confirming')
-        }).appendTo(confirm);
+        }).appendTo(confirmDelete);
+        
+        no.clone().click(function(){
+          var service = $(this).parents(".service");
+          service.find(".confirm").remove();
+          service.removeClass('confirming')
+                 .find('li').fadeTo(100,1)
+        }).appendTo(confirmDelete);
+        console.log(confirmDelete)
         $(this).parent().siblings().fadeTo(300,.1)
-               .parents('.service').addClass('confirming').append(confirm);
+               .parents('.service').addClass('confirming').append(confirmDelete);
         $(".confirm").fadeIn(400)
         return false;
       });

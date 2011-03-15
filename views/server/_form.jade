@@ -42,7 +42,7 @@ ul.services
         li.url
           input(type="url", placeholder="URL", name='server[services]['+indexInCollection +'][url]', value=service.url)
         li.port
-          input(type="number", placeholder="Port", name='server[services]['+indexInCollection +'][port]', value=service.port||'80')
+          input(type="text", placeholder="Port", name='server[services]['+indexInCollection +'][port]', value=service.port||'80')
         li
           a.delete(href="javascript:void(0)") Delete Service
 ul  
