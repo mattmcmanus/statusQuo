@@ -3,10 +3,10 @@ ul
     label(for='server[ip]') Server IP
     input(type="text", name='server[ip]', 'autofocus', value=server.ip)
   li.hostname
-    label(for='server[hostname]') Hostname
-    input(type="text", name='server[hostname]', value=server.hostname)
+    label(for='server[name]') Hostname
+    input(type="text", name='server[name]', value=server.name)
   li.os
-    label(for='server[os]') Operating System
+    label(for='server[os]') OS
     input(type="text", name='server[os]', value=server.os)
   li.checkboxes.type
     span.label Server type
@@ -21,6 +21,53 @@ ul
           | Database Server
 h2 Services to monitor
 ul.services
-  !=partial('_form_service', server.services)
+  -each service, indexInCollection in server.services
+    li.service(id=service.id)
+      input.delete(type="hidden", name="server[services]["+indexInCollection +"][delete]", value="false")
+      .message
+      ul
+        li.type.checkboxes
+          span.label Type
+          ul
+            li
+              label
+                input(type="radio", name='server[services]['+indexInCollection +'][type]', checked=(service.type === 'web')?"checked":"", value="web") 
+                | Website
+            li
+              label
+                input(type="radio", name='server[services]['+indexInCollection +'][type]', checked=(service.type === 'application')?"checked":"", value="db")
+                | Application
+        li.name
+          input(type="text", placeholder="Service Name", name='server[services]['+indexInCollection +'][name]', value=service.name)
+        li.url
+          input(type="url", placeholder="URL", name='server[services]['+indexInCollection +'][url]', value=service.url)
+        li.port
+          input(type="number", placeholder="Port", name='server[services]['+indexInCollection +'][port]', value=service.port||'80')
+        li
+          a.delete(href="javascript:void(0)") Delete Service
+ul  
+  li.service.default(style="display:none")
+    input.delete(type="hidden", name="server[services][index][delete]", value="false")
+    .message
+    ul
+      li.type.checkboxes
+        span.label Type
+        ul
+          li
+            label
+              input(type="radio", name='server[services][index][type]', checked, value="web") 
+              | Website
+          li
+            label
+              input(type="radio", name='server[services][index][type]', value="db")
+              | Application
+      li.name
+        input(type="text", placeholder="Service Name", name='server[services][index][name]', value='')
+      li.url
+        input(type="url", placeholder="URL", name='server[services][index][url]', value='')
+      li.port
+        input(type="number", placeholder="Port", name='server[services][index][port]', value='80')
+      li
+        a.delete(href="javascript:void(0)") Delete Service
   li
-    a(href='javascript:void(0)') Add Another
+    a.add(href='javascript:void(0)') Add Service

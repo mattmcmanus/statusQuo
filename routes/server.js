@@ -1,4 +1,5 @@
 var global = require('./global');
+require('../lib/underscore.js')
 
 module.exports = function(app){
   app.get('/', function(req, res){
@@ -51,25 +52,45 @@ module.exports = function(app){
   
   app.put('/server/:id', function(req, res, next){
     app.Server.findOne({_id: req.params.id}, function(err, server) {
+      console.log(server.toObject());
       if(!server) return next(new NotFound('That server disappeared!'));
-      server.update = Date.now;
+      server.updated = Date.now;
       server.ip = req.body.server.ip;
-      server.hostname = req.body.server.hostname;
+      server.name = req.body.server.hostname;
       server.os = req.body.server.os;
-
-      _.each(req.body.server.services, function(service){
-        server.services.push(service)
-      })
+      
+      var push = [];
+      
+      for (var num = _.size(req.body.server.services) - 1; num >= 0; num--){
+        if (server.services[num]) {
+          if (req.body.server.services[num].delete == "true") {
+            server.services[num].remove()
+          } else {
+            server.services[num].type = req.body.server.services[num].type
+            server.services[num].name = req.body.server.services[num].name
+            server.services[num].url = req.body.server.services[num].url
+            server.services[num].port = req.body.server.services[num].port
+          }
+        } else {
+          // Defer adding new services until the loop finishes
+          push.push(num)
+        }
+      };
+      for (var num=0; num < push.length; num++) {
+        service[num].delete.remove();
+        server.services.push(service[num]);
+      };
+      console.log(server.toObject());
       
       server.save(function(err){
-      if (!err) {
-        req.flash('success', 'Server updated')
-      } else {
-        req.flash('error', 'Err, Something broke when we tried to save your server. Sorry!')
-        console.log(err)
-      }
-      res.redirect('/')
-    });
+        if (!err) {
+          req.flash('success', 'Server updated')
+        } else {
+          req.flash('error', 'Err, Something broke when we tried to save your server. Sorry!')
+          console.log(err)
+        }
+        res.redirect('/')
+      });
     })
   });
   

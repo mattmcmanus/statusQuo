@@ -19,8 +19,7 @@ module.exports = function(app){
   }
   
   app.get('/login', function(req, res){
-    if (!req.session.oauth) 
-      req.session.oauth = {}
+    if (!req.session.oauth) req.session.oauth = {}
     
     oa.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, results){
       if (error) 

@@ -2,7 +2,7 @@ li(id=service.id)
   ul
     li.name
       label(for='server[services]['+indexInCollection +'][name]') Name
-      input(type="text", name='server[services]['+indexInCollection +'][name]', value='')
+      input(type="text", name='server[services]['+indexInCollection +'][name]', value=service.name)
     li.type.checkboxes
       span.label Type
       ul
@@ -16,7 +16,7 @@ li(id=service.id)
             | Application
     li.url
       label(for='server[services]['+indexInCollection +'][url]') Url
-      input(type="url", name='server[services]['+indexInCollection +'][url]', value='')
+      input(type="url", name='server[services]['+indexInCollection +'][url]', value=service.url)
     li.port
       label(for='server[services]['+indexInCollection +'][port]') Port
-      input(type="number", name='server[services]['+indexInCollection +'][port]', value='')
+      input(type="number", name='server[services]['+indexInCollection +'][port]', value=service.port)

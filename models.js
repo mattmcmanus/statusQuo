@@ -47,7 +47,7 @@ exports.defineModels = function(mongoose, fn) {
     , created         :  { type: Date, default: Date.now }
     , updated         :  { type: Date, default: Date.now }
     , ip              :  { type: String, index: { unique: true } }
-    , hostname        :  String
+    , name            :  String
     , os              :  String
     , type            :  [String]
     , services        :  [Services] 
