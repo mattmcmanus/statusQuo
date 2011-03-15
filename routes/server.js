@@ -26,7 +26,22 @@ module.exports = function(app){
   });
   
   app.post('/server/new', function(req, res){
-    var server = new app.Server(req.body.server);
+    // Clean up some of the stuff coming in from the form
+    delete req.body.server.services.index;
+    
+    var server = new app.Server({
+        name    : req.body.server.name
+      , type    : req.body.server.type
+      , ip      : req.body.server.ip
+      , os      : req.body.server.os
+      , user_id : req.session.user.id
+    });
+    
+    for (var i=0; i < _.size(req.body.server.services); i++) {
+      delete req.body.server.services[i]['delete']
+      server.services.push(req.body.server.services[i])
+    }
+    
     server.save(function(err){
       if (!err) {
         req.flash('success', 'You\'re server has been created')
@@ -52,15 +67,15 @@ module.exports = function(app){
   
   app.put('/server/:id', function(req, res, next){
     app.Server.findOne({_id: req.params.id}, function(err, server) {
-      console.log(server.toObject());
       if(!server) return next(new NotFound('That server disappeared!'));
-      server.updated = Date.now;
+      
+      delete req.body.server.services.index;
+      server.updated = new Date();
       server.ip = req.body.server.ip;
-      server.name = req.body.server.hostname;
+      server.name = req.body.server.name;
       server.os = req.body.server.os;
       
       var push = [];
-      
       for (var num = _.size(req.body.server.services) - 1; num >= 0; num--){
         if (server.services[num]) {
           if (req.body.server.services[num].delete == "true") {
@@ -73,14 +88,10 @@ module.exports = function(app){
           }
         } else {
           // Defer adding new services until the loop finishes
-          push.push(num)
+          delete req.body.server.services[num]["delete"]
+          server.services.push(req.body.server.services[num]);
         }
-      };
-      for (var num=0; num < push.length; num++) {
-        service[num].delete.remove();
-        server.services.push(service[num]);
-      };
-      console.log(server.toObject());
+      }
       
       server.save(function(err){
         if (!err) {
