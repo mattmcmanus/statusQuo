@@ -20,8 +20,10 @@ html(lang="en")
         a(href='/',title="Go home")
           em the
           | StatusQuo
+      - if (authenticated)
+        a#server_add.button(href="/server/new") Add Server
       nav#eyebrow
-        - if (session.user)
+        - if (authenticated)
           img.picture(src=session.user.picture, alt=session.user.name)
           span= session.user.name
           a(href='/') Dashboard

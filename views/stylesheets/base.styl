@@ -155,6 +155,7 @@ header
   box-shadow 0 1px 2px rgba(255,255,255,.1)
   padding 10px 1em 8px
   border-bottom 1px solid #161616
+  position relative
   a,a:link
     color #fff
     
@@ -163,7 +164,7 @@ header
     margin 0
     font-size 1.2em
     line-height 1em
-    font-weight 400
+    font-weight 700
     em font-size .8em
     li
       padding 3px
@@ -171,7 +172,7 @@ header
   #eyebrow
     position absolute 
     right 0 
-    top 0
+    top -2px
     padding 7px 10px
     font-size .9em
     font-weight 700
@@ -198,6 +199,9 @@ header
     text-indent -9999px
     width 10px
     height 13px
+    position absolute
+    left 120px
+    top 5px
     background-image url(/images/add.png) 
     background-repeat no-repeat
     background-position center center
@@ -347,7 +351,7 @@ form
   li
     padding .75em 18px 1em
     linear-gradient #333333,#292929
-    
+    position relative
     &.checkboxes
       ul, li
         display inline-block
@@ -393,17 +397,18 @@ form
       
 form#account_setup
   .screen_name
-    .profile_picture, h2
-      display inline-block
+    padding 1em 18px
     .profile_picture
+      display inline-block
       padding 3px
       background rgba(255,255,255,.1)
       border 1px solid #555
     h2
       font-weight 700
-      position relative
-      top -13px
-      left 10px
+      position absolute
+      top 27px
+      left 70px
+      background transparent
 
 form.server
   .services
@@ -413,7 +418,7 @@ form.server
         display none
       .confirm,.message
         position absolute
-        top 30px
+        top 13px
         left 140px
       .message
         font-weight 700
@@ -457,6 +462,11 @@ form.server
     
 #page
   margin 1em auto
+  
+  .psst
+    position absolute
+    left 142px
+    top 40px
   
   header
     border-top-radius 7px

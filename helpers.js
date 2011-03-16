@@ -18,6 +18,10 @@ exports.dynamicHelpers = {
     return classes.join(' ');
   },
   
+  authenticated: function(req, res) {
+    return (req.session.user);
+  },
+  
   session: function(req,res) {
     return req.session;
   },

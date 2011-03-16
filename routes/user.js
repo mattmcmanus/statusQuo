@@ -11,17 +11,24 @@ var consumerKey = 'KZHCsJ6yIpWQbmI2Adkrg'
 
 module.exports = function(app){
   app.get('/login', function(req, res){
-    if (!req.session.oauth) req.session.oauth = {}
-    
-    oa.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, results){
-      if (error) 
-        new Error(error.data)
-      else {
-        req.session.oauth.token = oauth_token
-        req.session.oauth.token_secret = oauth_token_secret
-        res.redirect('https://twitter.com/oauth/authenticate?oauth_token='+oauth_token)
-       }
-    });
+    if (req.cookies && req.cookies.username) {
+      app.User.findOne({username: req.cookies.username }, function(err, user) {
+        req.session.user = user
+        res.redirect('/')
+      })
+    } else {
+      if (!req.session.oauth) req.session.oauth = {}
+      oa.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, results){
+        if (error) 
+          new Error(error.data)
+        else {
+          req.session.oauth.token = oauth_token
+          req.session.oauth.token_secret = oauth_token_secret
+          res.redirect('https://twitter.com/oauth/authenticate?oauth_token='+oauth_token)
+         }
+      });
+
+    }
   });
   
   app.get('/logout', function(req, res) {
@@ -48,6 +55,7 @@ module.exports = function(app){
             if (user) {
               req.session.user = user
               req.flash('success', 'You\'ve successfully logged in!')
+              res.cookie('username', user.username, { maxAge: 1209600, path: '/login'})
               res.redirect('/')
             } else {
               req.flash('info', 'It appears this is your first time logging in! Please fill out the remaining below to steup your account')
@@ -64,8 +72,8 @@ module.exports = function(app){
     oa.get("http://api.twitter.com/1/account/verify_credentials.json", req.session.oauth.access_token, req.session.oauth.access_token_secret, function(error, data) {
       if (data) {
         res.render('user/setup', {
-          title:"Welcome! Please verify you information",
-          user: data
+          title:"Welcome! Please verify your information",
+          user: JSON.parse(data)
         });
       } else {
         console.log('Unable to verify user')
@@ -75,6 +83,7 @@ module.exports = function(app){
   
   app.post('/user/setup', function(req, res) {
     var user = new app.User(req.body.user);
+    req.session.user = user;
     user.save(function(err){
       if (!err) {
         req.flash('success', 'You\'re account has been created!')

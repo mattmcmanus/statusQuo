@@ -53,19 +53,24 @@ module.exports = function(app){
     });
   });
   
-  app.get('/server/:id', function(req, res){
-    app.Server.findOne({_id: req.params.id}, function(err, server) {
-      res.render('server/show', {server: server});
-    })
+  app.param('server', function(req, res, next, id){
+    app.Server.findOne({_id: id}, function(err, server) {
+      if (err) return next(err);
+      if (!server) return next(new Error('failed to find server'));
+      req.server = server;
+      next();
+    });
   });
   
-  app.get('/server/:id/edit', function(req, res){
-    app.Server.findOne({_id: req.params.id}, function(err, server) {
-      res.render('server/edit', {server: server});
-    })
+  app.get('/server/:server', function(req, res){
+    res.render('server/show', {server: req.server});
   });
   
-  app.put('/server/:id', function(req, res, next){
+  app.get('/server/:server/edit', function(req, res){
+    res.render('server/edit', {server: req.server});
+  });
+  
+  app.put('/server/:server', function(req, res, next){
     app.Server.findOne({_id: req.params.id}, function(err, server) {
       if(!server) return next(new NotFound('That server disappeared!'));
       
@@ -80,7 +85,6 @@ module.exports = function(app){
           if (req.body.server.services[num].delete == "true") {
             server.services[num].remove()
           } else {
-            server.services[num].type = req.body.server.services[num].type
             server.services[num].name = req.body.server.services[num].name
             server.services[num].url = req.body.server.services[num].url
             server.services[num].port = req.body.server.services[num].port
@@ -91,7 +95,7 @@ module.exports = function(app){
           server.services.push(req.body.server.services[num]);
         }
       }
-      
+      console.log(server.toObject())
       server.save(function(err){
         if (!err) {
           req.flash('success', 'Server updated')

@@ -1,3 +1,4 @@
-!=partial('_server', servers)
-.server
-  a#server_add.button(href="/server/new") Add Server
+- if (servers.length)
+  !=partial('_server', servers)
+- else  
+  img.psst(src="/images/psst.png")
