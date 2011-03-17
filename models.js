@@ -26,9 +26,9 @@ exports.defineModels = function(mongoose, fn) {
   //                     Server Services
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
   var Services = new Schema({
-      name              :  String
-    , url               :  String
-    , port              :  { type: Number, default: 80}
+      name        :  String
+    , url         :  { type: String, index: true }
+    , port        :  { type: Number, default: 80}
   })
   
   Services.virtual('id')
@@ -48,6 +48,7 @@ exports.defineModels = function(mongoose, fn) {
     , name            :  String
     , os              :  String
     , type            :  [String]
+    , public          :  Boolean
     , services        :  [Services] 
   })
   

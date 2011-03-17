@@ -11,10 +11,12 @@ var consumerKey = 'KZHCsJ6yIpWQbmI2Adkrg'
 
 module.exports = function(app){
   app.get('/login', function(req, res){
+    console.log(req.header('Referer'))
+    req.returnToAfterLogin = req.header('Referer');
     if (req.cookies && req.cookies.username) {
       app.User.findOne({username: req.cookies.username }, function(err, user) {
         req.session.user = user
-        res.redirect('/')
+        res.redirect(req.returnToAfterLogin)
       })
     } else {
       if (!req.session.oauth) req.session.oauth = {}
@@ -48,15 +50,15 @@ module.exports = function(app){
       
       oa.getOAuthAccessToken(oauth.token,oauth.token_secret,oauth.verifier, 
         function(error, oauth_access_token, oauth_access_token_secret, results){
+          if (error) new Error(error)
           req.session.oauth.access_token = oauth_access_token
           req.session.oauth.access_token_secret = oauth_access_token_secret
-          
           app.User.findOne({username: results.screen_name }, function(err, user) {
             if (user) {
               req.session.user = user
               req.flash('success', 'You\'ve successfully logged in!')
-              res.cookie('username', user.username, { maxAge: 1209600, path: '/login'})
-              res.redirect('/')
+              res.cookie('username', user.username, { maxAge: 1209600, path: '/'})
+              res.redirect(req.returnToAfterLogin)
             } else {
               req.flash('info', 'It appears this is your first time logging in! Please fill out the remaining below to steup your account')
               res.redirect('/user/setup')
@@ -91,13 +93,13 @@ module.exports = function(app){
         req.flash('error', 'Err, Something broke when we tried to save your account')
         console.log(err)
       }
-      res.redirect('/')
+      res.redirect(req.returnToAfterLogin)
       
     });
     
   })
   
-  app.get('/user', global.authenticated, function(req, res){
+  app.get('/user', global.isAuthenticated, function(req, res){
     res.render('user/view', {
       title:"Your Account",
       user:req.session.user

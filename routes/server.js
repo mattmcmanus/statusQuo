@@ -1,5 +1,10 @@
-var global = require('./global');
 require('../lib/underscore.js')
+
+var global = require('./global')
+  , dns = require('dns')
+  , util   = require('util')
+  , spawn = require('child_process').spawn
+  , info = [];
 
 module.exports = function(app){
   app.get('/', function(req, res){
@@ -19,7 +24,7 @@ module.exports = function(app){
     
   });
   
-  app.get('/server/new', function(req, res){
+  app.get('/server/new', global.isAuthenticated, function(req, res){
     res.render('server/new', {
       server: new app.Server()
     });
@@ -53,6 +58,14 @@ module.exports = function(app){
     });
   });
   
+  app.get('/server/lookup/:ip', function(req, res){
+    var ip = req.params.ip;
+    
+    dns.reverse(ip, function(err, domains){
+      res.send(domains)
+    })
+  });
+  
   app.param('server', function(req, res, next, id){
     app.Server.findOne({_id: id}, function(err, server) {
       if (err) return next(err);
@@ -66,13 +79,13 @@ module.exports = function(app){
     res.render('server/show', {server: req.server});
   });
   
-  app.get('/server/:server/edit', function(req, res){
+  app.get('/server/:server/edit', global.isAuthenticated, function(req, res){
     res.render('server/edit', {server: req.server});
   });
   
-  app.put('/server/:server', function(req, res, next){
+  app.put('/server/:id', function(req, res, next){
     app.Server.findOne({_id: req.params.id}, function(err, server) {
-      if(!server) return next(new NotFound('That server disappeared!'));
+      if(!server) return next(new Error('That server disappeared!'));
       
       delete req.body.server.services.index;
       server.updated = new Date();

@@ -67,7 +67,7 @@ selection
   
 a, a:link 
   text-decoration none
-  color #900
+  color #19e
   
 a:hover
   text-decoration underline
@@ -372,10 +372,25 @@ form
     width 125px
   input[type=text],input[type=email],input[type=url]
     width 225px
-    background rgba(255,255,255,.75)
-    border 1px solid #222
+    border 1px solid #444
+    linear-gradient #ccc, #eee
+    border-radius 6px
+    line-height 1.5em
+    padding .25em .5em
+    box-shadow(0 1px 1px rgba(255,255,255,.3))
     &:focus
       background #fff
+      outline none
+      border-color #19e
+  input[type=checkbox], input[type=radio]
+   display: inline-block;
+   line-height: 1em;
+   margin: 0 0.25em 0 0;
+   padding: 0;
+   width: 1.25em;
+   height: 1.25em;
+   vertical-align: text-top;
+      
   a.add
     display inline-block
     background url(/images/add.png) no-repeat 0 center
@@ -418,11 +433,11 @@ form.server
         display none
       .confirm,.message
         position absolute
-        top 13px
+        top 19px
         left 140px
       .message
         font-weight 700
-        top 40px
+        top 26px
         text-shadow 0px 1px 5px rgba(34,34,34,.75)
     ul li
       display inline-block
@@ -434,7 +449,7 @@ form.server
         padding 0
     .name, .url
       input
-        width 200px
+        width 192px
     .port
       input
         width 35px

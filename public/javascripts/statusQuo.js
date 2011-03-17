@@ -7,7 +7,7 @@ if(typeof window.statusQuo === "undefined") {
   var statusQuo = function (params) {
     this.servers = null;
     this.checkOnLoad = params.checkOnLoad || false;
-    
+    this.didServerLookup = false;
     //this.socket = new io.Socket(null, {port: 8000, rememberTransport: false});
     //this.getConfig();
   };
@@ -15,6 +15,7 @@ if(typeof window.statusQuo === "undefined") {
   statusQuo.prototype = {
     setupPage: function() {
       this.bindButtons();
+      this.bindEvents();
       if (this.checkOnLoad) {
         var context = this;
         $('.server').each(function(site){
@@ -28,6 +29,19 @@ if(typeof window.statusQuo === "undefined") {
       $.getJSON('/getConfig', function(data) {
         context.servers = data;
       });
+    },
+    
+    serverAddService: function(url){
+      var servicesNum = $('.service').size()-1,
+      service = $('.service.default').clone().removeClass('default');
+      service.find('input').each(function(i){
+              $(this).attr('name', $(this).attr('name').replace("index",servicesNum));
+            })
+      if (url) {
+        service.find('.name input').val(url)
+        service.find('.url input').val('http://'+url);
+      }
+      service.appendTo('.services').slideDown(200)
     },
     
     bindButtons: function() {
@@ -49,12 +63,7 @@ if(typeof window.statusQuo === "undefined") {
       
       // Add a service button
       $('.server a.add').click(function(){
-        var servicesNum = $('.service').size()-1,
-        service = $('.service.default').clone().removeClass('default').show();
-        service.find('input').each(function(i){
-                $(this).attr('name', $(this).attr('name').replace("index",servicesNum));
-              })
-        service.appendTo('.services')
+        context.serverAddService()
       })
       
       var confirmDialog = $('<div class="confirm">Whoa! Are you sure?</div>').hide()
@@ -90,7 +99,7 @@ if(typeof window.statusQuo === "undefined") {
             service.find(".message").html('Service will be deleted when you save. (<a href="javascript:void(0)" class="undo")>undo?</a>)').show()
             service.find(".confirm").remove();
           } else {
-            service.remove()
+            service.slideUp(200).remove()
           }
         }).appendTo(confirmDelete);
         // no
@@ -106,6 +115,14 @@ if(typeof window.statusQuo === "undefined") {
       });
     },
     
+    bindEvents: function() {
+      var context = this;
+      
+      $('form.new .ip input').blur(function(){
+        if ($(this).val() && context.didServerLookup === false) context.serverLookup(this)
+      })
+    },
+    
     checkServer: function(server) {
       var context = this;
       $(server).find('.site').show()
@@ -115,13 +132,22 @@ if(typeof window.statusQuo === "undefined") {
     },
     
     checkSite: function(site){
-      $(site).addClass('checking');
       $.ajax({ url:'/check/'+$(site).attr('id'), context:site, success: function(data){
         $(this).addClass('s'+data.statusCode).removeClass('checking').find('.message').text(data.message)
         if(data.statusCode == 500)
           $(this).parents('.server').addClass('error');
         if ($(this).siblings('.site:not(.checking)').length == $(this).siblings('.site').length)
           $(this).parents(".server").removeClass("checking");
+      }});
+    },
+    
+    serverLookup: function(input) {
+      var context = this;
+      $.ajax({ url:'/server/lookup/'+$(input).val(), success: function(data){
+        $.each(data, function(key,url){
+          context.serverAddService(url)
+        })
+        context.didServerLookup = true;
       }});
     },
     
