@@ -48,7 +48,7 @@ exports.defineModels = function(mongoose, fn) {
     , name            :  String
     , os              :  String
     , type            :  [String]
-    , public          :  Boolean
+    , public          :  { type: Boolean, index: true }
     , services        :  [Services] 
   })
   

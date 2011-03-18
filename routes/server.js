@@ -39,6 +39,7 @@ module.exports = function(app){
       , type    : req.body.server.type
       , ip      : req.body.server.ip
       , os      : req.body.server.os
+      , public  : (req.body.server.public)?true:false
       , user_id : req.session.user.id
     });
     
@@ -62,6 +63,7 @@ module.exports = function(app){
     var ip = req.params.ip;
     
     dns.reverse(ip, function(err, domains){
+      if (err) domains = []
       res.send(domains)
     })
   });
@@ -92,6 +94,7 @@ module.exports = function(app){
       server.ip = req.body.server.ip;
       server.name = req.body.server.name;
       server.os = req.body.server.os;
+      server.public  = (req.body.server.public)?true:false
       
       for (var num = _.size(req.body.server.services) - 1; num >= 0; num--){
         if (server.services[num]) {

@@ -11,7 +11,6 @@ var consumerKey = 'KZHCsJ6yIpWQbmI2Adkrg'
 
 module.exports = function(app){
   app.get('/login', function(req, res){
-    console.log(req.header('Referer'))
     req.returnToAfterLogin = req.header('Referer');
     if (req.cookies && req.cookies.username) {
       app.User.findOne({username: req.cookies.username }, function(err, user) {
@@ -21,15 +20,13 @@ module.exports = function(app){
     } else {
       if (!req.session.oauth) req.session.oauth = {}
       oa.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, results){
-        if (error) 
-          new Error(error.data)
+        if (error) new Error(error.data)
         else {
           req.session.oauth.token = oauth_token
           req.session.oauth.token_secret = oauth_token_secret
           res.redirect('https://twitter.com/oauth/authenticate?oauth_token='+oauth_token)
          }
       });
-
     }
   });
   
@@ -58,7 +55,7 @@ module.exports = function(app){
               req.session.user = user
               req.flash('success', 'You\'ve successfully logged in!')
               res.cookie('username', user.username, { maxAge: 1209600, path: '/'})
-              res.redirect(req.returnToAfterLogin)
+              res.redirect((req.returnToAfterLogin)?req.returnToAfterLogin:'/')
             } else {
               req.flash('info', 'It appears this is your first time logging in! Please fill out the remaining below to steup your account')
               res.redirect('/user/setup')

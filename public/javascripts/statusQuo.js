@@ -71,7 +71,7 @@ if(typeof window.statusQuo === "undefined") {
         , no = $('<a class="button no">No</a>');
       
       
-      $('.buttons a.delete').live("click",function(){
+      $('.buttons .delete a').live("click",function(){
         var confirmDelete = confirmDialog.clone();
         // yes button
         yes.clone().click(function(){
@@ -87,7 +87,7 @@ if(typeof window.statusQuo === "undefined") {
         return false;
       });
       
-      $('.service a.delete').live("click",function(){
+      $('.service .delete ').live("click",function(){
         var confirmDelete = confirmDialog.clone();
         // yess
         yes.clone().click(function(){
@@ -99,7 +99,7 @@ if(typeof window.statusQuo === "undefined") {
             service.find(".message").html('Service will be deleted when you save. (<a href="javascript:void(0)" class="undo")>undo?</a>)').show()
             service.find(".confirm").remove();
           } else {
-            service.slideUp(200).remove()
+            service.slideUp(200).delay(500).remove()
           }
         }).appendTo(confirmDelete);
         // no
@@ -117,9 +117,14 @@ if(typeof window.statusQuo === "undefined") {
     
     bindEvents: function() {
       var context = this;
-      
       $('form.new .ip input').blur(function(){
-        if ($(this).val() && context.didServerLookup === false) context.serverLookup(this)
+        console.log($(this).data('lastIP'))
+        if ($(this).val().match(/(?:\d{1,3}\.){3}\d{1,3}/) !== null 
+          && (context.didServerLookup === false || 
+          (!$(this).data('lastIP') || $(this).data('lastIP') !== $(this).val()))) 
+            context.serverLookup(this)
+        
+        $(this).data('lastIP',$(this).val())
       })
     },
     
@@ -143,6 +148,7 @@ if(typeof window.statusQuo === "undefined") {
     
     serverLookup: function(input) {
       var context = this;
+      if ($(input).data('lastIP') && $(input).data('lastIP') !== $(input).val()) $('.service').not('.default').slideUp(200).remove()
       $.ajax({ url:'/server/lookup/'+$(input).val(), success: function(data){
         $.each(data, function(key,url){
           context.serverAddService(url)

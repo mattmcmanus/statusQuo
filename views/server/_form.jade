@@ -8,6 +8,13 @@ ul
   li.os
     label(for='server[os]') OS
     input(type="text", name='server[os]', value=server.os)
+  li.checkboxes.public
+    span.label Public facing?
+    ul
+      li
+        label
+          input(type="checkbox", name='server[public]', value="true", checked=(server.public)?'checked':'') 
+          | Yes
   li.checkboxes.type
     span.label Server type
     ul
@@ -32,8 +39,8 @@ ul.services
           input(type="url", placeholder="URL", name='server[services]['+indexInCollection +'][url]', value=service.url)
         li.port
           input(type="text", placeholder="Port", name='server[services]['+indexInCollection +'][port]', value=service.port||'80')
-        li
-          a.delete(href="javascript:void(0)") Delete Service
+        li.delete
+          a(href="javascript:void(0)") Delete Service
 ul  
   li.service.default(style="display:none")
     input.delete(type="hidden", name="server[services][index][delete]", value="false")
@@ -45,7 +52,7 @@ ul
         input(type="url", placeholder="URL", name='server[services][index][url]', value='')
       li.port
         input(type="text", placeholder="Port", name='server[services][index][port]', value='80')
-      li
-        a.delete(href="javascript:void(0)") Delete Service
+      li.delete
+        a(href="javascript:void(0)") Delete Service
   li
     a.add(href='javascript:void(0)') Add Service
