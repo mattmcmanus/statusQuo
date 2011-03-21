@@ -96,49 +96,51 @@ module.exports = function(app){
     res.render('server/edit', {server: req.server});
   });
   
-  app.put('/server/:id', function(req, res, next){
-    app.Server.findOne({_id: req.params.id}, function(err, server) {
-      if(!server) return next(new Error('That server disappeared!'));
-      
-      delete req.body.server.services.index;
-      server.updated = new Date();
-      server.ip = req.body.server.ip;
-      server.name = req.body.server.name;
-      server.os = req.body.server.os;
-      server.public  = (req.body.server.public)?true:false
-      
-      for (var num = _.size(req.body.server.services) - 1; num >= 0; num--){
-        if (server.services[num]) {
-          if (req.body.server.services[num].delete == "true") {
-            server.services[num].remove()
-          } else {
-            server.services[num].name = req.body.server.services[num].name
-            server.services[num].url = req.body.server.services[num].url
-            server.services[num].port = req.body.server.services[num].port
-          }
+  app.put('/server/:server', function(req, res, next){
+    if(!req.server) return next(new Error('That server disappeared!'));
+    var server = req.server
+      , services = server.services;
+    
+    delete req.body.server.services.index;
+    server.updated = new Date();
+    server.ip = req.body.server.ip;
+    server.name = req.body.server.name;
+    server.os = req.body.server.os;
+    server.public  = (req.body.server.public)?true:false
+    
+    for (var num = _.size(req.body.server.services) - 1; num >= 0; num--){
+      if (services[num]) {
+        if (req.body.server.services[num].delete == "true") {
+          server.services.splice(num,1)
         } else {
-          // Defer adding new services until the loop finishes
-          delete req.body.server.services[num]["delete"]
-          server.services.push(req.body.server.services[num]);
+          services[num].name = req.body.server.services[num].name
+          services[num].url = req.body.server.services[num].url
+          services[num].port = req.body.server.services[num].port
         }
+      } else {
+        // Defer adding new services until the loop finishes
+        delete req.body.server.services[num]["delete"]
+        services.push(req.body.server.services[num]);
       }
-      server.save(function(err){
-        if (!err) {
-          req.flash('success', 'Server updated')
-        } else {
-          req.flash('error', 'Err, Something broke when we tried to save your server. Sorry!')
-          console.log("ERROR:" + err)
-        }
-        res.redirect('/')
-      });
-    })
+    }
+    
+    server.services = services;
+    console.log(server.services.toObject())
+    server.save(function(err){
+      if (!err) {
+        req.flash('success', 'Server updated')
+      } else {
+        req.flash('error', 'Err, Something broke when we tried to save your server. Sorry!')
+        console.log("ERROR:" + err)
+      }
+      res.redirect('/')
+    });
   });
   
-  app.del('/server/:id', function(req, res, next){
-    app.Server.findOne({_id: req.params.id}, function(err, server) {
-      if(!server) return next(new NotFound('That server disappeared!'));
+  app.del('/server/:server', function(req, res, next){
+    if(!req.server) return next(new NotFound('That server disappeared!'));
       
-      server.remove(function(err){
+    req.server.remove(function(err){
       if (!err) {
         req.flash('success', 'Server removed')
       } else {
@@ -147,7 +149,6 @@ module.exports = function(app){
       }
       res.redirect('/')
     });
-    })
   });
   
   function statusMessage(statusCode) {
