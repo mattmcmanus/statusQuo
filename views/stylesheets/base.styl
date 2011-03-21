@@ -9,28 +9,7 @@ ok = #090
 warning = #990
 error = #900
 
-// Status Code COLORS!
-ok_text()
-  color ok + #ccc
-  text-shadow ok 0 0 3px
 
-warning_text()
-  color warning + #ccc
-  text-shadow warning 0 0 3px
-
-error_text()
-  color error + #ccc
-  text-shadow error 0 0 3px
-
-.s200
-  ok_text
- 
-.s300,.s301
-  warning_text
-
-.s404,.s500
-  error_text
-  
 //  Typography presets
 //  -----------------
 body
@@ -64,6 +43,20 @@ selection
   background rgb(255,255,0)
 -moz-selection
   background rgb(255,255,0)
+  
+  
+.s200
+  color ok + #ccc
+  text-shadow ok 0 0 3px
+ 
+.s300,.s301,.s302
+  color warning + #ccc
+  text-shadow warning 0 0 3px
+
+.s404,.s500, .s403
+  error_text
+  color error + #ccc
+  text-shadow error 0 0 3px  
   
 a, a:link 
   text-decoration none

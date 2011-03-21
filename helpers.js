@@ -1,7 +1,3 @@
-exports.helpers = {
-  serviceCounter: 0
-}
-
 exports.dynamicHelpers = {
   body_classes: function(req, res) {
     var classes = []
@@ -24,10 +20,6 @@ exports.dynamicHelpers = {
   
   session: function(req,res) {
     return req.session;
-  },
-  
-  page: function(req, res){
-    return req.url;
   },
   
   messages: function(req, res){

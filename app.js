@@ -38,7 +38,7 @@ app.configure('development', function() {
 
 //                      Dynamic Helpers
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
-app.helpers(require('./helpers.js').helpers);
+//app.helpers(require('./helpers.js').helpers);
 app.dynamicHelpers(require('./helpers.js').dynamicHelpers);
 
 //                      Models
@@ -65,7 +65,6 @@ app.error(function(err, req, res){
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 require('./routes/site')(app);
 require('./routes/user')(app);
-require('./routes/service')(app);
 require('./routes/server')(app);
 
 app.listen('8000');

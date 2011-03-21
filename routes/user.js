@@ -88,7 +88,7 @@ module.exports = function(app){
         req.flash('success', 'You\'re account has been created!')
       } else {
         req.flash('error', 'Err, Something broke when we tried to save your account')
-        console.log(err)
+        console.log("Error: /user/setup" + err)
       }
       res.redirect(req.returnToAfterLogin)
       

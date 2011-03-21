@@ -2,11 +2,33 @@ require('../lib/underscore.js')
 
 var global = require('./global')
   , dns = require('dns')
+  , http = require('http')
+  , https = require('https')
   , util   = require('util')
   , spawn = require('child_process').spawn
   , info = [];
 
 module.exports = function(app){
+  //                      PARAMETERS
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  app.param('server', function(req, res, next, id){
+    app.Server.findOne({_id: id}, function(err, server) {
+      if (err) return next(err);
+      if (!server) return next(new Error('failed to find server'));
+      req.server = server;
+      next();
+    });
+  });
+  
+  app.param('service', function(req, res, next, id){
+    if (req.server) {
+      req.service = req.server.services.id(id)
+    }
+    next();
+  });
+  
+  //                      Routes
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   app.get('/', function(req, res){
     if (req.session.user) {
       app.Server.find({user_id: req.session.user.id}, function(err, servers){
@@ -53,28 +75,17 @@ module.exports = function(app){
         req.flash('success', 'You\'re server has been created')
       } else {
         req.flash('error', 'Err, Something broke when we tried to save your server. Sorry!')
-        console.log(err)
+        console.log("Mongoose ERROR:" + err)
       }
       res.redirect('/')
     });
   });
   
   app.get('/server/lookup/:ip', function(req, res){
-    var ip = req.params.ip;
-    
-    dns.reverse(ip, function(err, domains){
+    dns.reverse(req.params.ip, function(err, domains){
       if (err) domains = []
       res.send(domains)
     })
-  });
-  
-  app.param('server', function(req, res, next, id){
-    app.Server.findOne({_id: id}, function(err, server) {
-      if (err) return next(err);
-      if (!server) return next(new Error('failed to find server'));
-      req.server = server;
-      next();
-    });
   });
   
   app.get('/server/:server', function(req, res){
@@ -111,13 +122,12 @@ module.exports = function(app){
           server.services.push(req.body.server.services[num]);
         }
       }
-      console.log(server.toObject())
       server.save(function(err){
         if (!err) {
           req.flash('success', 'Server updated')
         } else {
           req.flash('error', 'Err, Something broke when we tried to save your server. Sorry!')
-          console.log(err)
+          console.log("ERROR:" + err)
         }
         res.redirect('/')
       });
@@ -133,10 +143,20 @@ module.exports = function(app){
         req.flash('success', 'Server removed')
       } else {
         req.flash('error', 'Err, Something broke when we tried to delete your server. Sorry!')
-        console.log(err)
+        console.log("ERROR:" + err)
       }
       res.redirect('/')
     });
     })
   });
+  
+  
+  app.get('/server/:server/service/:service', function(req, res){
+    var options = require('url').parse(req.service.url)
+    http.get(options, function(get){
+      res.send({statusCode: get.statusCode, message: "OK"});
+    }).on('error', function(e) {
+      res.send({statusCode: 500, message: e.message.substr(e.message.indexOf(',')+2)});
+    })
+  })
 };

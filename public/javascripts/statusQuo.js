@@ -48,7 +48,7 @@ if(typeof window.statusQuo === "undefined") {
       var context = this;
       //Bind server refresh action
       $('.server a.refresh').click(function(){
-        context.checkServer($(this).parents('.server'));
+        context.refreshServer($(this).parents('.server'));
       });
       
       //Bind server ping action
@@ -118,7 +118,6 @@ if(typeof window.statusQuo === "undefined") {
     bindEvents: function() {
       var context = this;
       $('form.new .ip input').blur(function(){
-        console.log($(this).data('lastIP'))
         if ($(this).val().match(/(?:\d{1,3}\.){3}\d{1,3}/) !== null 
           && (context.didServerLookup === false || 
           (!$(this).data('lastIP') || $(this).data('lastIP') !== $(this).val()))) 
@@ -128,20 +127,21 @@ if(typeof window.statusQuo === "undefined") {
       })
     },
     
-    checkServer: function(server) {
+    refreshServer: function(server) {
       var context = this;
-      $(server).find('.site').show()
-      $(server).addClass("checking").find('.site').each(function(){
-        context.checkSite($(this));
+      $(server).find('.loader').show()
+      $(server).addClass("checking").find('.service').each(function(){
+        context.checkService($(this));
       });
     },
     
-    checkSite: function(site){
-      $.ajax({ url:'/check/'+$(site).attr('id'), context:site, success: function(data){
+    checkService: function(service){
+      service.addClass('checking')
+      $.ajax({ url:'/server/' + $(service).parents(".server").attr('id') + '/service/' + $(service).attr('id'), context:service, success: function(data){
         $(this).addClass('s'+data.statusCode).removeClass('checking').find('.message').text(data.message)
         if(data.statusCode == 500)
           $(this).parents('.server').addClass('error');
-        if ($(this).siblings('.site:not(.checking)').length == $(this).siblings('.site').length)
+        if ($(this).siblings('.service:not(.checking)').length == $(this).siblings('.service').length)
           $(this).parents(".server").removeClass("checking");
       }});
     },
