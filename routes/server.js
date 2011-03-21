@@ -150,13 +150,34 @@ module.exports = function(app){
     })
   });
   
+  function statusMessage(statusCode) {
+    var message;
+    switch(statusCode) {
+      case 302: message = "Redirected";break;
+      case 403: message = "Forbidden";break;
+      default: message = "OK"
+    }
+    return message;
+  }
   
   app.get('/server/:server/service/:service', function(req, res){
-    var options = require('url').parse(req.service.url)
-    http.get(options, function(get){
-      res.send({statusCode: get.statusCode, message: "OK"});
-    }).on('error', function(e) {
-      res.send({statusCode: 500, message: e.message.substr(e.message.indexOf(',')+2)});
-    })
+    var options = require('url').parse(req.service.url);
+    if (options.protocol === 'https:') {
+      https.get(options, function(get){
+        console.log(get.headers);
+        get.on('data', function (chunk) {
+          console.log('BODY: ' + chunk);
+        });
+        res.send({statusCode: get.statusCode, message: statusMessage(get.statusCode)});
+      }).on('error', function(e) {
+        res.send({statusCode: 500, message: e.message.substr(e.message.indexOf(',')+2)});
+      })
+    } else {
+      http.get(options, function(get){
+        res.send({statusCode: get.statusCode, message: statusMessage(get.statusCode)});
+      }).on('error', function(e) {
+        res.send({statusCode: 500, message: e.message.substr(e.message.indexOf(',')+2)});
+      })
+    }
   })
 };
