@@ -28,7 +28,10 @@ h2
   font-size  24px
   line-height  28px
   letter-spacing  -1px
-  font-weight 400
+  linear-gradient #222222,#161616
+  text-shadow 0 1px 2px rgba(255,255,255,.5)
+  padding .25em 18px
+  font-weight 700
 
 h3
   font-size  16px
@@ -117,6 +120,16 @@ body
   margin 0 auto
   color #fff
   -webkit-font-smoothing  antialiased
+
+#curtain
+  display none
+  background #222
+  background rgba(34,34,34,.75)
+  width 100%
+  position absolute
+  top 0
+  left 0
+  z-index 100
 
 #messages
   position relative
@@ -210,7 +223,11 @@ div.server
   box-shadow(0 2px 7px rgba(0,0,0,.25))
   border 1px solid #262626
   position relative
- 
+  transition box-shadow 200ms ease-in
+  &:hover
+    box-shadow(0 3px 15px rgba(0,0,0,.6))
+    cursor pointer
+  
   header
     border-top-radius 7px
     linear-gradient #222222,#161616
@@ -219,7 +236,8 @@ div.server
     position relative
    
     h2
-      margin 5px .25em 0
+      margin 7px 5px
+      padding 0
       font-size 1em
       line-height 1em
       font-weight 700
@@ -254,42 +272,23 @@ div.server
         &:hover
           opacity 1
  
-  .console
-    display none
-    position absolute  
-    top 28px 
-    left 0
-    z-index 100
-    width 99%
-    height 200px
-    border-bottom-radius 7px
-    border 1px solid #363636
-    border-top none
-    linear-gradient #262626, #161616
-   
-    .button
-      position absolute  
-      bottom 5px  
-      left 40%
-   
   section.info
     display none
    
   section
     .service
-      border-top 1px solid #333
+      border-top 1px solid #2c2c2c
       border-bottom 1px solid #222
-      linear-gradient(#333333,#222222)
+      linear-gradient(#292929,#222222)
       padding 5px 10px
       position relative
       .loader
-        display none
         opacity 0
         position absolute
         top 0 
         left 0
         width 100%
-        height 60px
+        height 29px
         z-index 50
         background rgba(34,34,34,.75) url(../images/ajax-loader.gif) no-repeat center center
         transition opacity .25s ease-in-out
@@ -300,14 +299,16 @@ div.server
           font-size 1.3em
           line-height 1.1em
           width 120px
+          
         &.url
-          font-size 0.9em
+          font-size 0.8em
+          font-family: 'Droid Sans Mono', arial, sans-serif;
         &.message
           text-align  center
           font-weight 700
           font-size 1.2em
           text-overflow ellipsis-word
-          height 29px
+          display none
      
       &.checking 
         .loader
@@ -333,6 +334,31 @@ div.server
       -webkit-animation-direction normal
       -webkit-animation-timing-function ease-in
 
+.server.detail
+  width 600px
+  max-width 600px
+  margin 2em auto
+  float none
+  linear-gradient #2c2c2c, #222222
+  box-shadow(0 2px 7px rgba(255,255,255,.2))
+  &:hover
+    box-shadow(0 3px 15px rgba(255,255,255,.2))
+  header
+    height auto
+    h2
+      font-size 1.5em
+      text-shadow 0px -1px 1px rgba(255,255,255,.2)
+      em
+        font-size .75em
+        color #666
+  section
+    float left
+    &.services
+      width 400px
+    &.ping
+      width 200px
+  .footer
+    clear both
 
 /*          Content!
 - - - - - - - - - - - - - - - - - - - - */
@@ -442,7 +468,7 @@ form.server
         padding 0
     .name, .url
       input
-        width 207px
+        width 205px
     .port
       input
         width 35px
@@ -492,12 +518,5 @@ form.server
       padding .25em 18px
       font-weight 700
   
-  h2
-    linear-gradient #222222,#161616
-    font-size 1.2em
-    text-shadow 0 1px 2px rgba(255,255,255,.5)
-    padding .25em 18px
-    font-weight 700
-    
   .content
     padding .5em 1em

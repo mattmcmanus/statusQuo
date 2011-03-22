@@ -12,8 +12,10 @@ html(lang="en")
     //script(type = "text/javascript",src = "/socket.io/socket.io.js")
     script(type = "text/javascript",src = "/javascripts/statusQuo.js")
     // Stylesheets
-    link(rel="stylesheet", href="/stylesheets/base.css")
+    link(rel="stylesheet", type='text/css', href="http://fonts.googleapis.com/css?family=Droid+Sans+Mono")
+    link(rel="stylesheet", type='text/css', href="/stylesheets/base.css")
   body(class = body_classes)
+    #curtain
     !=messages
     header
       h1#logo.ok

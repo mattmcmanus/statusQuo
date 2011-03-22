@@ -88,8 +88,15 @@ module.exports = function(app){
     })
   });
   
-  app.get('/server/:server', function(req, res){
-    res.render('server/show', {server: req.server});
+  app.get('/server/:server.:format?', function(req, res){
+    switch (req.params.format) {
+      case 'json':
+        res.send(req.server.toObject());
+      break;
+
+      default:
+        res.render('server/show', {server: req.server});
+    }
   });
   
   app.get('/server/:server/edit', global.isAuthenticated, function(req, res){
@@ -125,7 +132,6 @@ module.exports = function(app){
     }
     
     server.services = services;
-    console.log(server.services.toObject())
     server.save(function(err){
       if (!err) {
         req.flash('success', 'Server updated')

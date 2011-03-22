@@ -24,47 +24,19 @@ if(typeof window.statusQuo === "undefined") {
       }
     },
     
-    getConfig: function(){
-      var context = this;
-      $.getJSON('/getConfig', function(data) {
-        context.servers = data;
-      });
-    },
-    
-    serverAddService: function(url){
-      var servicesNum = $('.service').size()-1,
-      service = $('.service.default').clone().removeClass('default');
-      service.find('input').each(function(i){
-              $(this).attr('name', $(this).attr('name').replace("index",servicesNum));
-            })
-      if (url) {
-        service.find('.name input').val(url)
-        service.find('.url input').val('http://'+url);
-      }
-      service.appendTo('.services').slideDown(200)
-    },
-    
     bindButtons: function() {
       var context = this;
+      
+      $('.server')
+        .click(function(){ context.serverDetail($(this)) });
+      
       //Bind server refresh action
-      $('.server a.refresh').click(function(){
-        context.refreshServer($(this).parents('.server'));
-      });
-      
-      //Bind server ping action
-      $('.server a.ping').click(function(){
-        context.pingServer($(this).parents('.server'));
-      });
-      
-      //Bind server ping stop action
-      $('.console a.stopPing').click(function(){
-        context.stopPing($(this).parents('.server'));
-      });
+      $('.server a.refresh')
+        .click(function(){ context.serverRefresh($(this).parents('.server')) });
       
       // Add a service button
-      $('.server a.add').click(function(){
-        context.serverAddService()
-      })
+      $('.server a.add')
+        .click(function(){ context.serverAddService() });
       
       var confirmDialog = $('<div class="confirm">Whoa! Are you sure?</div>').hide()
         , yes = $('<a class="button yes">Yes</a>')
@@ -125,20 +97,26 @@ if(typeof window.statusQuo === "undefined") {
         
         $(this).data('lastIP',$(this).val())
       })
+      
+      $('#curtain').click(function(){
+        $(this).fadeOut(200).children().remove()
+      })
     },
     
-    refreshServer: function(server) {
+    serverRefresh: function(server) {
       var context = this;
       $(server).find('.loader').show()
       $(server).addClass("checking").find('.service').each(function(){
-        context.checkService($(this));
+        context.serviceCheck($(this));
       });
     },
     
-    checkService: function(service){
+    serviceCheck: function(service){
       service.addClass('checking')
       $.ajax({ url:'/server/' + $(service).parents(".server").attr('id') + '/service/' + $(service).attr('id'), context:service, success: function(data){
-        $(this).addClass('s'+data.statusCode).removeClass('checking').find('.message').text(data.message)
+        $(this).addClass('s'+data.statusCode).removeClass('checking')
+        if (data.message !== 'OK')
+          $(this).find('.message').text(data.message).slideDown(200)
         if(data.statusCode == 500)
           $(this).parents('.server').addClass('error');
         if ($(this).siblings('.service:not(.checking)').length == $(this).siblings('.service').length)
@@ -157,7 +135,43 @@ if(typeof window.statusQuo === "undefined") {
       }});
     },
     
-    pingServer: function(server) {
+    serverDetail: function(server){
+      var context = this;
+      $('#curtain').height(window.innerHeight).fadeIn(200);
+      $.get('/server/'+$(server).attr('id')+'.json', function(s){
+        var serverDetail = $('<div id="'+s._id+'"class="server detail"></div>')
+        $('<header><h2>'+s.name+' <em>'+s.ip+'</em></h2></header>').appendTo(serverDetail)
+        
+        var services = '';
+        $(s.services).each(function(index,service) {
+          services += '<div class="service" id="'+service._id+'"><ul>\
+                          <li class="name">'+service.name+'</li>\
+                          <li class="url">'+service.url+'</li>\
+                          <li class="message">'+service.message+'</li>\
+                        </ul></div>';
+        });
+        $('<section class="services"></section>').append(services).appendTo(serverDetail)
+        $('<section class="ping"></section><div class="footer"></div>').appendTo(serverDetail)
+        console.log(serverDetail)
+        $('#curtain').append(serverDetail)
+      });
+      
+    },
+    
+    serverAddService: function(url){
+      var servicesNum = $('.service').size()-1,
+      service = $('.service.default').clone().removeClass('default');
+      service.find('input').each(function(i){
+              $(this).attr('name', $(this).attr('name').replace("index",servicesNum));
+            })
+      if (url) {
+        service.find('.name input').val(url)
+        service.find('.url input').val('http://'+url);
+      }
+      service.appendTo('.services').slideDown(200)
+    },
+    
+    serverPing: function(server) {
       var context = this;
       $(server).addClass("pinging");
       $(server).find('.console').slideDown(150)
