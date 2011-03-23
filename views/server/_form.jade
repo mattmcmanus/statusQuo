@@ -28,31 +28,7 @@ ul
           | Database Server
 h2 Services to monitor
 ul.services
-  -each service, indexInCollection in server.services
-    li.service(id=service.id)
-      input.delete(type="hidden", name="server[services]["+indexInCollection +"][delete]", value="false")
-      .message
-      ul
-        li.name
-          input(type="text", placeholder="Service Name", name='server[services]['+indexInCollection +'][name]', value=service.name)
-        li.url
-          input(type="url", placeholder="URL", name='server[services]['+indexInCollection +'][url]', value=service.url)
-        li.port
-          input(type="text", placeholder="Port", name='server[services]['+indexInCollection +'][port]', value=service.port||'80')
-        li.delete
-          a(href="javascript:void(0)") Delete Service
+  !=partial('_form_service',  { collection: server.services, as: 'service' })
 ul  
-  li.service.default(style="display:none")
-    input.delete(type="hidden", name="server[services][index][delete]", value="false")
-    .message
-    ul
-      li.name
-        input(type="text", placeholder="Service Name", name='server[services][index][name]', value='')
-      li.url
-        input(type="url", placeholder="URL", name='server[services][index][url]', value='')
-      li.port
-        input(type="text", placeholder="Port", name='server[services][index][port]', value='80')
-      li.delete
-        a(href="javascript:void(0)") Delete Service
   li
     a.add(href='javascript:void(0)') Add Service

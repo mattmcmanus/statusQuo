@@ -53,9 +53,6 @@ module.exports = function(app){
   });
   
   app.post('/server/new', function(req, res){
-    // Clean up some of the stuff coming in from the form
-    delete req.body.server.services.index;
-    
     var server = new app.Server({
         name    : req.body.server.name
       , type    : req.body.server.type
@@ -108,7 +105,6 @@ module.exports = function(app){
     var server = req.server
       , services = server.services;
     
-    delete req.body.server.services.index;
     server.updated = new Date();
     server.ip = req.body.server.ip;
     server.name = req.body.server.name;

@@ -27,7 +27,7 @@ if(typeof window.statusQuo === "undefined") {
     bindButtons: function() {
       var context = this;
       
-      $('.server')
+      $('.front .server')
         .bind('click', function(){ context.serverDetail($(this)) });
       
       //Bind server refresh action
@@ -174,7 +174,7 @@ if(typeof window.statusQuo === "undefined") {
     
     serverAddService: function(url){
       var servicesNum = $('.service').size()-1,
-      service = $('.service.default').clone().removeClass('default');
+      service = $('.default .service').clone();
       service.find('input').each(function(i){
               $(this).attr('name', $(this).attr('name').replace("index",servicesNum));
             })
@@ -203,7 +203,7 @@ if(typeof window.statusQuo === "undefined") {
 
 $(document).ready(function() {
   sq = new statusQuo({
-    "checkOnLoad":true
+    "checkOnLoad":false
   });
   
   sq.setupPage();
