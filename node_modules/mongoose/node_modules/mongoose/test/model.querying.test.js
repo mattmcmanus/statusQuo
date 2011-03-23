@@ -666,9 +666,14 @@ module.exports = {
 
         BlogPostB.findOne({tags: {$in: ['football', 'baseball']}}, function (err, doc) {
           should.strictEqual(err, null);
-
           doc._id.should.eql(post._id);
-          db.close();
+
+          BlogPostB.findOne({ _id: post._id, tags: /otba/i }, function (err, doc) {
+            should.strictEqual(err, null);
+            doc._id.should.eql(post._id);
+
+            db.close();
+          })
         });
       });
   },

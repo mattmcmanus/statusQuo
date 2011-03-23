@@ -8,18 +8,18 @@ if(typeof window.statusQuo === "undefined") {
     this.servers = null;
     this.checkOnLoad = params.checkOnLoad || false;
     this.didServerLookup = false;
-    //this.socket = new io.Socket(null, {port: 8000, rememberTransport: false});
+    this.socket = new io.Socket(null, {port: 8000, rememberTransport: false});
     //this.getConfig();
   };
   
   statusQuo.prototype = {
     setupPage: function() {
+      var context = this;
       this.bindButtons();
       this.bindEvents();
       if (this.checkOnLoad) {
-        var context = this;
         $('.server').each(function(site){
-          context.checkServer($(this));
+          context.serverRefresh($(this));
         })
       }
     },
@@ -28,11 +28,11 @@ if(typeof window.statusQuo === "undefined") {
       var context = this;
       
       $('.server')
-        .click(function(){ context.serverDetail($(this)) });
+        .bind('click', function(){ context.serverDetail($(this)) });
       
       //Bind server refresh action
       $('.server a.refresh')
-        .click(function(){ context.serverRefresh($(this).parents('.server')) });
+        .bind('click', function(){ context.serverRefresh($(this).parents('.server')); return false });
       
       // Add a service button
       $('.server a.add')
@@ -98,9 +98,23 @@ if(typeof window.statusQuo === "undefined") {
         $(this).data('lastIP',$(this).val())
       })
       
-      $('#curtain').click(function(){
-        $(this).fadeOut(200).children().remove()
-      })
+      $('#curtain').click(function(){context.curtainClose()})
+    },
+    
+    curtainOpen: function(modal){
+      $('#curtain').append(modal). height(window.innerHeight).fadeIn(200);
+    },
+    
+    curtainClose: function(){
+      var context = this
+        , curtain = $("#curtain");
+      
+      curtain.fadeOut(200)
+      
+      if (curtain.has('.server.detail').length)
+        context.socket.send({'kill':'ping'});
+      
+      curtain.children().remove()
     },
     
     serverRefresh: function(server) {
@@ -137,9 +151,9 @@ if(typeof window.statusQuo === "undefined") {
     
     serverDetail: function(server){
       var context = this;
-      $('#curtain').height(window.innerHeight).fadeIn(200);
+      
       $.get('/server/'+$(server).attr('id')+'.json', function(s){
-        var serverDetail = $('<div id="'+s._id+'"class="server detail"></div>')
+        var serverDetail = $('<div id="'+s._id+'"class="server detail" data-ip="'+s.ip+'"></div>')
         $('<header><h2>'+s.name+' <em>'+s.ip+'</em></h2></header>').appendTo(serverDetail)
         
         var services = '';
@@ -151,9 +165,9 @@ if(typeof window.statusQuo === "undefined") {
                         </ul></div>';
         });
         $('<section class="services"></section>').append(services).appendTo(serverDetail)
-        $('<section class="ping"></section><div class="footer"></div>').appendTo(serverDetail)
-        console.log(serverDetail)
-        $('#curtain').append(serverDetail)
+        $('<section class="ping"><em>Pinging '+s.ip+'</em><div class="output"></div></section><footer></footer>').appendTo(serverDetail)
+        context.curtainOpen(serverDetail)
+        context.serverPing(serverDetail)
       });
       
     },
@@ -174,30 +188,22 @@ if(typeof window.statusQuo === "undefined") {
     serverPing: function(server) {
       var context = this;
       $(server).addClass("pinging");
-      $(server).find('.console').slideDown(150)
-      //context.socket.connect();
-      //context.socket.on('connect', function(){ 
-      //  console.log("Client: Connecting")
-      //})
-      //context.socket.send({'ping':$(server).attr('id')});
-      //context.socket.on('message', function(obj){
-      //  console.log(obj)
-      //});
+      context.socket.connect();
+      context.socket.on('connect', function(){ 
+        console.log("Client: Connected")
+      })
+      context.socket.send({'ping':$(server).data('ip')});
+      context.socket.on('message', function(output){
+        server.find('.ping .output').text(output.time)
+      });
         
-    },
-    
-    stopPing: function(server) {
-      server.children('.console').slideUp(150)
     }
   }
 };
 
-
-
-
 $(document).ready(function() {
   sq = new statusQuo({
-    "checkOnLoad":false
+    "checkOnLoad":true
   });
   
   sq.setupPage();

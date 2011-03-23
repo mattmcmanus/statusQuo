@@ -340,9 +340,9 @@ div.server
   margin 2em auto
   float none
   linear-gradient #2c2c2c, #222222
-  box-shadow(0 2px 7px rgba(255,255,255,.2))
+  box-shadow(0 2px 7px rgba(0,0,0,.75))
   &:hover
-    box-shadow(0 3px 15px rgba(255,255,255,.2))
+    box-shadow(0 3px 15px rgba(0,0,0,.75))
   header
     height auto
     h2
@@ -354,10 +354,18 @@ div.server
   section
     float left
     &.services
-      width 400px
+      width 399px
+      border-right 1px solid #333
     &.ping
       width 200px
-  .footer
+      em
+        font-weight 700
+        padding 5px 8px
+      .output
+        font-family: 'Droid Sans Mono', arial, sans-serif;
+        font-size 2em
+        text-align center
+  footer
     clear both
 
 /*          Content!

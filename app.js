@@ -6,6 +6,7 @@ var sys = require('sys')
   , express = require('express')
   , stylus = require('stylus')
   , mongoose = require('mongoose')
+  , io = require('socket.io')
   // Some Basic variable setting
   , pub = __dirname + '/public'
   , views = __dirname + '/views'
@@ -74,60 +75,43 @@ console.log('Express server started on port %s', app.address().port);
 // - - - - - - - - - - - - - - - - - - - - - - - - - - 
 //                 socket.io 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - 
-//var socket = io.listen(app); 
-//socket.on('connection', function(client){ 
-//  client.on('message', function(commands){ 
-//    _.each(commands,function(action, command){
-//      if (command == 'ping') {
-//        // Set things up
-//        var buffer = [],
-//        ip,
-//        exec = require('child_process').exec,
-//        ping;
-//        
-//        // Load up the servers IP
-//        _.each(serversConfig,function(server){
-//          if (ip == null && server.name == action) {
-//            if (server.ip) {
-//              ip = server.ip;
-//            } else {
-//              //TODO: Throw a proper error
-//            };
-//          }
-//        })
-//        // It's time to ping!
-//        //var ping = spawn('ping ' + ip );
-//        //ping.stdout.on('data', function (data) {
-//        //  console.log('stdout: ' + data);
-//        //});
-//        
-//        //ping.stderr.on('data', function (data) {
-//        //  console.log('stderr: ' + data);
-//        //});
-//        
-//        //ping.on('exit', function (code) {
-//        //  console.log('child process exited with code ' + code);
-//        //});
-//        console.log("pinging: "+ ip);
-//        //ping = exec('ping ' + ip, 
-//        //  function (error, stdout, stderr) {
-//        //    console.log('stdout: ' + stdout);
-//        //    console.log('stderr: ' + stderr);
-//        //    if (error !== null) {
-//        //      console.log('exec error: ' + error);
-//        //    }
-//        //});
-//        
-//        // Stop this
-//        //setTimeout(ping.kill(),1000)
-//        //
-//      }
-//      
-//    });
-//  });
-//  
-//  client.on('disconnect', function(){
-//    console.log('socket.io: DISCONNECTED!')
-//  }) 
-//  
-//});
+var socket = io.listen(app); 
+socket.on('connection', function(client){
+  var ping
+  client.on('message', function(commands){ 
+    _.each(commands,function(item, command){
+      if (command == 'ping') {
+        // Set things up
+        var buffer = []
+          , spawn = require('child_process').spawn
+          , pattern = /(\d+?) bytes from (.+?): icmp_seq=(\d+?) ttl=(\d+?) time=(.+)/
+          , output
+          
+        ping = spawn('ping', [item])
+
+        ping.stdout.on('data', function (data) {
+          data = data.toString().slice(0,-1)
+          var regexOutput = pattern.exec(data)
+          output = {bytes_sent:regexOutput[1], ip: regexOutput[2], icmp_seq: regexOutput[3], ttl: regexOutput[4], time: regexOutput[5]}
+          client.send(output)
+        });
+        
+        ping.stderr.on('data', function (data) {
+          console.log('stderr: ' + data);
+        });
+        
+        ping.on('exit', function (code) {
+          console.log('child process exited with code ' + code);
+        });
+      } else if (command === 'kill' && item === 'ping') {
+        if (ping.kill()) ping.kill()
+      }
+      
+    });
+  });
+  
+  client.on('disconnect', function(){
+    console.log('socket.io: DISCONNECTED!')
+  }) 
+  
+});
