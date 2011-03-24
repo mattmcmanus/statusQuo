@@ -1,0 +1,16 @@
+.server.detail(id=server.id||'', data-ip=server.ip||'')
+  header
+    h2= server.name
+      em= server.ip
+    a.button Edit
+  section.services
+    - each service in server.services
+      .service(id=service.id)
+        .name= service.name
+        .url= service.url
+        .message
+        .details
+  section.ping
+    em Pinging
+    .output
+  footer

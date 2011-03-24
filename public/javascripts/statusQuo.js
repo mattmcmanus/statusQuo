@@ -152,22 +152,9 @@ if(typeof window.statusQuo === "undefined") {
     serverDetail: function(server){
       var context = this;
       
-      $.get('/server/'+$(server).attr('id')+'.json', function(s){
-        var serverDetail = $('<div id="'+s._id+'"class="server detail" data-ip="'+s.ip+'"></div>')
-        $('<header><h2>'+s.name+' <em>'+s.ip+'</em></h2></header>').appendTo(serverDetail)
-        
-        var services = '';
-        $(s.services).each(function(index,service) {
-          services += '<div class="service" id="'+service._id+'"><ul>\
-                          <li class="name">'+service.name+'</li>\
-                          <li class="url">'+service.url+'</li>\
-                          <li class="message">'+service.message+'</li>\
-                        </ul></div>';
-        });
-        $('<section class="services"></section>').append(services).appendTo(serverDetail)
-        $('<section class="ping"><em>Pinging '+s.ip+'</em><div class="output"></div></section><footer></footer>').appendTo(serverDetail)
-        context.curtainOpen(serverDetail)
-        context.serverPing(serverDetail)
+      $.get('/server/'+$(server).attr('id'), function(server){
+        context.curtainOpen(server)
+        //context.serverPing(serverDetail)
       });
       
     },

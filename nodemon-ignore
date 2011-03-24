@@ -6,3 +6,4 @@ public/images/*
 node_modules/*
 .git/*
 *.swp
+*.etmp

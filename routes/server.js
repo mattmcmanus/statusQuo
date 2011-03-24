@@ -86,16 +86,15 @@ module.exports = function(app){
   });
   
   app.get('/server/:server.:format?', function(req, res){
-    switch (req.params.format) {
-      case 'json':
-        res.send(req.server.toObject());
-      break;
-
-      default:
-        res.render('server/show', {server: req.server});
-    }
+    console.log(req.server.toObject())
+    if (req.params.format === 'json')
+      res.send(req.server.toObject());
+    else if (req.xhr)
+      res.partial('server/show', {server: req.server});
+    else
+      res.render('server/show', {server: req.server});
   });
-  
+    
   app.get('/server/:server/edit', global.isAuthenticated, function(req, res){
     res.render('server/edit', {server: req.server});
   });
