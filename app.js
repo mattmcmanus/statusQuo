@@ -37,6 +37,11 @@ app.configure('development', function() {
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
+
+app.configure('production', function() {
+  app.set('db-uri', 'mongodb://localhost/statusQuo');
+  app.use(express.errorHandler());
+});
 //                      Dynamic Helpers
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 //app.helpers(require('./helpers.js').helpers);
