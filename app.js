@@ -16,7 +16,7 @@ var sys = require('sys')
   , db
   // Load server and routes
   , app = module.exports = express.createServer();
-  
+
 app.configure(function(){
   // Templating Setup
   app.set('view engine', 'jade');
@@ -24,7 +24,7 @@ app.configure(function(){
   // Files
   app.use(express.static(pub));
   app.use(express.favicon());
-  
+
   app.use(express.logger({ format: '":method :url" :status' }));
   app.use(express.cookieParser());
   app.use(express.bodyParser());
@@ -68,17 +68,17 @@ require('./routes/site')(app);
 require('./routes/user')(app);
 require('./routes/server')(app);
 
-app.listen('8000');
+app.listen( process.env.PORT || '8000' );
 console.log('Express server started on port %s', app.address().port);
 
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - 
-//                 socket.io 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - 
-var socket = io.listen(app); 
+// - - - - - - - - - - - - - - - - - - - - - - - - - -
+//                 socket.io
+// - - - - - - - - - - - - - - - - - - - - - - - - - -
+var socket = io.listen(app);
 socket.on('connection', function(client){
   var ping
-  client.on('message', function(commands){ 
+  client.on('message', function(commands){
     _.each(commands,function(item, command){
       if (command == 'ping') {
         // Set things up
@@ -86,7 +86,7 @@ socket.on('connection', function(client){
           , spawn = require('child_process').spawn
           , pattern = /(\d+?) bytes from (.+?): icmp_seq=(\d+?) ttl=(\d+?) time=(.+)/
           , output
-          
+
         ping = spawn('ping', [item])
 
         ping.stdout.on('data', function (data) {
@@ -95,23 +95,23 @@ socket.on('connection', function(client){
           output = {bytes_sent:regexOutput[1], ip: regexOutput[2], icmp_seq: regexOutput[3], ttl: regexOutput[4], time: regexOutput[5]}
           client.send(output)
         });
-        
+
         ping.stderr.on('data', function (data) {
           console.log('stderr: ' + data);
         });
-        
+
         ping.on('exit', function (code) {
           console.log('child process exited with code ' + code);
         });
       } else if (command === 'kill' && item === 'ping') {
         if (ping.kill()) ping.kill()
       }
-      
+
     });
   });
-  
+
   client.on('disconnect', function(){
     console.log('socket.io: DISCONNECTED!')
-  }) 
-  
+  })
+
 });
