@@ -110,7 +110,6 @@ module.exports = function(app){
     server.name = req.body.server.name;
     server.os = req.body.server.os;
     server.public  = (req.body.server.public)?true:false
-    
     for (var num = _.size(req.body.server.services) - 1; num >= 0; num--){
       if (services[num]) {
         if (req.body.server.services[num].delete == "true") {
