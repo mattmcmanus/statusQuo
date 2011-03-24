@@ -4,16 +4,14 @@
   "version": "0.0.0",
   "repository": "git://github.com/mattmcmanus/statusQuo.git",
   "author": "Matthew McManus <mattmcmanus@gmail.com> (http://mattmcman.us)",
-  "directories": {
-    "lib": "lib"
-  },
   "engines": {
     "node": "*"
   },
-  "modules": {
-    "underscore.js": "lib/underscore.js"
-  },
-  "files": [
-    ""
-  ]
+  "dependencies": {
+    "jade": ">=0.9.1 < 2.0.0",
+    "mongoose": ">= 1.0",
+    "express": ">= 2",
+    "stylus": ">=0.9",
+    "oauth": ">=0.9"
+  }
 }
