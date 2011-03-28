@@ -2,11 +2,12 @@
   header
     h2= server.name
     nav
-      a.edit(href="/server/"+server.id+"/edit") Edit
       a.refresh(href="javascript:void(0)") Refresh
+  
   section.info
     ul
       li= server.ip
       li= server.os
   section.services
-    !=partial('_service', server.services)
+    .loader
+    ul

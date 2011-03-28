@@ -32,7 +32,7 @@ if(typeof window.statusQuo === "undefined") {
       
       //Bind server refresh action
       $('.server a.refresh')
-        .bind('click', function(){ context.serverRefresh($(this).parents('.server')); return false });
+        .bind('click', function(){ context.serverCheck($(this).parents('.server')); return false });
       
       // Add a service button
       $('.server a.add')
@@ -109,20 +109,29 @@ if(typeof window.statusQuo === "undefined") {
       var context = this
         , curtain = $("#curtain");
       
-      curtain.fadeOut(200)
-      
       if (curtain.has('.server.detail').length)
         context.socket.send({'kill':'ping'});
       
-      curtain.children().remove()
+      curtain.fadeOut(200).children().remove()
     },
     
-    serverRefresh: function(server) {
+    serverCheck: function(server) {
+      event.stopPropagation();
       var context = this;
-      $(server).find('.loader').show()
-      $(server).addClass("checking").find('.service').each(function(){
-        context.serviceCheck($(this));
-      });
+      $(server).addClass("checking").find('.loader').show()
+      $.ajax({ url:'/server/' + $(server).attr('id') + '/check/'
+        , context:server
+        , success: function(data){
+            var server = $(this);
+            $(server).removeClass('checking')
+            $.each(data, function(status, services){
+              if(services.length) {
+                $(server).addClass(status).find(".services ul").append('<li class="'+status+'"><span class="count">'+services.length+'</span>'+status)
+              }
+            })
+            
+          }
+      })
     },
     
     serviceCheck: function(service){

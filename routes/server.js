@@ -5,6 +5,7 @@ var global = require('./global')
   , http = require('http')
   , https = require('https')
   , util   = require('util')
+  , async = require('async')
   , spawn = require('child_process').spawn
   , info = [];
 
@@ -86,7 +87,6 @@ module.exports = function(app){
   });
   
   app.get('/server/:server.:format?', function(req, res){
-    console.log(req.server.toObject())
     if (req.params.format === 'json')
       res.send(req.server.toObject());
     else if (req.xhr)
@@ -151,34 +151,47 @@ module.exports = function(app){
     });
   });
   
-  function statusMessage(statusCode) {
-    var message;
+  
+  //                      Services
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  function statusObject(id, statusCode, err) {
+    var status, message;
     switch(statusCode) {
-      case 302: message = "Redirected";break;
-      case 403: message = "Forbidden";break;
-      default: message = "OK"
+      case 302: status = "warning"; message = "Redirected"; break;
+      case 403: status = "error"; message = "Forbidden"; break;
+      case 500: status = "error"; message = err.message.substr(err.message.indexOf(',')+2); break;
+      default: status = "ok"; message = "OK"
     }
-    return message;
+    return { id:id, status:status, statusCode: statusCode, message: message };
   }
   
+  function serviceCheck (service, fn) {
+    var options = require('url').parse(service.url);
+
+    http.get(options, function(get){
+      fn(null, statusObject( service._id, get.statusCode ));
+    }).on('error', function(e) {
+      fn(null, statusObject( service._id, 500, e ));
+    })
+  }
+  
+  app.get('/server/:server/check', function(req, res){
+    async.map(req.server.services, serviceCheck, function(err, results){
+      if (err) console.log(err)
+      var result = {
+          ok: _.select(results, function(service){return service.status == 'ok' })
+        , warning: _.select(results, function(service){return service.status == 'warning' })
+        , error: _.select(results, function(service){return service.status == 'error' })
+      }
+      
+      res.send(result)
+    });
+  })
+  
+  
   app.get('/server/:server/service/:service', function(req, res){
-    var options = require('url').parse(req.service.url);
-    if (options.protocol === 'https:') {
-      https.get(options, function(get){
-        console.log(get.headers);
-        get.on('data', function (chunk) {
-          console.log('BODY: ' + chunk);
-        });
-        res.send({statusCode: get.statusCode, message: statusMessage(get.statusCode)});
-      }).on('error', function(e) {
-        res.send({statusCode: 500, message: e.message.substr(e.message.indexOf(',')+2)});
-      })
-    } else {
-      http.get(options, function(get){
-        res.send({statusCode: get.statusCode, message: statusMessage(get.statusCode)});
-      }).on('error', function(e) {
-        res.send({statusCode: 500, message: e.message.substr(e.message.indexOf(',')+2)});
-      })
-    }
+    seviceCheck(req.service, function(err, result){
+      res.send(result)
+    })
   })
 };

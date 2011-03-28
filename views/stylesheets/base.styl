@@ -9,6 +9,9 @@ ok = #090
 warning = #990
 error = #900
 
+ok_text = lighten(ok, 60%)
+warning_text = lighten(warning, 60%)
+error_text = lighten(error, 60%)
 
 //  Typography presets
 //  -----------------
@@ -248,38 +251,34 @@ div.server
       a
         overflow hidden
         display inline-block
+        position relative
         text-indent -9999px
-        height 20px
-        width 20px
+        height 17px
+        width 19px
         background transparent no-repeat center center
         margin 2px
         opacity .25
         transition(opacity,.25s)
        
         &.refresh
+          top 1px
           height 14px
           width 15px
           background url(../images/server_refresh.png) no-repeat 0 0
        
-        &.ping
-          background-image url(../images/server_ping.png)
-        
-        &.edit
-          background-image url(../images/server_edit.png)  
-          
         &:hover
           opacity 1
- 
   section.info
     display none
    
   section
-    .service
+    &.services
       border-top 1px solid #2c2c2c
       border-bottom 1px solid #222
       linear-gradient(#292929,#222222)
       padding 5px 10px
       position relative
+      height 30px
       .loader
         opacity 0
         position absolute
@@ -290,40 +289,26 @@ div.server
         z-index 50
         background rgba(34,34,34,.75) url(../images/ajax-loader.gif) no-repeat center center
         transition opacity .25s ease-in-out
-     
       li
-        list-style none
-        &.name h3
-          font-size 1.3em
-          line-height 1.1em
-          width 120px
-          
-        &.url
-          font-size 0.8em
-          font-family: 'Droid Sans Mono', arial, sans-serif;
-        &.message
-          text-align  center
+        text-align  center
+        font-weight 700
+        font-size 1.2em
+        text-overflow ellipsis-word
+        .count
+          font-size .8em
           font-weight 700
-          font-size 1.2em
-          text-overflow ellipsis-word
-          display none
-     
-      &.checking 
-        .loader
-          opacity 1
-      &:last-child
-        border-bottom-radius 7px
-   
+          border-radius 15px
+          padding 2px 6px
+          color #fff
+          margin-right 5px
+          
+    &:last-child
+      border-bottom-radius 7px
+      
 .server 
-  &.error 
-    box-shadow 0px 1px 10px rgba(221,102,102,.5)
-    -webkit-animation-name  pulse
-    -webkit-animation-duration 1s
-    -webkit-animation-iteration-count infinite
-    -webkit-animation-direction alternate
-    -webkit-animation-timing-function ease-in-out
-  
   &.checking
+    section.services .loader
+      opacity 1
     a.refresh
       opacity 1
       -webkit-animation-name rotate
@@ -331,7 +316,32 @@ div.server
       -webkit-animation-iteration-count infinite
       -webkit-animation-direction normal
       -webkit-animation-timing-function ease-in
-
+  &.warning
+    box-shadow (2px 1px 10px darken(warning, 21%))
+  &.error 
+    box-shadow (1px 1px 10px darken(error, 15%))
+    -webkit-animation-name  pulse
+    -webkit-animation-duration 1s
+    -webkit-animation-iteration-count infinite
+    -webkit-animation-direction alternate
+    -webkit-animation-timing-function ease-in-out
+  section.services
+    li.ok 
+      color ok_text
+      text-transform uppercase
+      .count
+        background ok
+    li.warning
+      color warning_text
+      text-transform capitalize
+      .count
+        background warning
+    li.error
+      color error_text
+      text-transform capitalize
+      .count
+        background error
+  
 .server.detail
   width 600px
   max-width 600px
@@ -349,6 +359,10 @@ div.server
       em
         font-size .75em
         color #666
+        margin-left 8px
+    nav
+      .button
+        text-indent 0
   section
     float left
     &.services
