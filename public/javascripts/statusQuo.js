@@ -1,8 +1,4 @@
-//var socket = new io.Socket(null, {port: 8080});
-//  socket.connect();
-//  socket.on('message', function(obj){
-//    console.log(obj)
-//  });
+
 if(typeof window.statusQuo === "undefined") {
   var statusQuo = function (params) {
     this.servers = null;
@@ -19,7 +15,7 @@ if(typeof window.statusQuo === "undefined") {
       this.bindEvents();
       if (this.checkOnLoad) {
         $('.server').each(function(site){
-          context.serverRefresh($(this));
+          context.serverCheck($(this));
         })
       }
     },
@@ -115,10 +111,13 @@ if(typeof window.statusQuo === "undefined") {
       curtain.fadeOut(200).children().remove()
     },
     
+    
+    
     serverCheck: function(server) {
       event.stopPropagation();
       var context = this;
       $(server).addClass("checking").find('.loader').show()
+      
       $.ajax({ url:'/server/' + $(server).attr('id') + '/check/'
         , context:server
         , success: function(data){
@@ -129,22 +128,8 @@ if(typeof window.statusQuo === "undefined") {
                 $(server).addClass(status).find(".services ul").append('<li class="'+status+'"><span class="count">'+services.length+'</span>'+status)
               }
             })
-            
           }
       })
-    },
-    
-    serviceCheck: function(service){
-      service.addClass('checking')
-      $.ajax({ url:'/server/' + $(service).parents(".server").attr('id') + '/service/' + $(service).attr('id'), context:service, success: function(data){
-        $(this).addClass('s'+data.statusCode).removeClass('checking')
-        if (data.message !== 'OK')
-          $(this).find('.message').text(data.message).slideDown(200)
-        if(data.statusCode == 500)
-          $(this).parents('.server').addClass('error');
-        if ($(this).siblings('.service:not(.checking)').length == $(this).siblings('.service').length)
-          $(this).parents(".server").removeClass("checking");
-      }});
     },
     
     serverLookup: function(input) {
@@ -160,10 +145,17 @@ if(typeof window.statusQuo === "undefined") {
     
     serverDetail: function(server){
       var context = this;
-      
       $.get('/server/'+$(server).attr('id'), function(server){
-        context.curtainOpen(server)
-        //context.serverPing(serverDetail)
+        context.curtainOpen(server);
+        var server_id = $(server).attr('id');
+        context.socket.connect();
+        context.socket.on('connect', function(){ 
+          console.log("Client: Connected")
+        })
+        context.serverPing(server_id)
+        $('#'+server_id+' .service').each(function(){
+          context.serviceCheck(this)
+        })
       });
       
     },
@@ -181,25 +173,33 @@ if(typeof window.statusQuo === "undefined") {
       service.appendTo('.services').slideDown(200)
     },
     
-    serverPing: function(server) {
-      var context = this;
+    serverPing: function(server_id) {
+      var context = this
+        , server = $('#'+server_id);
       $(server).addClass("pinging");
-      context.socket.connect();
-      context.socket.on('connect', function(){ 
-        console.log("Client: Connected")
-      })
       context.socket.send({'ping':$(server).data('ip')});
       context.socket.on('message', function(output){
         server.find('.ping .output').text(output.time)
       });
         
+    },
+    
+    serviceCheck: function(service){
+      $(service).addClass('checking')
+      console.log($(service).data('server'))
+      $.ajax({ url:'/server/' + $(service).data('server') + '/service/' + $(service).attr('id'), context:service, success: function(data){
+        $(this).addClass(data.status).removeClass('checking')
+        $(this).find('.message').text(data.message)
+        if ($(this).siblings('.service:not(.checking)').length == $(this).siblings('.service').length)
+          $(this).parents(".server").removeClass("checking");
+      }});
     }
   }
 };
 
 $(document).ready(function() {
   sq = new statusQuo({
-    "checkOnLoad":false
+    "checkOnLoad":true
   });
   
   sq.setupPage();

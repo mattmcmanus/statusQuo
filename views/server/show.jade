@@ -1,12 +1,13 @@
-.server.detail(id=server.id||'', data-ip=server.ip||'')
+.server.detail(id='detail_'+server.id||'', data-ip=server.ip||'')
   header
     h2= server.name
       em= server.ip
-    nav
-      a.edit.button Edit
+    .buttons
+      a.edit.button(href='/server/'+server.id+'/edit') Edit
   section.services
     - each service in server.services
-      .service(id=service.id)
+      .service(id=service.id, data-server=server.id)
+        .loader
         .name= service.name
         .url= service.url
         .message

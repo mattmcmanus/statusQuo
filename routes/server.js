@@ -1,6 +1,5 @@
-require('../lib/underscore.js')
-
 var global = require('./global')
+  , _ = require('underscore')
   , dns = require('dns')
   , http = require('http')
   , https = require('https')
@@ -167,12 +166,19 @@ module.exports = function(app){
   
   function serviceCheck (service, fn) {
     var options = require('url').parse(service.url);
-
-    http.get(options, function(get){
-      fn(null, statusObject( service._id, get.statusCode ));
-    }).on('error', function(e) {
-      fn(null, statusObject( service._id, 500, e ));
-    })
+    if (options.protocol === 'https:'){
+      https.get(options, function(get){
+        fn(null, statusObject( service._id, get.statusCode ));
+      }).on('error', function(e) {
+        fn(null, statusObject( service._id, 500, e ));
+      })
+    } else {
+      http.get(options, function(get){
+        fn(null, statusObject( service._id, get.statusCode ));
+      }).on('error', function(e) {
+        fn(null, statusObject( service._id, 500, e ));
+      })
+    }
   }
   
   app.get('/server/:server/check', function(req, res){
@@ -190,7 +196,7 @@ module.exports = function(app){
   
   
   app.get('/server/:server/service/:service', function(req, res){
-    seviceCheck(req.service, function(err, result){
+    serviceCheck(req.service, function(err, result){
       res.send(result)
     })
   })

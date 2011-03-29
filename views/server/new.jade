@@ -6,3 +6,6 @@ form.server.new(method='post')
     li.buttons
       input.button(type="submit", value="Add Server")
       a.button.cancel(href="/") Cancel
+
+.default
+  !=partial('_form_service',  { object: {}, as: 'service' })

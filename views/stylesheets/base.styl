@@ -51,15 +51,15 @@ selection
   background rgb(255,255,0)
   
   
-.s200
+.s200, .ok
   color ok + #ccc
   text-shadow ok 0 0 3px
  
-.s300,.s301,.s302
+.s300,.s301,.s302, .warning
   color warning + #ccc
   text-shadow warning 0 0 3px
 
-.s404,.s500, .s403
+.s404,.s500, .s403, .error
   error_text
   color error + #ccc
   text-shadow error 0 0 3px  
@@ -243,40 +243,32 @@ div.server
       line-height 1em
       font-weight 700
       text-shadow 0 -1px 2px #111
-   
-    nav
+    .buttons
       position absolute 
       right 2px 
-      top 4px
-      a
-        overflow hidden
-        display inline-block
+      top 5px
+      a.refresh
+        display block
         position relative
         text-indent -9999px
-        height 17px
-        width 19px
-        background transparent no-repeat center center
+        height 14px
+        width 15px
+        background transparent url(../images/server_refresh.png) no-repeat center center
         margin 2px
         opacity .25
         transition(opacity,.25s)
-       
-        &.refresh
-          top 1px
-          height 14px
-          width 15px
-          background url(../images/server_refresh.png) no-repeat 0 0
-       
         &:hover
           opacity 1
   section.info
     display none
    
   section
+    &:last-child
+      border-bottom-radius 7px
     &.services
       border-top 1px solid #2c2c2c
       border-bottom 1px solid #222
       linear-gradient(#292929,#222222)
-      padding 5px 10px
       position relative
       height 30px
       .loader
@@ -290,61 +282,27 @@ div.server
         background rgba(34,34,34,.75) url(../images/ajax-loader.gif) no-repeat center center
         transition opacity .25s ease-in-out
       li
+        display inline-block
         text-align  center
         font-weight 700
         font-size 1.2em
         text-overflow ellipsis-word
+        padding 2px 15px
         .count
           font-size .8em
           font-weight 700
           border-radius 15px
           padding 2px 6px
-          color #fff
+          color #222
           margin-right 5px
-          
-    &:last-child
-      border-bottom-radius 7px
       
-.server 
-  &.checking
-    section.services .loader
-      opacity 1
-    a.refresh
-      opacity 1
-      -webkit-animation-name rotate
-      -webkit-animation-duration 7s
-      -webkit-animation-iteration-count infinite
-      -webkit-animation-direction normal
-      -webkit-animation-timing-function ease-in
-  &.warning
-    box-shadow (2px 1px 10px darken(warning, 21%))
-  &.error 
-    box-shadow (1px 1px 10px darken(error, 15%))
-    -webkit-animation-name  pulse
-    -webkit-animation-duration 1s
-    -webkit-animation-iteration-count infinite
-    -webkit-animation-direction alternate
-    -webkit-animation-timing-function ease-in-out
-  section.services
-    li.ok 
-      color ok_text
-      text-transform uppercase
-      .count
-        background ok
-    li.warning
-      color warning_text
-      text-transform capitalize
-      .count
-        background warning
-    li.error
-      color error_text
-      text-transform capitalize
-      .count
-        background error
-  
+
+//         Server detail!
+//- - - - - - - - - - - - - - - - - - - - 
+
 .server.detail
-  width 600px
-  max-width 600px
+  width 100%
+  max-width 800px
   margin 2em auto
   float none
   linear-gradient #2c2c2c, #222222
@@ -360,32 +318,99 @@ div.server
         font-size .75em
         color #666
         margin-left 8px
-    nav
+        text-shadow 0px -1px 1px rgba(0,0,0,.25)
+    .buttons
       .button
         text-indent 0
   section
     float left
     &.services
-      width 399px
+      width 69%
+      height auto
       border-right 1px solid #333
+      .service
+        position relative
+        linear-gradient(#292929,#222222)
+        padding 4px 7px
+        div
+          display inline-block
+          padding 2px 4px
+          overflow hidden
+          text-overflow ellipsis
+          white-space nowrap
+        .loader
+          display none
+        .name
+          font-weight 700
+        .url
+          color #666
+          font-size .9em
+          width 200px
+          text-shadow none
+        .message
+          position absolute
+          right 10px
+          font-weight 700
+        .detail
+          display none
+          clear both
+          display block
+          
     &.ping
-      width 200px
+      width 28%
       em
         font-weight 700
         padding 5px 8px
       .output
-        font-family: 'Droid Sans Mono', arial, sans-serif;
         font-size 2em
         text-align center
   footer
     clear both
-
-/*          Content!
-- - - - - - - - - - - - - - - - - - - - */
-ul
-  li
-    list-style none
     
+    
+.server 
+  &.checking
+    section.services .loader
+      opacity 1
+    a.refresh
+      opacity 1
+      -webkit-animation-name rotate
+      -webkit-animation-duration 7s
+      -webkit-animation-iteration-count infinite
+      -webkit-animation-direction normal
+      -webkit-animation-timing-function ease-in
+  &.warning
+    box-shadow (2px 1px 10px darken(warning, 25%))
+  &.error 
+    box-shadow (2px 1px 10px darken(error, 20%))
+    -webkit-animation-name  pulse
+    -webkit-animation-duration 1s
+    -webkit-animation-iteration-count infinite
+    -webkit-animation-direction alternate
+    -webkit-animation-timing-function ease-in-out
+  section.services
+    li.ok 
+      color ok_text
+      text-transform uppercase
+      .count
+        background darken(ok, 5%)
+        box-shadow(0 2px 2px ok)
+    li.warning
+      color warning_text
+      text-transform capitalize
+      .count
+        background darken(warning, 5%)
+        box-shadow(0 2px 2px warning)
+    li.error
+      color error_text
+      text-transform capitalize      
+      .count
+        background darken(error, 5%)
+        box-shadow( 0 2px 2px error)
+
+//          General forms!
+//- - - - - - - - - - - - - - - - - - - - 
+
 form
   li
     padding .75em 18px 1em
@@ -422,14 +447,17 @@ form
       outline none
       border-color #19e
   input[type=checkbox], input[type=radio]
-   display: inline-block;
-   line-height: 1em;
-   margin: 0 0.25em 0 0;
-   padding: 0;
-   width: 1.25em;
-   height: 1.25em;
-   vertical-align: text-top;
-      
+    display: inline-block;
+    line-height: 1em;
+    margin: 0 0.25em 0 0;
+    padding: 0;
+    width: 1.25em;
+    height: 1.25em;
+    vertical-align: text-top;
+  
+  h2
+    font-size 18px  
+    
   a.add
     display inline-block
     background url(/images/add.png) no-repeat 0 center
@@ -509,18 +537,17 @@ form.server
           background-color none
           opacity 1
 
-.type-server.edit
+.type-server
   .default
     display none
       
 
-.page
+.page #main
   width 600px
   border-radius 7px
   box-shadow(0 2px 7px rgba(0,0,0,.25))
   border 1px solid #262626
   linear-gradient #333333,#222222
-  margin 0 auto
     
 #main
   margin 1em auto

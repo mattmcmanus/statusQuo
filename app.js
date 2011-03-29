@@ -1,7 +1,8 @@
-require('./lib/underscore.js')
+
 
 var sys = require('sys')
   , fs = require('fs')
+  , _ = require('underscore')
   , http = require('http')
   , express = require('express')
   , stylus = require('stylus')
