@@ -4,7 +4,10 @@
       em= server.ip
     .buttons
       a.edit.button(href='/server/'+server.id+'/edit') Edit
+  section.ping
+    canvas#ping_graph(width="600", height="100")
   section.services
+    h3 Services
     - each service in server.services
       .service(id=service.id, data-server=server.id)
         .loader
@@ -12,7 +15,4 @@
         .url= service.url
         .message
         .details
-  section.ping
-    em Pinging
-    .output
   footer

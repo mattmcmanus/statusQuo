@@ -177,10 +177,15 @@ if(typeof window.statusQuo === "undefined") {
       var context = this
         , server = $('#'+server_id);
       $(server).addClass("pinging");
+      var smoothie = new SmoothieChart({ grid: { strokeStyle: 'rgb(45, 45, 45)', fillStyle: 'rgb(34, 34, 34)', lineWidth: 1, millisPerLine: 500, verticalSections: 3 } });
+      smoothie.streamTo(document.getElementById("ping_graph"), 500);
+      var ping = new TimeSeries();
       context.socket.send({'ping':$(server).data('ip')});
       context.socket.on('message', function(output){
-        server.find('.ping .output').text(output.time)
+        //server.find('.ping .output').text(output.time)
+        ping.append(new Date().getTime(),parseFloat(output.time))
       });
+      smoothie.addTimeSeries(ping, { strokeStyle:'rgb(200, 200, 200)', fillStyle:'rgba(255, 255, 255, 0.1)', lineWidth:2 })
         
     },
     

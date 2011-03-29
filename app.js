@@ -90,7 +90,7 @@ socket.on('connection', function(client){
         // Set things up
         var buffer = []
           , spawn = require('child_process').spawn
-          , pattern = /(\d+?) bytes from (.+?): icmp_seq=(\d+?) ttl=(\d+?) time=(.+)/
+          , pattern = /(\d+?) bytes from (.+?): icmp_seq=(\d+?) ttl=(\d+?) time=(.+) ms/
           , output
 
         ping = spawn('ping', [item])

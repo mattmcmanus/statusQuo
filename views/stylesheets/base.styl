@@ -39,7 +39,10 @@ h2
 h3
   font-size  16px
   line-height  20px
-  font-weight 400
+  font-weight 700
+  linear-gradient #222222,#161616
+  text-shadow 0 1px 2px rgba(255,255,255,.5)
+  padding .25em 8px
 
 small
   font-size  13px
@@ -302,7 +305,7 @@ div.server
 
 .server.detail
   width 100%
-  max-width 800px
+  max-width 600px
   margin 2em auto
   float none
   linear-gradient #2c2c2c, #222222
@@ -323,9 +326,7 @@ div.server
       .button
         text-indent 0
   section
-    float left
     &.services
-      width 69%
       height auto
       border-right 1px solid #333
       .service
@@ -357,13 +358,7 @@ div.server
           display block
           
     &.ping
-      width 28%
-      em
-        font-weight 700
-        padding 5px 8px
-      .output
-        font-size 2em
-        text-align center
+      height 100px  
   footer
     clear both
     
