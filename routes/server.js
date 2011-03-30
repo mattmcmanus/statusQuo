@@ -1,8 +1,7 @@
 var global = require('./global')
   , _ = require('underscore')
   , dns = require('dns')
-  , http = require('http')
-  , https = require('https')
+  , request = require('request')
   , util   = require('util')
   , async = require('async')
   , spawn = require('child_process').spawn
@@ -158,7 +157,7 @@ module.exports = function(app){
     switch(statusCode) {
       case 302: status = "warning"; message = "Redirected"; break;
       case 403: status = "error"; message = "Forbidden"; break;
-      case 500: status = "error"; message = err.message.substr(err.message.indexOf(',')+2); break;
+      case 500: status = "error"; message = (err)?err.message.substr(err.message.indexOf(',')+2):'BROKEN'; break;
       default: status = "ok"; message = "OK"
     }
     return { id:id, status:status, statusCode: statusCode, message: message };
@@ -166,19 +165,31 @@ module.exports = function(app){
   
   function serviceCheck (service, fn) {
     var options = require('url').parse(service.url);
-    if (options.protocol === 'https:'){
-      https.get(options, function(get){
-        fn(null, statusObject( service._id, get.statusCode ));
-      }).on('error', function(e) {
-        fn(null, statusObject( service._id, 500, e ));
-      })
-    } else {
-      http.get(options, function(get){
-        fn(null, statusObject( service._id, get.statusCode ));
-      }).on('error', function(e) {
-        fn(null, statusObject( service._id, 500, e ));
-      })
-    }
+    
+    request({uri:service.url, onResponse:true}, function (error, response, body) {
+      if (error) {
+        console.log(service.url + ": " + error.message)
+        fn(null, statusObject( service._id, 500, error ));
+      } else {
+        console.log(service.url + ": " + response.statusCode)
+        console.log(body)
+        fn(null, statusObject( service._id, response.statusCode ));
+      }
+    })
+    
+    //if (options.protocol === 'https:'){
+    //  https.get(options, function(get){
+    //    fn(null, statusObject( service._id, get.statusCode ));
+    //  }).on('error', function(e) {
+    //    fn(null, statusObject( service._id, 500, e ));
+    //  })
+    //} else {
+    //  http.get(options, function(get){
+    //    fn(null, statusObject( service._id, get.statusCode ));
+    //  }).on('error', function(e) {
+    //    fn(null, statusObject( service._id, 500, e ));
+    //  })
+    //}
   }
   
   app.get('/server/:server/check', function(req, res){

@@ -13,7 +13,7 @@ if(typeof window.statusQuo === "undefined") {
       var context = this;
       this.bindButtons();
       this.bindEvents();
-      if (this.checkOnLoad) {
+      if (this.checkOnLoad && $('body').hasClass('front')) {
         $('.server').each(function(site){
           context.serverCheck($(this));
         })
