@@ -178,7 +178,7 @@ if(typeof window.statusQuo === "undefined") {
         , server = $('#'+server_id);
       $(server).addClass("pinging");
       var smoothie = new SmoothieChart({ grid: { strokeStyle: 'rgb(45, 45, 45)', fillStyle: 'rgb(34, 34, 34)', lineWidth: 1, millisPerLine: 500, verticalSections: 3 } });
-      smoothie.streamTo(document.getElementById("ping_graph"), 500);
+      smoothie.streamTo(document.getElementById("ping_graph"), 100);
       var ping = new TimeSeries();
       context.socket.send({'ping':$(server).data('ip')});
       context.socket.on('message', function(output){
