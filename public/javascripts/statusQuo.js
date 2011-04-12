@@ -122,7 +122,8 @@ if(typeof window.statusQuo === "undefined") {
         , context:server
         , success: function(data){
             var server = $(this);
-            $(server).removeClass('checking')
+            
+            $(server).removeClass('checking').find(".services li").remove()
             $.each(data, function(status, services){
               if(services.length) {
                 $(server).addClass(status).find(".services ul").append('<li class="'+status+'"><span class="count">'+services.length+'</span>'+status)
@@ -178,12 +179,12 @@ if(typeof window.statusQuo === "undefined") {
         , server = $('#'+server_id);
       $(server).addClass("pinging");
       var smoothie = new SmoothieChart({ grid: { strokeStyle: 'rgb(45, 45, 45)', fillStyle: 'rgb(34, 34, 34)', lineWidth: 1, millisPerLine: 500, verticalSections: 3 } });
-      smoothie.streamTo(document.getElementById("ping_graph"), 100);
+      smoothie.streamTo(document.getElementById("ping_graph"), 750);
       var ping = new TimeSeries();
       context.socket.send({'ping':$(server).data('ip')});
       context.socket.on('message', function(output){
-        //server.find('.ping .output').text(output.time)
-        ping.append(new Date().getTime(),parseFloat(output.time))
+        $('.ping .responseTime').delay(1000).html(output.time + "<em>ms</em>")
+        ping.append(new Date().getTime(), parseFloat(output.time))
       });
       smoothie.addTimeSeries(ping, { strokeStyle:'rgb(200, 200, 200)', fillStyle:'rgba(255, 255, 255, 0.1)', lineWidth:2 })
         

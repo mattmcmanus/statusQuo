@@ -28,7 +28,7 @@ exports.defineModels = function(mongoose, fn) {
   var Services = new Schema({
       name        :  String
     , url         :  { type: String, index: true }
-    , port        :  { type: Number, default: 80}
+    //, port        :  { type: Number, default: 80}
   })
   
   Services.virtual('id')

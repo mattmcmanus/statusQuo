@@ -171,8 +171,8 @@ module.exports = function(app){
         console.log(service.url + ": " + error.message)
         fn(null, statusObject( service._id, 500, error ));
       } else {
-        console.log(service.url + ": " + response.statusCode)
-        console.log(body)
+        //console.log(service.url + ": " + response.statusCode)
+        //console.log(body)
         fn(null, statusObject( service._id, response.statusCode ));
       }
     })

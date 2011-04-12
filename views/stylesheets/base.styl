@@ -9,9 +9,9 @@ ok = #090
 warning = #990
 error = #900
 
-ok_text = lighten(ok, 60%)
-warning_text = lighten(warning, 60%)
-error_text = lighten(error, 60%)
+ok_text = lighten(ok, 90%)
+warning_text = lighten(warning, 90%)
+error_text = lighten(error, 90%)
 
 //  Typography presets
 //  -----------------
@@ -292,11 +292,7 @@ div.server
         text-overflow ellipsis-word
         padding 2px 15px
         .count
-          font-size .8em
           font-weight 700
-          border-radius 15px
-          padding 2px 6px
-          color #222
           margin-right 5px
       
 
@@ -326,6 +322,8 @@ div.server
       .button
         text-indent 0
   section
+    h3
+      line-height 1.5em
     &.services
       height auto
       border-right 1px solid #333
@@ -358,7 +356,19 @@ div.server
           display block
           
     &.ping
-      height 100px  
+      height 100px
+      position relative
+      .responseTime
+        z-index 100
+        position absolute
+        right 5px
+        top 33px
+        font-size 2em
+        font-family monospace
+        em
+          color #999
+          font-style normal
+          margin-left 5px
   footer
     clear both
     
@@ -387,21 +397,12 @@ div.server
     li.ok 
       color ok_text
       text-transform uppercase
-      .count
-        background darken(ok, 5%)
-        box-shadow(0 2px 2px ok)
     li.warning
       color warning_text
       text-transform capitalize
-      .count
-        background darken(warning, 5%)
-        box-shadow(0 2px 2px warning)
     li.error
       color error_text
       text-transform capitalize      
-      .count
-        background darken(error, 5%)
-        box-shadow( 0 2px 2px error)
 
 //          General forms!
 //- - - - - - - - - - - - - - - - - - - - 

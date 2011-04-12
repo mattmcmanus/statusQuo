@@ -74,8 +74,8 @@ require('./routes/site')(app);
 require('./routes/user')(app);
 require('./routes/server')(app);
 
-app.listen( process.env.PORT || '8000' );
-console.log('Express server started on port %s', app.address().port);
+//app.listen( process.env.PORT || '8000' );
+//console.log('Express server started on port %s', app.address().port);
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -90,7 +90,7 @@ socket.on('connection', function(client){
         // Set things up
         var buffer = []
           , spawn = require('child_process').spawn
-          , pattern = /(\d+?) bytes from (.+?): icmp_seq=(\d+?) ttl=(\d+?) time=(.+) ms/
+          , pattern = /(\d+?) bytes from (.+?): icmp_req=(\d+?) ttl=(\d+?) time=(.+) ms/
           , output
 
         ping = spawn('ping', [item])
@@ -98,7 +98,7 @@ socket.on('connection', function(client){
         ping.stdout.on('data', function (data) {
           data = data.toString().slice(0,-1)
           var regexOutput = pattern.exec(data)
-          output = {bytes_sent:regexOutput[1], ip: regexOutput[2], icmp_seq: regexOutput[3], ttl: regexOutput[4], time: regexOutput[5]}
+          output = (regexOutput) ? {bytes_sent:regexOutput[1], ip: regexOutput[2], icmp_req: regexOutput[3], ttl: regexOutput[4], time: regexOutput[5]} : {}
           client.send(output)
         });
 

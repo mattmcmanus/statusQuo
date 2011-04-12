@@ -1,3 +1,6 @@
 *.css
 .monitor
 public/stylesheets
+pids/*
+tmp/*
+logs/*

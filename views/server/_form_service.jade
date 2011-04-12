@@ -7,7 +7,5 @@ li.service(id=service.id||'')
       input(type="text", placeholder="Service Name", name='server[services]['+indexInCollection +'][name]', value=service.name||'')
     li.url
       input(type="url", placeholder="URL", name='server[services]['+indexInCollection +'][url]', value=service.url||'')
-    li.port
-      input(type="text", placeholder="Port", name='server[services]['+indexInCollection +'][port]', value=service.port||'80')
     li.delete
       a(href="javascript:void(0)") Delete Service

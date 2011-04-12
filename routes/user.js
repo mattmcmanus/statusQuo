@@ -6,7 +6,7 @@ var consumerKey = 'KZHCsJ6yIpWQbmI2Adkrg'
                 ,  "https://twitter.com/oauth/access_token"
                 ,   consumerKey
                 ,   consumerSecret
-                ,  "1.0A", "http://172.25.68.218:8000/oauth/callback", "HMAC-SHA1");
+                ,  "1.0A", "http://util.it.arcadia.edu:8000/oauth/callback", "HMAC-SHA1");
 
 
 module.exports = function(app){
@@ -90,7 +90,7 @@ module.exports = function(app){
         req.flash('error', 'Err, Something broke when we tried to save your account')
         console.log("Error: /user/setup" + err)
       }
-      res.redirect(req.returnToAfterLogin)
+      res.redirect('/')
       
     });
     
