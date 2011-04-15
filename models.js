@@ -1,12 +1,16 @@
-var User;
 
+// Define models
 exports.defineModels = function(mongoose, fn) {
   var Schema = mongoose.Schema
-    , ObjectId = Schema.ObjectId;
+    , ObjectId = Schema.ObjectId
+    , User
+    , LoginToken
+    , Server
+    , Services
 
   //                          Users
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-  var User = new Schema({
+  User = new Schema({
       user_id       :  ObjectId
     , created       :  { type: Date, default: Date.now }
     , lastLoggedIn  :  { type: Date, default: Date.now }
@@ -22,10 +26,44 @@ exports.defineModels = function(mongoose, fn) {
     .get(function() {
       return this._id.toHexString();
     });
+  
+  //                     LoginToken
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+  LoginToken = new Schema({
+    email: { type: String, index: true },
+    series: { type: String, index: true },
+    token: { type: String, index: true }
+  });
+
+  LoginToken.method('randomToken', function() {
+    return Math.round((new Date().valueOf() * Math.random())) + '';
+  });
+
+  LoginToken.pre('save', function(next) {
+    // Automatically create the tokens
+    this.token = this.randomToken();
+
+    if (this.isNew)
+      this.series = this.randomToken();
+
+    next();
+  });
+
+  LoginToken.virtual('id')
+    .get(function() {
+      return this._id.toHexString();
+    });
+
+  LoginToken.virtual('cookieValue')
+    .get(function() {
+      return JSON.stringify({ email: this.email, token: this.token, series: this.series });
+    });  
     
+    
+  
   //                     Server Services
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-  var Services = new Schema({
+  Services = new Schema({
       name        :  String
     , url         :  { type: String, index: true }
     //, port        :  { type: Number, default: 80}
@@ -39,7 +77,7 @@ exports.defineModels = function(mongoose, fn) {
   
   //                          Servers
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-  var Server = new Schema({
+  Server = new Schema({
       server_id       :  ObjectId
     , user_id         :  ObjectId
     , created         :  { type: Date, default: Date.now }
@@ -60,6 +98,7 @@ exports.defineModels = function(mongoose, fn) {
   
   mongoose.model('User', User);
   mongoose.model('Server', Server);
+  mongoose.model('LoginToken', LoginToken);
   
   fn();
 }

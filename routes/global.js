@@ -1,6 +1,6 @@
 
 exports.isAuthenticated = function(req, res, next) {
-  if (req.session && req.session.user) {
+  if (req.session && req.currentUser) {
     next()
   } else {
     res.render('page', {

@@ -1,11 +1,10 @@
-
-
 var sys = require('sys')
   , fs = require('fs')
   , _ = require('underscore')
   , http = require('http')
   , express = require('express')
   , stylus = require('stylus')
+  , mongoStore = require('connect-mongodb')
   , mongoose = require('mongoose')
   , io = require('socket.io')
   // Some Basic variable setting
@@ -18,21 +17,6 @@ var sys = require('sys')
   // Load server and routes
   , app = module.exports = express.createServer();
 
-app.configure(function(){
-  // Templating Setup
-  app.set('view engine', 'jade');
-  app.use(stylus.middleware({src: views,dest: pub}));
-  // Files
-  app.use(express.static(pub));
-  app.use(express.favicon());
-
-  app.use(express.logger({ format: '":method :url" :status' }));
-  app.use(express.cookieParser());
-  app.use(express.bodyParser());
-  app.use(express.methodOverride());
-  app.use(express.session({secret:'St@tu$Qu0', cookie: { maxAge: 1209600 }}));
-});
-
 app.configure('development', function() {
   app.set('db-uri', 'mongodb://localhost/sq_dev');
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
@@ -43,6 +27,24 @@ app.configure('production', function() {
   app.set('db-uri', 'mongodb://localhost/statusQuo');
   app.use(express.errorHandler());
 });
+
+
+app.configure(function(){
+  // Templating Setup
+  app.set('view engine', 'jade');
+  app.use(stylus.middleware({src: views,dest: pub}));
+  // Files
+  app.use(express.static(pub));
+  app.use(express.favicon());
+
+  //app.use(express.logger({ format: '":method :url" :status' }));
+  app.use(express.logger({ format: '\x1b[1m:method\x1b[0m \x1b[33m:url\x1b[0m :response-time ms' }))
+  app.use(express.cookieParser());
+  app.use(express.bodyParser());
+  app.use(express.methodOverride());
+  app.use(express.session({ store: mongoStore(app.set('db-uri')), secret: 'St@tu$Qu0', cookie: { maxAge: 1209600 }}));
+});
+
 //                      Dynamic Helpers
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 //app.helpers(require('./helpers.js').helpers);
@@ -53,6 +55,7 @@ app.dynamicHelpers(require('./helpers.js').dynamicHelpers);
 require('./models').defineModels(mongoose, function() {
   app.User = User = mongoose.model('User');
   app.Server = Server = mongoose.model('Server');
+  app.LoginToken = LoginToken = mongoose.model('LoginToken');
   db = mongoose.connect(app.set('db-uri'));
 })
 

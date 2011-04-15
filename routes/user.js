@@ -10,14 +10,58 @@ var consumerKey = 'KZHCsJ6yIpWQbmI2Adkrg'
 
 
 module.exports = function(app){
-  app.get('/login', function(req, res){
-    req.returnToAfterLogin = req.header('Referer');
-    if (req.cookies && req.cookies.username) {
-      app.User.findOne({username: req.cookies.username }, function(err, user) {
-        req.session.user = user
-        res.redirect(req.returnToAfterLogin)
-      })
+  
+  function authenticateFromLoginToken(req, res, next) {
+    var cookie = JSON.parse(req.cookies.logintoken);
+  
+    app.LoginToken.findOne({ email: cookie.email,  series: cookie.series,  token: cookie.token }, (function(err, token) {
+      if (!token) {
+        res.clearCookie('logintoken')
+        res.redirect('/login');
+        return;
+      }
+  
+      app.User.findOne({ email: token.email }, function(err, user) {
+        if (user) {
+          req.session.user_id = user.id
+          req.session.user = user
+  
+          token.token = token.randomToken()
+          req.token = token
+          next()
+        } else {
+          res.redirect('/login');
+        }
+      });
+    }));
+  }
+  
+  function returnToAfterLogin(req, res, next) {
+    var returnTo = req.header('Referer') || '/'
+    res.cookie('returnTo', returnTo, { maxAge:604800000, path: '/login', httpOnly: true })
+    next()
+  }
+  
+  function loadUser(req, res, next) {
+    if (req.session.user) {
+      console.log("CurrentUser exists")
+      next()
+    } else if (req.session.user_id){
+      console.log("user_id is there")
+      app.User.findById(req.session.user_id, function(err, user) {
+        if (user) {
+          req.session.user = user
+          next()
+        } else {
+          req.session.user_id.remove()
+          res.redirect('/login')
+        }
+      });
+    } else if (req.cookies.logintoken) {
+      console.log("Hey Look!  A cookie!")
+      authenticateFromLoginToken(req, res, next);
     } else {
+      console.log("To the cloud!")
       if (!req.session.oauth) req.session.oauth = {}
       oa.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, results){
         if (error) new Error(error.data)
@@ -28,17 +72,15 @@ module.exports = function(app){
          }
       });
     }
-  });
+  }
   
-  app.get('/logout', function(req, res) {
-    if (req.session)
-      req.session.destroy(title = "You have been logged out")
-    else 
-      title = "You are already logged out"
-    res.render('user/logout', {
-      title:title
+  app.get('/login', returnToAfterLogin, loadUser, function(req, res){
+    var loginToken = new app.LoginToken({ email: req.session.user.email })
+    loginToken.save(function() {
+      res.cookie('logintoken', loginToken.cookieValue, { maxAge: 604800000, path: '/', httpOnly: true });
+      res.redirect(req.cookies.returnTo || '/');
     });
-  })
+  });
   
   app.get('/oauth/callback', function(req, res, next){
     if (req.session.oauth) {
@@ -54,10 +96,8 @@ module.exports = function(app){
             if (user) {
               req.session.user = user
               req.flash('success', 'You\'ve successfully logged in!')
-              res.cookie('username', user.username, { maxAge: 1209600, path: '/'})
-              res.redirect((req.returnToAfterLogin)?req.returnToAfterLogin:'/')
+              res.redirect('/login')
             } else {
-              req.flash('info', 'It appears this is your first time logging in! Please fill out the remaining below to steup your account')
               res.redirect('/user/setup')
             }
           });
@@ -90,10 +130,23 @@ module.exports = function(app){
         req.flash('error', 'Err, Something broke when we tried to save your account')
         console.log("Error: /user/setup" + err)
       }
-      res.redirect('/')
+      res.redirect('/login')
       
     });
     
+  })
+  
+  app.get('/logout', function(req, res) {
+    if (req.session){
+      req.session.destroy(title = "You have been logged out")
+      app.LoginToken.remove({ email: req.session.user.email }, function() {});
+      res.clearCookie('logintoken');
+    }
+    else 
+      title = "You are already logged out"
+    res.render('user/logout', {
+      title:title
+    });
   })
   
   app.get('/user', global.isAuthenticated, function(req, res){
