@@ -30,16 +30,18 @@ module.exports = function(app){
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   app.get('/', function(req, res){
     if (req.session.user) {
-      app.Server.find({user_id: req.session.user.id}, function(err, servers){
+      app.Server.find({user: req.session.user.id}, function(err, servers){
         res.render('server/index', {
           title: "Dashboard",
           servers: servers
         })
       })
     } else {
-      res.render('page', {
-        title: "Status Quo",
-        body: "You need to login before you can see any hotness"
+      app.Server.find({public: true}, function(err, servers){
+        res.render('server/index', {
+          title: "Dashboard",
+          servers: servers
+        })
       })
     }
     
@@ -58,7 +60,7 @@ module.exports = function(app){
       , ip      : req.body.server.ip
       , os      : req.body.server.os
       , public  : (req.body.server.public)?true:false
-      , user_id : req.session.user.id
+      , user : req.session.user.id
     });
     
     for (var i=0; i < _.size(req.body.server.services); i++) {

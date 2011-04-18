@@ -27,8 +27,11 @@ module.exports = function(app){
           req.session.user = user
   
           token.token = token.randomToken()
-          req.token = token
-          next()
+          var loginToken = new app.LoginToken({ email: req.session.user.email })
+          token.save(function() {
+            res.cookie('logintoken', token.cookieValue, { maxAge: 604800000, path: '/', httpOnly: true });
+            res.redirect(req.cookies.returnTo || '/');
+          });
         } else {
           res.redirect('/login');
         }
@@ -46,17 +49,6 @@ module.exports = function(app){
     if (req.session.user) {
       console.log("CurrentUser exists")
       next()
-    } else if (req.session.user_id){
-      console.log("user_id is there")
-      app.User.findById(req.session.user_id, function(err, user) {
-        if (user) {
-          req.session.user = user
-          next()
-        } else {
-          req.session.user_id.remove()
-          res.redirect('/login')
-        }
-      });
     } else if (req.cookies.logintoken) {
       console.log("Hey Look!  A cookie!")
       authenticateFromLoginToken(req, res, next);
@@ -77,6 +69,7 @@ module.exports = function(app){
   app.get('/login', returnToAfterLogin, loadUser, function(req, res){
     var loginToken = new app.LoginToken({ email: req.session.user.email })
     loginToken.save(function() {
+      res.cookie('logintoken2', loginToken.cookieValue, { maxAge: 604800000, path: '/', httpOnly: true });
       res.cookie('logintoken', loginToken.cookieValue, { maxAge: 604800000, path: '/', httpOnly: true });
       res.redirect(req.cookies.returnTo || '/');
     });
@@ -92,7 +85,9 @@ module.exports = function(app){
           if (error) new Error(error)
           req.session.oauth.access_token = oauth_access_token
           req.session.oauth.access_token_secret = oauth_access_token_secret
+          console.log(results)
           app.User.findOne({username: results.screen_name }, function(err, user) {
+            
             if (user) {
               req.session.user = user
               req.flash('success', 'You\'ve successfully logged in!')
@@ -138,15 +133,11 @@ module.exports = function(app){
   
   app.get('/logout', function(req, res) {
     if (req.session){
-      req.session.destroy(title = "You have been logged out")
       app.LoginToken.remove({ email: req.session.user.email }, function() {});
+      req.session.destroy()
       res.clearCookie('logintoken');
     }
-    else 
-      title = "You are already logged out"
-    res.render('user/logout', {
-      title:title
-    });
+    res.redirect('/')
   })
   
   app.get('/user', global.isAuthenticated, function(req, res){

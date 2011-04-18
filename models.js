@@ -79,7 +79,7 @@ exports.defineModels = function(mongoose, fn) {
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
   Server = new Schema({
       server_id       :  ObjectId
-    , user_id         :  ObjectId
+    , user         :  { type: String, index: true }
     , created         :  { type: Date, default: Date.now }
     , updated         :  { type: Date, default: Date.now }
     , ip              :  { type: String, index: { unique: true } }

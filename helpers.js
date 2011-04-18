@@ -9,17 +9,17 @@ exports.dynamicHelpers = {
       classes[0] = 'type-' + classes[0];
       classes.push('page');
     }
-    classes.push((req.session.user)?'logged-in':'not-logged-in');
+    classes.push((req.session && req.session.user)?'logged-in':'not-logged-in');
     
     return classes.join(' ');
   },
   
   authenticated: function(req, res) {
-    return (req.session.user);
+    return (req.session && req.session.user);
   },
   
-  session: function(req,res) {
-    return req.session;
+  user: function(req, res) {
+    return (req.session && req.session.user) ? req.session.user: {} ;
   },
   
   messages: function(req, res){

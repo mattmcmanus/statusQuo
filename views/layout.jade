@@ -29,8 +29,8 @@ html(lang="en")
         a#server_add.button(href="/server/new") Add Server
       nav#eyebrow
         - if (authenticated)
-          img.picture(src=session.user.picture, alt=session.user.name)
-          span= session.user.name
+          img.picture(src=user.picture, alt=user.name)
+          span= user.name
           a(href='/') Dashboard
           a(href='/user') Account Settings
           a(href="/logout") Log Out

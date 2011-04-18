@@ -39,7 +39,7 @@ if(typeof window.statusQuo === "undefined") {
         , no = $('<a class="button no">No</a>');
       
       
-      $('.buttons .delete a').live("click",function(){
+      $('.buttons .delete').live("click",function(){
         var confirmDelete = confirmDialog.clone();
         // yes button
         yes.clone().click(function(){
