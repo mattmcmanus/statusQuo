@@ -27,6 +27,9 @@ html(lang="en")
           | StatusQuo
       - if (authenticated)
         a#server_add.button(href="/server/new") Add Server
+        - if (isFront)
+          a#refresh.button(href="javascript:void()") Refresh Dashboard
+            span.countdown
       nav#eyebrow
         - if (authenticated)
           img.picture(src=user.picture, alt=user.name)

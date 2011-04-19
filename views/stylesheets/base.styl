@@ -206,18 +206,40 @@ header
   #login
     height 24px
     width 151px
-    
-  #server_add
-    text-indent -9999px
+  
+  .button
     width 10px
     height 13px
-    position absolute
-    left 120px
-    top 5px
-    background-image url(/images/add.png) 
+    text-indent -9999px
     background-repeat no-repeat
     background-position center center
- 
+    position absolute
+    top 5px
+    &:hover
+      background-repeat no-repeat
+      background-position center center
+      
+  #server_add
+    left 120px
+    background-image url(/images/add.png) 
+    
+  #refresh
+    left 170px
+    background-image url(/images/server_refresh.png) 
+    overflow visible
+    &:hover .countdown
+      display inline
+  .countdown
+    display none
+    position absolute
+    top 2px
+    left 45px
+    width 150px
+    color #999
+    text-indent 0
+    strong
+      color #eee
+    
  
 div.server
   float left
@@ -386,6 +408,8 @@ div.server
       -webkit-animation-timing-function ease-in
   &.warning
     box-shadow (2px 1px 10px darken(warning, 25%))
+    &:hover
+      box-shadow (2px 3px 20px darken(warning, 25%))
   &.error 
     box-shadow (2px 1px 10px darken(error, 20%))
     -webkit-animation-name  pulse
@@ -393,6 +417,8 @@ div.server
     -webkit-animation-iteration-count infinite
     -webkit-animation-direction alternate
     -webkit-animation-timing-function ease-in-out
+    &:hover
+      box-shadow (2px 3px 20px darken(error, 25%))
   section.services
     li.ok 
       color ok_text

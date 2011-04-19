@@ -1,69 +1,57 @@
 // MIXINS
 
+vendor(prop, args)
+  -webkit-{prop} args
+  -moz-{prop} args
+  -o-{prop} args
+  {prop} args
+
+animation()
+  vendor('animation', arguments)
+
 border-radius()
-  -webkit-border-radius arguments 
-  -moz-border-radius arguments 
-  border-radius arguments 
+  vendor('border-radius', arguments)
 
 border-top-radius() 
-  -webkit-border-top-left-radius arguments
-  -moz-border-top-left-radius arguments
-  border-top-left-radius arguments
-  -webkit-border-top-right-radius arguments
-  -moz-border-top-right-radius arguments
-  border-top-right-radius arguments
+  vendor('border-top-left-radius', arguments)
+  vendor('border-top-right-radius', arguments)
 
-border-bottom-radius() 
-  -webkit-border-bottom-left-radius arguments
-  -moz-border-bottom-left-radius arguments
-  border-bottom-left-radius arguments
-  -webkit-border-bottom-right-radius arguments
-  -moz-border-bottom-right-radius arguments
-  border-bottom-right-radius arguments
+border-top-radius() 
+  vendor('border-bottom-left-radius', arguments)
+  vendor('border-bottom-right-radius', arguments)
 
 linear-gradient(start_color, end_color, start = left top, end = left bottom)
   mozstart = top if start = left top
+  background start_color
   background -moz-linear-gradient(mozstart, start_color 0%, end_color 100%)
   background -webkit-gradient(linear, start, end, color-stop(0%, start_color), color-stop(100%, end_color))
   -webkit-background-origin padding-box
 
-box-shadow(arguments) 
+background-clip()
+  vendor('background-clip', arguments)
+
+box-shadow() 
   -moz-box-shadow arguments
   -webkit-box-shadow arguments
   box-shadow arguments
 
 box(orient, pack, align) 
   display -webkit-box
-  -webkit-box-orient orient
-  -webkit-box-pack pack
-  -webkit-box-align align
-  -webkit-box-lines multiple
-
   display -moz-box
-  -moz-box-orient orient
-  -moz-box-pack pack
-  -moz-box-align align
-  -moz-box-lines multiple
-
   display box
-  box-orient orient
-  box-pack pack
-  box-align align
-  box-lines multiple
+  vendor('box-orient', orient)
+  vendor('box-pack', pack)
+  vendor('box-align', align)
+  vendor('box-lines', multiple)
 
 box_flex()
-  -webkit-box-flex arguments
-  -moz-box-flex arguments
-  box-flex arguments
+  vendor('box-flex', arguments)
+
+text-fill-color()
+  vendor('text-fill-color', arguments)
 
 transition()
-  -webkit-transition arguments
-  -moz-transition arguments
-  -o-transition arguments
-  transition arguments
+  vendor('transition', arguments)
 
 transform()
-  -webkit-transform arguments
-  -moz-transform arguments
-  -o-transform arguments
-  transform arguments
+  vendor('transform', arguments)

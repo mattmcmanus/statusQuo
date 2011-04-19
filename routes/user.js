@@ -13,15 +13,18 @@ module.exports = function(app){
   
   function authenticateFromLoginToken(req, res, next) {
     var cookie = JSON.parse(req.cookies.logintoken);
-  
+    console.log(cookie)
     app.LoginToken.findOne({ email: cookie.email,  series: cookie.series,  token: cookie.token }, (function(err, token) {
+      
       if (!token) {
+        console.log("Clearing old cookie")
         res.clearCookie('logintoken')
         res.redirect('/login');
         return;
       }
-  
+      
       app.User.findOne({ email: token.email }, function(err, user) {
+        
         if (user) {
           req.session.user_id = user.id
           req.session.user = user
@@ -69,7 +72,6 @@ module.exports = function(app){
   app.get('/login', returnToAfterLogin, loadUser, function(req, res){
     var loginToken = new app.LoginToken({ email: req.session.user.email })
     loginToken.save(function() {
-      res.cookie('logintoken2', loginToken.cookieValue, { maxAge: 604800000, path: '/', httpOnly: true });
       res.cookie('logintoken', loginToken.cookieValue, { maxAge: 604800000, path: '/', httpOnly: true });
       res.redirect(req.cookies.returnTo || '/');
     });

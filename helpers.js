@@ -14,6 +14,10 @@ exports.dynamicHelpers = {
     return classes.join(' ');
   },
   
+  isFront: function(req, res) {
+    return (require('url').parse(req.url).pathname == '/')
+  },
+  
   authenticated: function(req, res) {
     return (req.session && req.session.user);
   },

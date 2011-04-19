@@ -1,8 +1,11 @@
-
 if(typeof window.statusQuo === "undefined") {
   var statusQuo = function (params) {
     this.servers = null;
     this.checkOnLoad = params.checkOnLoad || false;
+    this.autoRefresh = true;
+    this.autoRefreshFunction = null;
+    this.autoRefreshInterval = params.autoRefreshInterval || 60;
+    this.autoRefreshCountdown = this.autoRefreshInterval;
     this.didServerLookup = false;
     this.socket = new io.Socket(null, {port: 8000, rememberTransport: false});
     //this.getConfig();
@@ -10,19 +13,23 @@ if(typeof window.statusQuo === "undefined") {
   
   statusQuo.prototype = {
     setupPage: function() {
-      var context = this;
-      this.bindButtons();
-      this.bindEvents();
+      var context = this
+      this.bindButtons()
+      this.bindEvents()
       if (this.checkOnLoad && $('body').hasClass('front')) {
-        $('.server').each(function(site){
-          context.serverCheck($(this));
-        })
-      }
+        if (this.autoRefresh)
+          this.autoRefreshFunction = setInterval("sq.autoDashboardRefresh()", 1000)
+        this.dashboardRefresh()
+      } 
     },
     
+    //              Binding Buttons & Events
+    // - - - - - - - - - - - - - - - - - - - - - - - - -
     bindButtons: function() {
       var context = this;
-      
+      $('.front #refresh')
+        .bind('click', function(){ context.dashboardRefresh() });
+
       $('.front .server')
         .bind('click', function(){ context.serverDetail($(this)) });
       
@@ -97,6 +104,9 @@ if(typeof window.statusQuo === "undefined") {
       $('#curtain').click(function(){context.curtainClose()})
     },
     
+    
+    //                     The Curtain
+    // - - - - - - - - - - - - - - - - - - - - - - - - -
     curtainOpen: function(modal){
       $('#curtain').append(modal). height(window.innerHeight).fadeIn(200);
     },
@@ -112,9 +122,28 @@ if(typeof window.statusQuo === "undefined") {
     },
     
     
+    //                  Servers
+    // - - - - - - - - - - - - - - - - - - - - - - - - -
+    dashboardRefresh: function() {
+      var context = this;
+      if (sq.autoRefresh) sq.autoRefreshCountdown = sq.autoRefreshInterval;
+      $('.server').each(function(site){
+        context.serverCheck($(this))
+      })
+    },
+    
+    autoDashboardRefresh: function() {
+      var context = this;
+      sq.autoRefreshCountdown--
+      if (context.autoRefreshCountdown == 0)   {
+         sq.dashboardRefresh()
+         return;
+      }
+       $(".countdown").html("Refresh in <strong>" + sq.autoRefreshCountdown + "</strong> seconds");
+    },
     
     serverCheck: function(server) {
-      event.stopPropagation();
+      if (event) event.stopPropagation();
       var context = this;
       $(server).addClass("checking").find('.loader').show()
       
@@ -190,6 +219,8 @@ if(typeof window.statusQuo === "undefined") {
         
     },
     
+    //                  Services
+    // - - - - - - - - - - - - - - - - - - - - - - - - -
     serviceCheck: function(service){
       $(service).addClass('checking')
       console.log($(service).data('server'))
