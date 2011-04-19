@@ -4,7 +4,7 @@ if(typeof window.statusQuo === "undefined") {
     this.checkOnLoad = params.checkOnLoad || false;
     this.autoRefresh = true;
     this.autoRefreshFunction = null;
-    this.autoRefreshInterval = params.autoRefreshInterval || 60;
+    this.autoRefreshInterval = params.autoRefreshInterval || 300;
     this.autoRefreshCountdown = this.autoRefreshInterval;
     this.didServerLookup = false;
     this.socket = new io.Socket(null, {port: 8000, rememberTransport: false});
@@ -28,7 +28,7 @@ if(typeof window.statusQuo === "undefined") {
     bindButtons: function() {
       var context = this;
       $('.front #refresh')
-        .bind('click', function(){ context.dashboardRefresh() });
+        .click(function(){ context.dashboardRefresh() });
 
       $('.front .server')
         .bind('click', function(){ context.serverDetail($(this)) });
@@ -126,8 +126,10 @@ if(typeof window.statusQuo === "undefined") {
     // - - - - - - - - - - - - - - - - - - - - - - - - -
     dashboardRefresh: function() {
       var context = this;
-      if (sq.autoRefresh) sq.autoRefreshCountdown = sq.autoRefreshInterval;
-      $('.server').each(function(site){
+      console.log("REFRESH!")
+      if (context.autoRefresh) context.autoRefreshCountdown = context.autoRefreshInterval;
+      $('.server').each(function(){
+        
         context.serverCheck($(this))
       })
     },

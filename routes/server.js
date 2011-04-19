@@ -29,22 +29,18 @@ module.exports = function(app){
   //                      Routes
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   app.get('/', function(req, res){
-    if (req.session.user) {
-      app.Server.find({user: req.session.user.id}, function(err, servers){
-        res.render('server/index', {
-          title: "Dashboard",
-          servers: servers
-        })
-      })
-    } else {
-      app.Server.find({public: true}, function(err, servers){
-        res.render('server/index', {
-          title: "Dashboard",
-          servers: servers
-        })
-      })
-    }
+    var find = {}
+    if (req.session.user)
+      find.user = req.session.user.id
+    else
+      find.public = true
     
+    app.Server.find(find).sort('name', 1 ).run(function (err, servers) {
+      res.render('server/index', {
+        title: "Dashboard",
+        servers: servers
+      })
+    })
   });
   
   app.get('/server/new', global.isAuthenticated, function(req, res){
