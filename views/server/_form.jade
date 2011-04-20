@@ -15,17 +15,9 @@ ul
         label
           input(type="checkbox", name='server[public]', value="true", checked=(server.public)?'checked':'') 
           | Yes
-  li.checkboxes.type
-    span.label Server type
-    ul
-      li
-        label
-          input(type="checkbox", name='server[type][]', value="web") 
-          | Web server
-      li
-        label
-          input(type="checkbox", name='server[type][]', value="db")
-          | Database Server
+  li.type
+    label(for='server[type]') Server Type
+    input(type="text", name='server[type]', value=server.type.join(', '))
 h2 Services to monitor
 ul.services
   !=partial('_form_service',  { collection: server.services, as: 'service' })

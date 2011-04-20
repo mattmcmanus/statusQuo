@@ -1,3 +1,4 @@
+var _ = require('underscore')
 
 // Define models
 exports.defineModels = function(mongoose, fn) {
@@ -85,15 +86,26 @@ exports.defineModels = function(mongoose, fn) {
     , ip              :  { type: String, index: { unique: true } }
     , name            :  String
     , os              :  String
-    , type            :  [String]
+    , type            :  { type: [String], set: splitTags}
     , public          :  { type: Boolean, index: true }
     , services        :  [Services] 
   })
+  
+  function splitTags(tags) {
+    tags = tags[0].split(',')
+    _.each(tags, function(tag, key){
+      if (tag == '') delete tags[key]
+      else
+        tags[key] = tag.toLowerCase().replace(/^\s+|\s+$/g,"")
+    })
+    return tags
+  }
   
   Server.virtual('id')
     .get(function() {
       return this._id.toHexString();
     });
+  
   
   
   mongoose.model('User', User);

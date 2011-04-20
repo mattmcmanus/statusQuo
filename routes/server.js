@@ -84,27 +84,29 @@ module.exports = function(app){
   
   app.get('/server/:server.:format?', function(req, res){
     if (req.params.format === 'json')
-      res.send(req.server.toObject());
+      res.send(req.server.toObject())
     else if (req.xhr)
-      res.partial('server/show', {server: req.server});
+      res.partial('server/show', {server: req.server})
     else
-      res.render('server/show', {server: req.server});
+      res.render('server/show', {server: req.server})
   });
     
   app.get('/server/:server/edit', global.isAuthenticated, function(req, res){
-    res.render('server/edit', {server: req.server});
+    res.render('server/edit', {server: req.server})
   });
   
   app.put('/server/:server', function(req, res, next){
-    if(!req.server) return next(new Error('That server disappeared!'));
+    if(!req.server) return next(new Error('That server disappeared!'))
     var server = req.server
       , services = server.services;
     
     server.updated = new Date();
-    server.ip = req.body.server.ip;
-    server.name = req.body.server.name;
-    server.os = req.body.server.os;
+    server.ip = req.body.server.ip
+    server.name = req.body.server.name
+    server.os = req.body.server.os
     server.public  = (req.body.server.public)?true:false
+    server.type = req.body.server.type
+    
     for (var num = _.size(req.body.server.services) - 1; num >= 0; num--){
       if (services[num]) {
         if (req.body.server.services[num].delete == "true") {
@@ -147,6 +149,16 @@ module.exports = function(app){
     });
   });
   
+  app.get('/tag/:tag', global.isAuthenticated, function(req, res){
+    app.Server.find({}, {type:1}, function(err, servers) {
+      if (err) return next(err);
+      var tags = _.select(_.uniq(_.flatten(_.pluck(servers,'type')).sort(), true), function(word){
+        return (word.indexOf(req.params.tag) != -1)?true:false
+      })
+      res.send(tags)
+    });
+    
+  });
   
   //                      Services
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - -

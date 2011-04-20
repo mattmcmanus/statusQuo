@@ -9,8 +9,9 @@ html(lang="en")
     
     // Javscripts
     script(type = "text/javascript", src = "http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js")
+    script(type = "text/javascript", src = "http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js")
     script(type = "text/javascript", src = "http://ajax.cdnjs.com/ajax/libs/modernizr/1.7/modernizr-1.7.min.js")
-    script(type = "text/javascript", src="http://ajax.cdnjs.com/ajax/libs/underscore.js/1.1.4/underscore-min.js")
+    script(type = "text/javascript", src = "http://ajax.cdnjs.com/ajax/libs/underscore.js/1.1.4/underscore-min.js")
     script(type = "text/javascript", src = "/socket.io/socket.io.js")
     script(type = "text/javascript", src = "/javascripts/smoothie.js")
     script(type = "text/javascript", src = "/javascripts/statusQuo.js")
@@ -20,7 +21,7 @@ html(lang="en")
   body(class = body_classes)
     #curtain
     !=messages
-    header
+    header#top
       h1#logo.ok
         a(href='/',title="Go home")
           em the
