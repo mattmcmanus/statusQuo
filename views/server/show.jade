@@ -2,6 +2,7 @@
   header
     h2= server.name
       em= server.ip
+    .types!= server.type
     .buttons
       a.edit.button(href='/server/'+server.id+'/edit') Edit
   section.ping

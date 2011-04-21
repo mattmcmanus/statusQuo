@@ -4,6 +4,8 @@
 // Variables
 sprites = url(../images/icons.png)
 
+hightlight = #19e
+
 //Status Colors
 ok = #090
 warning = #990
@@ -69,7 +71,7 @@ selection
   
 a, a:link 
   text-decoration none
-  color #19e
+  color hightlight
   
 a:hover
   text-decoration underline
@@ -87,9 +89,11 @@ a:hover
   border-radius 6px
   text-align center
   text-shadow 0 -1px 1px rgba(34,34,34,.3)
-  linear-gradient #262626,#060606 
+  linear-gradient #262626,#060606
   box-shadow(inset 0px 0px 5px rgba(34,34,34,.5), 0 1px 7px rgba(34,34,34,.5))
   transition opacity 200ms ease-out
+  &:link
+    color #fff
   &:hover
     linear-gradient #333,#111
     color #eee
@@ -229,6 +233,7 @@ header#top
     overflow visible
     &:hover .countdown
       display inline
+      
   .countdown
     display none
     position absolute
@@ -241,7 +246,13 @@ header#top
     strong
       color #eee
     
- 
+.front
+  h2
+    background none
+    color rgba(225,225,225,.3)
+    text-shadow -1px -1px 2px rgba(0,0,0,.5)
+    clear both
+    
 div.server
   float left
   color #fff
@@ -262,7 +273,7 @@ div.server
     height 25px
     position relative
    
-    h2
+    h3
       margin 7px 5px
       padding 0
       font-size 1em
@@ -333,7 +344,10 @@ div.server
     box-shadow(0 3px 15px rgba(0,0,0,.75))
   header
     height auto
+    h2, .types, .tyoe
+      display inline-block
     h2
+      color #fff
       font-size 1.5em
       text-shadow 0px -1px 1px rgba(255,255,255,.2)
       em
@@ -341,9 +355,33 @@ div.server
         color #666
         margin-left 8px
         text-shadow 0px -1px 1px rgba(0,0,0,.25)
+    .types
+      position relative
+      top -2px
+      .type
+        border-radius 5px
+        linear-gradient #444444,#333333
+        color #eee
+        display inline-block
+        padding 0 8px
+        margin 0 2px
+        border 1px solid #333
+        text-shadow -1px -1px 2px rgba(0,0,0,.3)
+        font-size .75em
+        font-weight 700
+        text-transform uppercase
+        &.production
+          background #060
+        
     .buttons
+      top 0
+      right 0
       .button
         text-indent 0
+        linear-gradient #333333,#111111
+        margin 3px
+        &:hover
+          linear-gradient #444444,#222222
   section
     h3
       line-height 1.5em

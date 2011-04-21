@@ -36,9 +36,17 @@ module.exports = function(app){
       find.public = true
     
     app.Server.find(find).sort('name', 1 ).run(function (err, servers) {
+      var list = {}
+          list.production = _.select(servers, function(server){ return _.include(server.type, "production") })
+        , list.development = _.select(servers, function(server){ return _.include(server.type, "development") })
+        , list.other = _.reject(servers, function(server){
+                          return _.any(server.type, function(type){
+                                    return (type == "development" || type == "production")
+                          })
+                      })
       res.render('server/index', {
         title: "Dashboard",
-        servers: servers
+        servers: list
       })
     })
   });
@@ -83,13 +91,16 @@ module.exports = function(app){
   });
   
   app.get('/server/:server.:format?', function(req, res){
+    _.each(req.server.type, function(type, key){ req.server.type[key] = '<span class="type '+type+'">'+type+'</span>' })
+    req.server.type = req.server.type.join('')
+    
     if (req.params.format === 'json')
       res.send(req.server.toObject())
     else if (req.xhr)
       res.partial('server/show', {server: req.server})
     else
       res.render('server/show', {server: req.server})
-  });
+  }); 
     
   app.get('/server/:server/edit', global.isAuthenticated, function(req, res){
     res.render('server/edit', {server: req.server})

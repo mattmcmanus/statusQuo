@@ -1,4 +1,14 @@
-- if (servers.length)
-  !=partial('_server', servers)
-- else  
+- if (servers.production.length)
+  h2 Production
+  !=partial('_server', servers.production)
+
+- if (servers.development.length)
+  h2 Development
+  !=partial('_server', servers.development)
+  
+- if (servers.other.length)
+  h2 Other
+  !=partial('_server', servers.other)
+
+- if (servers.length == 0)  
   img.psst(src="/images/psst.png")
