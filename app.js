@@ -113,7 +113,7 @@ socket.on('connection', function(client){
           console.log('child process exited with code ' + code);
         });
       } else if (command === 'kill' && item === 'ping') {
-        if (ping.kill()) ping.kill()
+        if (ping) ping.kill()
       }
 
     });

@@ -126,7 +126,6 @@ if(typeof window.statusQuo === "undefined") {
     // - - - - - - - - - - - - - - - - - - - - - - - - -
     dashboardRefresh: function() {
       var context = this;
-      console.log("REFRESH!")
       if (context.autoRefresh) context.autoRefreshCountdown = context.autoRefreshInterval;
       $('.server').each(function(){
         
@@ -145,7 +144,7 @@ if(typeof window.statusQuo === "undefined") {
     },
     
     serverCheck: function(server) {
-      if (event) event.stopPropagation();
+      if (typeof event != "undefined") event.stopPropagation();
       var context = this;
       $(server).addClass("checking").find('.loader').show()
       

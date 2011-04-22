@@ -98,7 +98,6 @@ exports.defineModels = function(mongoose, fn) {
       else
         tags[key] = tag.toLowerCase().replace(/^\s+|\s+$/g,"")
     })
-    console.log(tags)
     return tags
   }
   
