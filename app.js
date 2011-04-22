@@ -16,28 +16,34 @@ var sys = require('sys')
   , db
   // Load server and routes
   , app = module.exports = express.createServer();
+  
+var settings = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
 
 app.configure('development', function() {
-  app.set('db-uri', 'mongodb://localhost/sq_dev');
+  _.each(settings.development, function(setting, key) {
+    app.set(key, setting);
+  })
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
 
 app.configure('production', function() {
-  app.set('db-uri', 'mongodb://localhost/statusQuo');
+  _.each(settings.production, function(setting, key) {
+    app.set(key, setting);
+  })
   app.use(express.errorHandler());
 });
 
 
 app.configure(function(){
   // Templating Setup
-  app.set('view engine', 'jade');
+  _.each(settings.defaults, function(setting, key) {
+    app.set(key, setting);
+  })
   app.use(stylus.middleware({src: views,dest: pub}));
   // Files
   app.use(express.static(pub));
   app.use(express.favicon());
-
-  //app.use(express.logger({ format: '":method :url" :status' }));
   app.use(express.logger({ format: '\x1b[1m:method\x1b[0m \x1b[33m:url\x1b[0m :response-time ms' }))
   app.use(express.cookieParser());
   app.use(express.bodyParser());

@@ -1,0 +1,14 @@
+{
+  "defaults" : {
+      "view engine" : "jade"
+    , "restrictUser" : false
+    , "oauthConsumerKey": ""
+    , "oauthConsumerSecret" : ""  
+    }
+, "production" : {
+      "db-uri" : ""
+    }
+, "development" : {
+      "db-uri" : ""
+    }
+}

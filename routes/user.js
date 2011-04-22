@@ -1,16 +1,14 @@
-var consumerKey = 'KZHCsJ6yIpWQbmI2Adkrg'
-  , consumerSecret = 'ZusgzvUah75KmHVsIatjAWw0SconKzdyuc4B5vDL4'
-  , OAuth = require('oauth').OAuth
+var OAuth = require('oauth').OAuth
   , global = require('./global')
-  , oa = new OAuth("https://twitter.com/oauth/request_token"
-                ,  "https://twitter.com/oauth/access_token"
-                ,   consumerKey
-                ,   consumerSecret
-                ,  "1.0A", "http://util.it.arcadia.edu:8000/oauth/callback", "HMAC-SHA1");
 
 
 module.exports = function(app){
-  
+  var oa = new OAuth("https://twitter.com/oauth/request_token"
+                ,  "https://twitter.com/oauth/access_token"
+                ,   app.settings.oauthConsumerKey
+                ,   app.settings.oauthConsumerSecret
+                ,  "1.0A", "http://util.it.arcadia.edu:8000/oauth/callback", "HMAC-SHA1");
+                
   function authenticateFromLoginToken(req, res, next) {
     var cookie = JSON.parse(req.cookies.logintoken);
     console.log(cookie)
@@ -22,9 +20,7 @@ module.exports = function(app){
         res.redirect('/login');
         return;
       }
-      
       app.User.findOne({ email: token.email }, function(err, user) {
-        
         if (user) {
           req.session.user_id = user.id
           req.session.user = user

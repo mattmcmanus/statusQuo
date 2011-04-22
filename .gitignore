@@ -4,3 +4,4 @@ public/stylesheets
 pids/*
 tmp/*
 logs/*
+config.json
