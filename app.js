@@ -20,26 +20,20 @@ var sys = require('sys')
 var settings = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
 
 app.configure('development', function() {
-  _.each(settings.development, function(setting, key) {
-    app.set(key, setting);
-  })
+  _.each(settings.development, function(setting, key) { app.set(key, setting) })
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
 
 app.configure('production', function() {
-  _.each(settings.production, function(setting, key) {
-    app.set(key, setting);
-  })
+  _.each(settings.production, function(setting, key) { app.set(key, setting) })
   app.use(express.errorHandler());
 });
 
 
 app.configure(function(){
   // Templating Setup
-  _.each(settings.defaults, function(setting, key) {
-    app.set(key, setting);
-  })
+  _.each(settings.defaults, function(setting, key) { app.set(key, setting) })
   app.use(stylus.middleware({src: views,dest: pub}));
   // Files
   app.use(express.static(pub));

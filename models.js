@@ -8,6 +8,7 @@ exports.defineModels = function(mongoose, fn) {
     , LoginToken
     , Server
     , Services
+    , Log
 
   //                          Users
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -31,9 +32,9 @@ exports.defineModels = function(mongoose, fn) {
   //                     LoginToken
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
   LoginToken = new Schema({
-    email: { type: String, index: true },
-    series: { type: String, index: true },
-    token: { type: String, index: true }
+      email   : { type: String, index: true }
+    , series  : { type: String, index: true }
+    , token   : { type: String, index: true }
   });
 
   LoginToken.method('randomToken', function() {
@@ -60,13 +61,14 @@ exports.defineModels = function(mongoose, fn) {
       return JSON.stringify({ email: this.email, token: this.token, series: this.series });
     });  
     
-    
   
   //                     Server Services
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
   Services = new Schema({
       name        :  String
-    , url         :  { type: String, index: true }
+    , type        :  { type: String, index: true }
+    , url         :  String
+    , public      :  { type: Boolean, index: true }
     //, port        :  { type: Number, default: 80}
   })
   
@@ -79,16 +81,15 @@ exports.defineModels = function(mongoose, fn) {
   //                          Servers
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
   Server = new Schema({
-      server_id       :  ObjectId
+      server_id    :  ObjectId
     , user         :  { type: String, index: true }
-    , created         :  { type: Date, default: Date.now }
-    , updated         :  { type: Date, default: Date.now }
-    , ip              :  { type: String, index: { unique: true } }
-    , name            :  String
-    , os              :  String
-    , type            :  { type: [String], set: splitTags}
-    , public          :  { type: Boolean, index: true }
-    , services        :  [Services] 
+    , created      :  { type: Date, default: Date.now }
+    , updated      :  { type: Date, default: Date.now }
+    , ip           :  { type: String, index: { unique: true } }
+    , name         :  String
+    , os           :  String
+    , type         :  { type: [String], set: splitTags}
+    , services     :  [Services] 
   })
   
   function splitTags(tags) {
@@ -105,12 +106,29 @@ exports.defineModels = function(mongoose, fn) {
     .get(function() {
       return this._id.toHexString();
     });
+    
+  //                     Status Log
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+  Log = new Schema({
+      timestamp       :  { type: Date, default: Date.now }
+    , type            :  { type: String, index: true }
+    , responseType    :  { type: String, index: true }
+    , responseCode    :  String
+    , responseMessage :  String
+    , responseTime    :  String
+    , pingReponse     :  String
+  })
   
-  
+  Log.virtual('id')
+    .get(function() {
+      return this._id.toHexString();
+    });
+    
   
   mongoose.model('User', User);
   mongoose.model('Server', Server);
   mongoose.model('LoginToken', LoginToken);
+  mongoose.model('Log', Log);
   
   fn();
 }
