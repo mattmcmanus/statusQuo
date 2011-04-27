@@ -42,12 +42,21 @@ module.exports = function(dir){
     function fn(err){ if (err) throw err; }
 
     // augment master
-    // augment master
     master.pidof = function(name){
       var dir = master.pidfiles
         , path = dir + '/' + name + '.pid'
         , pid = fs.readFileSync(path, 'ascii');
+        
       return parseInt(pid, 10);
+    };
+
+    master.workerpids = function(){
+      var dir = master.pidfiles;
+      return fs.readdirSync(dir).filter(function(file){
+        return file.match(/^worker\./);
+      }).map(function(file){
+        return parseInt(fs.readFileSync(dir + '/' + file, 'ascii'), 10);
+      });
     };
 
     // save worker pids

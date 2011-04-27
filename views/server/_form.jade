@@ -8,13 +8,6 @@ ul
   li.os
     label(for='server[os]') OS
     input(type="text", name='server[os]', value=server.os)
-  li.checkboxes.public
-    span.label Public facing?
-    ul
-      li
-        label
-          input(type="checkbox", name='server[public]', value="true", checked=(server.public)?'checked':'') 
-          | Yes
   li.type
     label(for='server[type]') Server Type
     input(type="text", name='server[type]', value=server.type.join(', '))

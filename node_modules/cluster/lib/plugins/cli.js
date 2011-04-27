@@ -61,6 +61,25 @@ exports = module.exports = function(){
   return function(master){
     requirePIDs(master);
 
+    // augment master
+    master.killall = function(sig){
+      var pid = master.pidof('master');
+      try {
+        // signal master
+        process.kill(pid, sig);
+      } catch (err) {
+        if (ESRCH != err.errno) throw err;
+        // signal children individually
+        master.workerpids().forEach(function(pid){
+          try {
+            process.kill(pid, sig);
+          } catch (err) {
+            if (ESRCH != err.errno) throw err;
+          }
+        });
+      }
+    };
+
     var args = process.argv.slice(2)
       , len = commands.length
       , command
@@ -158,7 +177,7 @@ define('-s, --status, status', function(master){
  */
 
 define('-r, --restart, restart', function(master){
-  process.kill(master.pidof('master'), 'SIGUSR2');
+  master.killall('SIGUSR2');
 }, 'Restart master by sending the SIGUSR2 signal');
 
 /**
@@ -166,7 +185,7 @@ define('-r, --restart, restart', function(master){
  */
 
 define('-g, --shutdown, shutdown', function(master){
-  process.kill(master.pidof('master'), 'SIGQUIT');
+  master.killall('SIGQUIT');
 }, 'Graceful shutdown by sending the SIGQUIT signal');
 
 /**
@@ -174,7 +193,7 @@ define('-g, --shutdown, shutdown', function(master){
  */
 
 define('-S, --stop, stop', function(master){
-  process.kill(master.pidof('master'), 'SIGTERM');
+  master.killall('SIGTERM');
 }, 'Hard shutdown by sending the SIGTERM signal');
 
 /**

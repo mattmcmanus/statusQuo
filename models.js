@@ -13,8 +13,7 @@ exports.defineModels = function(mongoose, fn) {
   //                          Users
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
   User = new Schema({
-      user_id       :  ObjectId
-    , created       :  { type: Date, default: Date.now }
+      created       :  { type: Date, default: Date.now }
     , lastLoggedIn  :  { type: Date, default: Date.now }
     , username      :  { type: String, index: { unique: true } }
     , name          :  { type: String, match: /[a-z]/ }
@@ -81,8 +80,7 @@ exports.defineModels = function(mongoose, fn) {
   //                          Servers
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
   Server = new Schema({
-      server_id    :  ObjectId
-    , user         :  { type: String, index: true }
+      user         :  { type: ObjectId, index: true }
     , created      :  { type: Date, default: Date.now }
     , updated      :  { type: Date, default: Date.now }
     , ip           :  { type: String, index: { unique: true } }
@@ -109,17 +107,19 @@ exports.defineModels = function(mongoose, fn) {
     
   //                     Status Log
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-  Log = new Schema({
-      timestamp       :  { type: Date, default: Date.now }
+  ServiceResponse = new Schema({
+      serverID        :  { type: ObjectId, index: true }
+    , serviceID       :  { type: ObjectId, index: true }
+    , timestamp       :  { type: Date, default: Date.now }
     , type            :  { type: String, index: true }
-    , responseType    :  { type: String, index: true }
+    , responseType    :  { type: String, index: true } //OK, warning, error
     , responseCode    :  String
     , responseMessage :  String
     , responseTime    :  String
-    , pingReponse     :  String
+    , pingReponse     :  String 
   })
   
-  Log.virtual('id')
+  ServiceResponse.virtual('id')
     .get(function() {
       return this._id.toHexString();
     });
@@ -128,7 +128,7 @@ exports.defineModels = function(mongoose, fn) {
   mongoose.model('User', User);
   mongoose.model('Server', Server);
   mongoose.model('LoginToken', LoginToken);
-  mongoose.model('Log', Log);
+  mongoose.model('ServiceResponse', ServiceResponse);
   
   fn();
 }

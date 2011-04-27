@@ -22,7 +22,6 @@ module.exports = function(app){
       }
       app.User.findOne({ email: token.email }, function(err, user) {
         if (user) {
-          req.session.user_id = user.id
           req.session.user = user
   
           token.token = token.randomToken()
@@ -46,19 +45,18 @@ module.exports = function(app){
   
   function loadUser(req, res, next) {
     if (req.session.user) {
-      console.log("CurrentUser exists")
+      console.log("loadUser: CurrentUser exists")
       next()
     } else if (req.cookies.logintoken) {
-      console.log("Hey Look!  A cookie!")
+      console.log("loadUser: Hey Look!  A cookie!")
       authenticateFromLoginToken(req, res, next);
     } else {
-      console.log("To the cloud!")
+      console.log("loadUser: To the cloud!")
       if (!req.session.oauth) req.session.oauth = {}
       oa.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, results){
         if (error) new Error(error.data)
         else {
-          req.session.oauth.token = oauth_token
-          req.session.oauth.token_secret = oauth_token_secret
+          req.session.oauth = { token: oauth_token, token_secret: oauth_token_secret }
           res.redirect('https://twitter.com/oauth/authenticate?oauth_token='+oauth_token)
          }
       });
@@ -81,11 +79,8 @@ module.exports = function(app){
       oa.getOAuthAccessToken(oauth.token,oauth.token_secret,oauth.verifier, 
         function(error, oauth_access_token, oauth_access_token_secret, results){
           if (error) new Error(error)
-          req.session.oauth.access_token = oauth_access_token
-          req.session.oauth.access_token_secret = oauth_access_token_secret
-          console.log(results)
+          req.session.oauth = { access_token: oauth_access_token, access_token_secret: oauth_access_token_secret }
           app.User.findOne({username: results.screen_name }, function(err, user) {
-            
             if (user) {
               req.session.user = user
               req.flash('success', 'You\'ve successfully logged in!')

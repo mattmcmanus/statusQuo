@@ -5,6 +5,7 @@ var global = require('./global')
   , util   = require('util')
   , async = require('async')
   , spawn = require('child_process').spawn
+  , HTTPStatus = require('http-status')
   , info = [];
 
 module.exports = function(app){
@@ -63,9 +64,8 @@ module.exports = function(app){
       , type    : req.body.server.type
       , ip      : req.body.server.ip
       , os      : req.body.server.os
-      , public  : (req.body.server.public)?true:false
-      , user : req.session.user.id
-    });
+      , user    : req.session.user._id
+    })
     
     for (var i=0; i < _.size(req.body.server.services); i++) {
       delete req.body.server.services[i]['delete']
@@ -115,7 +115,6 @@ module.exports = function(app){
     server.ip = req.body.server.ip
     server.name = req.body.server.name
     server.os = req.body.server.os
-    server.public  = (req.body.server.public)?true:false
     server.type = req.body.server.type
     
     for (var num = _.size(req.body.server.services) - 1; num >= 0; num--){
@@ -123,9 +122,10 @@ module.exports = function(app){
         if (req.body.server.services[num].delete == "true") {
           server.services.splice(num,1)
         } else {
+          services[num].type = req.body.server.services[num].type
           services[num].name = req.body.server.services[num].name
           services[num].url = req.body.server.services[num].url
-          services[num].port = req.body.server.services[num].port
+          services[num].public = (req.body.server.services[num].public)?true:false
         }
       } else {
         // Defer adding new services until the loop finishes
@@ -133,7 +133,6 @@ module.exports = function(app){
         services.push(req.body.server.services[num]);
       }
     }
-    
     server.services = services;
     server.save(function(err){
       if (!err) {
@@ -148,7 +147,7 @@ module.exports = function(app){
   
   app.del('/server/:server', function(req, res, next){
     if(!req.server) return next(new NotFound('That server disappeared!'));
-      
+    
     req.server.remove(function(err){
       if (!err) {
         req.flash('success', 'Server removed')
@@ -168,19 +167,25 @@ module.exports = function(app){
       })
       res.send(tags)
     });
-    
   });
   
   //                      Services
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  function statusObject(id, statusCode, err) {
+  function responseObject(id, statusCode, err) {
     var status, message;
-    switch(statusCode) {
-      case 302: status = "warning"; message = "Redirected"; break;
-      case 403: status = "error"; message = "Forbidden"; break;
-      case 500: status = "error"; message = (err)?err.message.substr(err.message.indexOf(',')+2):'BROKEN'; break;
-      default: status = "ok"; message = "OK"
-    }
+    
+    if (statusCode >= 300 && < 400) 
+      status = "warning"
+    else if (statusCode >= 400) 
+      status = "error"
+    else 
+      status = "ok"
+    
+    if (err)
+      message = err.message.substr(err.message.indexOf(',')+2)
+    else
+      message = HTTPStatus[statusCode]
+    
     return { id:id, status:status, statusCode: statusCode, message: message };
   }
   
@@ -188,29 +193,12 @@ module.exports = function(app){
     var options = require('url').parse(service.url);
     
     request({uri:service.url, onResponse:true}, function (error, response, body) {
-      if (error) {
-        console.log(service.url + ": " + error.message)
-        fn(null, statusObject( service._id, 500, error ));
-      } else {
-        //console.log(service.url + ": " + response.statusCode)
-        //console.log(body)
-        fn(null, statusObject( service._id, response.statusCode ));
-      }
+      var serviceResponse  new app.ServiceResponse()      
+      
+      if (error) response.statusCode = 500
+      var result
+      fn(null, statusObject( service._id, response.statusCode, (error)?error:null ))
     })
-    
-    //if (options.protocol === 'https:'){
-    //  https.get(options, function(get){
-    //    fn(null, statusObject( service._id, get.statusCode ));
-    //  }).on('error', function(e) {
-    //    fn(null, statusObject( service._id, 500, e ));
-    //  })
-    //} else {
-    //  http.get(options, function(get){
-    //    fn(null, statusObject( service._id, get.statusCode ));
-    //  }).on('error', function(e) {
-    //    fn(null, statusObject( service._id, 500, e ));
-    //  })
-    //}
   }
   
   app.get('/server/:server/check', function(req, res){
@@ -221,7 +209,6 @@ module.exports = function(app){
         , warning: _.select(results, function(service){return service.status == 'warning' })
         , error: _.select(results, function(service){return service.status == 'error' })
       }
-      
       res.send(result)
     });
   })

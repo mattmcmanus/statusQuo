@@ -3,6 +3,21 @@ li.service(id=service.id||'')
   input.delete(type="hidden", name="server[services]["+indexInCollection +"][delete]", value="false")
   .message
   ul
+    li.checkboxes.type
+      span.label Type
+      ul
+        li
+          label
+            input(type="radio", name='server[services]['+indexInCollection +'][type]', value="http", checked=(service.type)?'checked':'') 
+            | http
+        li
+          label
+            input(type="radio", name='server[services]['+indexInCollection +'][type]', disabled="disabled", value="port", checked=(service.type)?'checked':'') 
+            | port
+    li.checkboxes.public
+      label
+        input(type="checkbox", name='server[services]['+indexInCollection +'][public]', value="true", checked=(service.public)?'checked':'') 
+        | Public
     li.name
       input(type="text", placeholder="Service Name", name='server[services]['+indexInCollection +'][name]', value=service.name||'')
     li.url

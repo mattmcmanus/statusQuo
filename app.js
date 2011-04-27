@@ -53,10 +53,11 @@ app.dynamicHelpers(require('./helpers.js').dynamicHelpers);
 //                      Models
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 require('./models').defineModels(mongoose, function() {
-  app.User = User = mongoose.model('User');
-  app.Server = Server = mongoose.model('Server');
-  app.LoginToken = LoginToken = mongoose.model('LoginToken');
-  db = mongoose.connect(app.set('db-uri'));
+  app.User = User = mongoose.model('User')
+  app.Server = Server = mongoose.model('Server')
+  app.LoginToken = LoginToken = mongoose.model('LoginToken')
+  app.ServiceResponse = ServiceResponse = mongoose.model('ServiceResponse')
+  db = mongoose.connect(app.set('db-uri'))
 })
 
 //                      Errors
