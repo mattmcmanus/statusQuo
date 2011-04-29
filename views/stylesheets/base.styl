@@ -104,6 +104,8 @@ a:hover
     linear-gradient #114411,#002200
     &:hover 
       linear-gradient #226622,#114411
+  &.refresh
+    background-image url(/images/server_refresh.png) 
 a.cancel
   color #aaa
   linear-gradient #444,#333 
@@ -227,9 +229,8 @@ header#top
     left 120px
     background-image url(/images/add.png) 
     
-  #refresh
+  .refresh
     left 170px
-    background-image url(/images/server_refresh.png) 
     overflow visible
     &:hover .countdown
       display inline
@@ -328,7 +329,6 @@ div.server
         .count
           font-weight 700
           margin-right 5px
-      
 
 //         Server detail!
 //- - - - - - - - - - - - - - - - - - - - 
@@ -350,6 +350,7 @@ div.server
       color #fff
       font-size 1.5em
       text-shadow 0px -1px 1px rgba(255,255,255,.2)
+      padding-left 6px
       em
         font-size .75em
         color #666
@@ -377,11 +378,15 @@ div.server
       top 0
       right 0
       .button
-        text-indent 0
-        linear-gradient #333333,#111111
-        margin 3px
-        &:hover
-          linear-gradient #444444,#222222
+        margin 5px
+        display inline-block
+        &.refresh
+          padding 0
+          top 3px
+        &.edit
+          text-indent 0
+          &:hover
+            linear-gradient #444444,#222222
   section
     h3
       line-height 1.5em
@@ -410,7 +415,7 @@ div.server
         .message
           position absolute
           right 10px
-          top 7px
+          top 5px
           font-weight 700
         .detail
           display none

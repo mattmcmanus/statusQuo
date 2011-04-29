@@ -4,6 +4,7 @@
       em= server.ip
     .types!= server.type
     .buttons
+      a.refresh.button(href="javascript:void()") Refresh
       a.edit.button(href='/server/'+server.id+'/edit') Edit
   section.ping
     .responseTime
@@ -11,10 +12,10 @@
   section.services
     h3 Services
     - each service in server.services
-      .service(id=service.id, data-server=server.id)
+      .service(id=service.id, data-server=server.id, class=service.lastStatus.toLowerCase())
         .loader
         .name= service.name
         .url= service.url
-        .message
+        .message= service.lastStatus
         .details
   footer

@@ -68,6 +68,7 @@ exports.defineModels = function(mongoose, fn) {
     , type        :  { type: String, index: true }
     , url         :  String
     , public      :  { type: Boolean, index: true }
+    , lastStatus  :  String
     //, port        :  { type: Number, default: 80}
   })
   
@@ -112,7 +113,7 @@ exports.defineModels = function(mongoose, fn) {
     , serviceID       :  { type: ObjectId, index: true }
     , timestamp       :  { type: Date, default: Date.now }
     , type            :  { type: String, index: true }
-    , responseType    :  { type: String, index: true } //OK, warning, error
+    , responseStatus    :  { type: String, index: true } //OK, warning, error
     , responseCode    :  String
     , responseMessage :  String
     , responseTime    :  String

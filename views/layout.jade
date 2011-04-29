@@ -29,7 +29,7 @@ html(lang="en")
       - if (authenticated)
         a#server_add.button(href="/server/new") Add Server
         - if (isFront)
-          a#refresh.button(href="javascript:void()") Refresh Dashboard
+          a.refresh.button(href="javascript:void()") Refresh Dashboard
             span.countdown
       nav#eyebrow
         - if (authenticated)

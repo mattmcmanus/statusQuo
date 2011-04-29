@@ -128,7 +128,6 @@ if(typeof window.statusQuo === "undefined") {
       var context = this;
       if (context.autoRefresh) context.autoRefreshCountdown = context.autoRefreshInterval;
       $('.server').each(function(){
-        
         context.serverCheck($(this))
       })
     },
@@ -140,7 +139,7 @@ if(typeof window.statusQuo === "undefined") {
          sq.dashboardRefresh()
          return;
       }
-       $(".countdown").html("Refresh in <strong>" + sq.autoRefreshCountdown + "</strong> seconds");
+      $(".countdown").html("Refresh in <strong>" + sq.autoRefreshCountdown + "</strong> seconds");
     },
     
     serverCheck: function(server) {
@@ -148,30 +147,19 @@ if(typeof window.statusQuo === "undefined") {
       var context = this;
       $(server).addClass("checking").find('.loader').show()
       
-      $.ajax({ url:'/server/' + $(server).attr('id') + '/check/'
+      $.ajax({ url:'/server/' + $(server).attr('id') + '/status/'
         , context:server
         , success: function(data){
             var server = $(this);
             
             $(server).removeClass('checking').find(".services li").remove()
             $.each(data, function(status, services){
-              if(services.length) {
-                $(server).addClass(status).find(".services ul").append('<li class="'+status+'"><span class="count">'+services.length+'</span>'+status)
+              if(services > 0) {
+                $(server).addClass(status).find(".services ul").append('<li class="'+status+'"><span class="count">'+services+'</span>'+status)
               }
             })
           }
       })
-    },
-    
-    serverLookup: function(input) {
-      var context = this;
-      if ($(input).data('lastIP') && $(input).data('lastIP') !== $(input).val()) $('.service').not('.default').slideUp(200).remove()
-      $.ajax({ url:'/server/lookup/'+$(input).val(), success: function(data){
-        $.each(data, function(key,url){
-          context.serverAddService(url)
-        })
-        context.didServerLookup = true;
-      }});
     },
     
     serverDetail: function(server){
@@ -180,28 +168,11 @@ if(typeof window.statusQuo === "undefined") {
         context.curtainOpen(server);
         var server_id = $(server).attr('id');
         context.socket.connect();
-        context.socket.on('connect', function(){ 
-          console.log("Client: Connected")
-        })
         context.serverPing(server_id)
-        $('#'+server_id+' .service').each(function(){
-          context.serviceCheck(this)
-        })
+        //$('#'+server_id+' .service').each(function(){
+        //  context.serviceCheck(this)
+        //})
       });
-      
-    },
-    
-    serverAddService: function(url){
-      var servicesNum = $('.service').size()-1,
-      service = $('.default .service').clone();
-      service.find('input').each(function(i){
-              $(this).attr('name', $(this).attr('name').replace("index",servicesNum));
-            })
-      if (url) {
-        service.find('.name input').val(url)
-        service.find('.url input').val('http://'+url);
-      }
-      service.appendTo('.services').slideDown(200)
     },
     
     serverPing: function(server_id) {
@@ -224,13 +195,38 @@ if(typeof window.statusQuo === "undefined") {
     // - - - - - - - - - - - - - - - - - - - - - - - - -
     serviceCheck: function(service){
       $(service).addClass('checking')
-      console.log($(service).data('server'))
       $.ajax({ url:'/server/' + $(service).data('server') + '/service/' + $(service).attr('id'), context:service, success: function(data){
         $(this).addClass(data.status).removeClass('checking')
         $(this).find('.message').text(data.message)
         if ($(this).siblings('.service:not(.checking)').length == $(this).siblings('.service').length)
           $(this).parents(".server").removeClass("checking");
       }});
+    },
+    
+    //                Server Form
+    // - - - - - - - - - - - - - - - - - - - - - - - - -
+    serverLookup: function(input) {
+      var context = this;
+      if ($(input).data('lastIP') && $(input).data('lastIP') !== $(input).val()) $('.service').not('.default').slideUp(200).remove()
+      $.ajax({ url:'/server/lookup/'+$(input).val(), success: function(data){
+        $.each(data, function(key,url){
+          context.serverAddService(url)
+        })
+        context.didServerLookup = true;
+      }});
+    },
+    
+    serverAddService: function(url){
+      var servicesNum = $('.service').size()-1,
+      service = $('.default .service').clone();
+      service.find('input').each(function(i){
+              $(this).attr('name', $(this).attr('name').replace("index",servicesNum));
+            })
+      if (url) {
+        service.find('.name input').val(url)
+        service.find('.url input').val('http://'+url);
+      }
+      service.appendTo('.services').slideDown(200)
     }
   }
 };

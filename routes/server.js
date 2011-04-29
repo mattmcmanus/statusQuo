@@ -9,10 +9,11 @@ var global = require('./global')
   , info = [];
 
 module.exports = function(app){
+  
   //                      PARAMETERS
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   app.param('server', function(req, res, next, id){
-    app.Server.findOne({_id: id}, function(err, server) {
+    app.Server.findById(id, function(err, server) {
       if (err) return next(err);
       if (!server) return next(new Error('failed to find server'));
       req.server = server;
@@ -32,7 +33,7 @@ module.exports = function(app){
   app.get('/', function(req, res){
     var find = {}
     if (req.session.user)
-      find.user = req.session.user.id
+      find.user = req.session.user._id
     else
       find.public = true
     
@@ -171,47 +172,60 @@ module.exports = function(app){
   
   //                      Services
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  function responseObject(id, statusCode, err) {
-    var status, message;
-    
-    if (statusCode >= 300 && < 400) 
-      status = "warning"
+  function responseStatus(statusCode) {
+    if (statusCode >= 300 && statusCode < 400) 
+      return "warning"
     else if (statusCode >= 400) 
-      status = "error"
+     return "error"
     else 
-      status = "ok"
-    
-    if (err)
-      message = err.message.substr(err.message.indexOf(',')+2)
-    else
-      message = HTTPStatus[statusCode]
-    
-    return { id:id, status:status, statusCode: statusCode, message: message };
+      return "ok"
   }
   
   function serviceCheck (service, fn) {
-    var options = require('url').parse(service.url);
-    
     request({uri:service.url, onResponse:true}, function (error, response, body) {
-      var serviceResponse  new app.ServiceResponse()      
-      
       if (error) response.statusCode = 500
-      var result
-      fn(null, statusObject( service._id, response.statusCode, (error)?error:null ))
+      var serviceResponse = new app.ServiceResponse({
+          serviceID       :  service._id
+        , timestamp       :  new Date()
+        , type            :  service.type
+        , responseStatus  :  responseStatus(response.statusCode)
+        , responseCode    :  response.statusCode
+        , responseMessage :  (error)?error.message.substr(err.message.indexOf(',')+2):HTTPStatus[response.statusCode]
+      })
+      fn(null, serviceResponse)
     })
   }
   
   app.get('/server/:server/check', function(req, res){
-    async.map(req.server.services, serviceCheck, function(err, results){
-      if (err) console.log(err)
-      var result = {
-          ok: _.select(results, function(service){return service.status == 'ok' })
-        , warning: _.select(results, function(service){return service.status == 'warning' })
-        , error: _.select(results, function(service){return service.status == 'error' })
-      }
-      res.send(result)
-    });
+    async.map(req.server.services, serviceCheck, function(err, serviceResponses){
+      _.each(serviceResponses, function(serviceResponse, key){
+        serviceResponse.serverID = req.server._id
+        req.server.services[key].lastStatus = serviceResponse.responseStatus
+        serviceResponse.save(function(err){
+          if (err) {
+            new Error('Couldnt save the serviceResponse')
+            console.log(err)
+          } 
+        });
+      })
+      req.server.save(function(err){
+        if (err) {
+          new Error('Updated server')
+          console.log(err)
+        }
+      });
+      
+    })
   })
+  
+  app.get('/server/:server/status', function(req, res){
+    var result = {
+        ok: _.size(_.select(req.server.services, function(service){return service.lastStatus == 'ok' }))
+      , warning: _.size(_.select(req.server.services, function(service){return service.lastStatus == 'warning' }))
+      , error: _.size(_.select(req.server.services, function(service){return service.lastStatus == 'error' }))
+    }
+    res.send(result)
+  });
   
   
   app.get('/server/:server/service/:service', function(req, res){
