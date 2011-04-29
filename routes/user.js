@@ -98,9 +98,10 @@ module.exports = function(app){
   app.get('/user/setup', function(req, res) {
     oa.get("http://api.twitter.com/1/account/verify_credentials.json", req.session.oauth.access_token, req.session.oauth.access_token_secret, function(error, data) {
       if (data) {
+        var account = JSON.parse(data)
         res.render('user/setup', {
-          title:"Welcome! Please verify your information",
-          user: JSON.parse(data)
+            title:"Welcome! Please verify your information"
+          , account: account
         });
       } else {
         console.log('Unable to verify user')

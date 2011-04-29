@@ -3,15 +3,15 @@ header
 p It appears this is your first time logging in! Please fill out the remaining below to steup your account
 form#account_setup(method='post')
   ul  
-      
+    - console.log(user)
     li.screen_name
-      img.profile_picture(src=user.profile_image_url, alt="Your twitter profile picture")
-      h2= user.screen_name
-      input(type="hidden", name="user[username]", value=user.screen_name)
-      input(type="hidden", name="user[picture]", value=user.profile_image_url)
+      img.profile_picture(src=account.profile_image_url, alt="Your twitter profile picture")
+      h2= account.screen_name
+      input(type="hidden", name="user[username]", value=account.screen_name)
+      input(type="hidden", name="user[picture]", value=account.profile_image_url)
     li.name
       label(for="user[name]") Name
-      input(type="text", name="user[name]", value=user.name)
+      input(type="text", name="user[name]", value=account.name)
     li.email
       label(for="user[email]") Email
       input(type="email", name="user[email]")
