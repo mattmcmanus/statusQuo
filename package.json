@@ -4,14 +4,24 @@
   "version": "0.0.0",
   "repository": "git://github.com/mattmcmanus/statusQuo.git",
   "author": "Matthew McManus <mattmcmanus@gmail.com> (http://mattmcman.us)",
+  "directories": {
+    "public": "./public"
+  },
   "engines": {
-    "node": "*"
+    "node": ">= 0.4.0"
   },
   "dependencies": {
-    "jade": ">=0.9.1 < 2.0.0",
-    "mongoose": ">= 1.0",
-    "express": ">= 2",
-    "stylus": ">=0.9",
-    "oauth": ">=0.9"
+    "jade"              : ">=0.9.1"
+  , "mongoose"          : ">= 1.0"
+  , "express"           : ">= 2"
+  , "stylus"            : ">= 0.9"
+  , "oauth"             : ">= 0.9"
+  , "async"             : ">= 0.1"
+  , "cluster"           : ">= 0.6"
+  , "http-status"       : ">= 0.1"
+  , "conntext-mongodb"  : ">= 0.2"
+  , "sockiet.io"        : ">= 0.6"
+  , "request"           : ">= 1.9"
+  , "underscore"        : ">= 1.1"
   }
 }
