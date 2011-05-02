@@ -76,6 +76,7 @@ module.exports = function(app){
     server.save(function(err){
       if (!err) {
         req.flash('success', 'You\'re server has been created')
+        serverCheck(server)
       } else {
         req.flash('error', 'Err, Something broke when we tried to save your server. Sorry!')
         console.log("Mongoose ERROR:" + err)
@@ -138,6 +139,7 @@ module.exports = function(app){
     server.save(function(err){
       if (!err) {
         req.flash('success', 'Server updated')
+        serverCheck(server)
       } else {
         req.flash('error', 'Err, Something broke when we tried to save your server. Sorry!')
         console.log("ERROR:" + err)
