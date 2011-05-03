@@ -184,9 +184,11 @@ module.exports = function(app){
   }
   
   function serviceCheck (service, fn) {
-    console.log(" ---> " + service.name)
     request({uri:service.url, onResponse:true}, function (error, response, body) {
-      if (error) response.statusCode = 500
+      if (error) {
+        var response = {}
+        response.statusCode = 500
+      }
       var serviceResponse = new app.ServiceResponse({
           serviceID       :  service._id
         , type            :  service.type
@@ -199,7 +201,6 @@ module.exports = function(app){
   }
   
   function serverCheck(server) {
-    console.log("Checking Server: " + server.name)
     async.map(server.services, serviceCheck, function(err, serviceResponses){
       _.each(serviceResponses, function(serviceResponse, key){
         serviceResponse.serverID = server._id
@@ -220,14 +221,13 @@ module.exports = function(app){
     })
   }
   
-  app.get('/check?', function(req, res){
-    //4dbb1ef58797f3e47f000001
+  app.get('/check?', function(req, res){ //4dbb1ef58797f3e47f000001
     app.Server.find({user:req.query.user}, function(err, servers){
       _.each(servers, function(server){
         serverCheck(server)
       })
     })
-    res.send("Dashboard Refresh Inititialized")
+    res.send('')
     
   })
   

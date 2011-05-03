@@ -64,9 +64,11 @@ module.exports = function(app){
   }
   
   app.get('/login', returnToAfterLogin, loadUser, function(req, res){
+    console.log("Login complete, returning to home")
     var loginToken = new app.LoginToken({ email: req.session.user.email })
     loginToken.save(function() {
-      res.cookie('logintoken', loginToken.cookieValue, { maxAge: 604800000, path: '/', httpOnly: true });
+      if (!req.cookies.loginToken)
+        res.cookie('loginToken', loginToken.cookieValue, { maxAge: 604800000, path: '/' });
       res.redirect(req.cookies.returnTo || '/');
     });
   });

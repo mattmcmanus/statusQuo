@@ -20,20 +20,23 @@ var sys = require('sys')
 var settings = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
 
 app.configure('development', function() {
+  // Load DEvelopment settings from config file
   _.each(settings.development, function(setting, key) { app.set(key, setting) })
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
 
 app.configure('production', function() {
+  // Load production settings from config file
   _.each(settings.production, function(setting, key) { app.set(key, setting) })
   app.use(express.errorHandler());
 });
 
 
 app.configure(function(){
-  // Templating Setup
+  // Load default settings from config file
   _.each(settings.defaults, function(setting, key) { app.set(key, setting) })
+  //Set Stylus middle to generate proper CSS files in the proper place
   app.use(stylus.middleware({src: views,dest: pub}));
   // Files
   app.use(express.static(pub));
