@@ -1,4 +1,4 @@
-var global = require('./global')
+var util = require('./util')
   , _ = require('underscore')
   , dns = require('dns')
   , request = require('request')
@@ -53,7 +53,7 @@ module.exports = function(app){
     })
   });
   
-  app.get('/server/new', global.isAuthenticated, function(req, res){
+  app.get('/server/new', util.isAuthenticated, function(req, res){
     res.render('server/new', {
       server: new app.Server()
     });
@@ -104,7 +104,7 @@ module.exports = function(app){
       res.render('server/show', {server: req.server})
   }); 
     
-  app.get('/server/:server/edit', global.isAuthenticated, function(req, res){
+  app.get('/server/:server/edit', util.isAuthenticated, function(req, res){
     res.render('server/edit', {server: req.server})
   });
   
@@ -162,7 +162,7 @@ module.exports = function(app){
     });
   });
   
-  app.get('/tag/:tag', global.isAuthenticated, function(req, res){
+  app.get('/tag/:tag', util.isAuthenticated, function(req, res){
     app.Server.find({}, {type:1}, function(err, servers) {
       if (err) return next(err);
       var tags = _.select(_.uniq(_.flatten(_.pluck(servers,'type')).sort(), true), function(word){

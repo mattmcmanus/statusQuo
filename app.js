@@ -36,7 +36,7 @@ app.configure('production', function() {
 app.configure(function(){
   // Load default settings from config file
   _.each(settings.defaults, function(setting, key) { app.set(key, setting) })
-  //Set Stylus middle to generate proper CSS files in the proper place
+  //Set Stylus middle to generate proper CSS files in the proper plac
   app.use(stylus.middleware({src: views,dest: pub}));
   // Files
   app.use(express.static(pub));
@@ -45,7 +45,7 @@ app.configure(function(){
   app.use(express.cookieParser());
   app.use(express.bodyParser());
   app.use(express.methodOverride());
-  app.use(express.session({ store: mongoStore(app.set('db-uri')), secret: 'St@tu$Qu0', cookie: { maxAge: 1209600 }}));
+  app.use(express.session({ store: mongoStore(app.set('db-uri')), secret: 'qu0'}));
 });
 
 //                      Dynamic Helpers
@@ -77,7 +77,6 @@ app.error(function(err, req, res){
 
 //                  The Routes, THE ROUTES!
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
-require('./routes/site')(app);
 require('./routes/user')(app);
 require('./routes/server')(app);
 

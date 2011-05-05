@@ -1,5 +1,5 @@
 var OAuth = require('oauth').OAuth
-  , global = require('./global')
+  , util = require('./util')
 
 
 module.exports = function(app){
@@ -27,7 +27,7 @@ module.exports = function(app){
           token.token = token.randomToken()
           var loginToken = new app.LoginToken({ email: req.session.user.email })
           token.save(function() {
-            res.cookie('logintoken', token.cookieValue, { maxAge: 604800000, path: '/', httpOnly: true });
+            res.cookie('logintoken', token.cookieValue, { expires: new Date(Date.now() + 604800000), path: '/', httpOnly: true });
             res.redirect(req.cookies.returnTo || '/');
           });
         } else {
@@ -67,8 +67,8 @@ module.exports = function(app){
     console.log("Login complete, returning to home")
     var loginToken = new app.LoginToken({ email: req.session.user.email })
     loginToken.save(function() {
-      if (!req.cookies.loginToken)
-        res.cookie('loginToken', loginToken.cookieValue, { maxAge: 604800000, path: '/' });
+      console.log("Writing login token")
+      res.cookie('logintoken', loginToken.cookieValue, { expires: new Date(Date.now() + 604800000), path: '/', httpOnly: true });
       res.redirect(req.cookies.returnTo || '/');
     });
   });
@@ -130,13 +130,13 @@ module.exports = function(app){
   app.get('/logout', function(req, res) {
     if (req.session){
       app.LoginToken.remove({ email: req.session.user.email }, function() {});
-      req.session.destroy()
+      req.session.destroy(function() {})
       res.clearCookie('logintoken');
     }
     res.redirect('/')
   })
   
-  app.get('/user', global.isAuthenticated, function(req, res){
+  app.get('/user', util.isAuthenticated, function(req, res){
     res.render('user/view', {
       title:"Your Account",
       user:req.session.user
