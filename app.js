@@ -4,10 +4,12 @@ var sys = require('sys')
   , http = require('http')
   , express = require('express')
   , stylus = require('stylus')
-  , mongoStore = require('connect-mongodb')
+  , RedisStore = require('connect-redis')
   , mongoose = require('mongoose')
   , io = require('socket.io')
-  // Some Basic variable setting
+  , everyauth = require('everyauth')
+  // Some Basic variables
+  , settings = JSON.parse(fs.readFileSync('./config.json', 'utf8'))
   , pub = __dirname + '/public'
   , views = __dirname + '/views'
   , User
@@ -16,42 +18,44 @@ var sys = require('sys')
   , db
   // Load server and routes
   , app = module.exports = express.createServer();
-  
-var settings = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
-
+//            Default Config settings
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+app.configure(function(){
+  // Load default settings from config file
+  _.each(settings.defaults, function(setting, key) { app.set(key, setting) })
+  //Set Stylus middle to generate proper CSS files in the proper plac
+  app.use(stylus.middleware({src: views,dest: pub}))
+   // Files
+  app.use(express.static(pub))
+  app.use(express.favicon())
+  app.use(express.logger({ format: '\x1b[1m:method\x1b[0m \x1b[33m:url\x1b[0m :response-time ms' }))
+  app.use(express.cookieParser())
+  app.use(express.bodyParser())
+  app.use(express.methodOverride())
+  app.use(express.session({ store: new RedisStore, secret: 'qu0'}))
+  app.use(app.router)
+});
+//            Development Config settings
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 app.configure('development', function() {
   // Load DEvelopment settings from config file
   _.each(settings.development, function(setting, key) { app.set(key, setting) })
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
-
+//            Prouction Config settings
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 app.configure('production', function() {
   // Load production settings from config file
   _.each(settings.production, function(setting, key) { app.set(key, setting) })
   app.use(express.errorHandler());
 });
 
-
-app.configure(function(){
-  // Load default settings from config file
-  _.each(settings.defaults, function(setting, key) { app.set(key, setting) })
-  //Set Stylus middle to generate proper CSS files in the proper plac
-  app.use(stylus.middleware({src: views,dest: pub}));
-  // Files
-  app.use(express.static(pub));
-  app.use(express.favicon());
-  app.use(express.logger({ format: '\x1b[1m:method\x1b[0m \x1b[33m:url\x1b[0m :response-time ms' }))
-  app.use(express.cookieParser());
-  app.use(express.bodyParser());
-  app.use(express.methodOverride());
-  app.use(express.session({ store: mongoStore(app.set('db-uri')), secret: 'qu0'}));
-});
-
 //                      Dynamic Helpers
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 //app.helpers(require('./helpers.js').helpers);
 app.dynamicHelpers(require('./helpers.js').dynamicHelpers);
+everyauth.helpExpress(app);
 
 //                      Models
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -79,6 +83,8 @@ app.error(function(err, req, res){
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 require('./routes/user')(app);
 require('./routes/server')(app);
+everyauth.debug = true;
+app.use(everyauth.middleware())
 
 //app.listen( process.env.PORT || '8000' );
 //console.log('Express server started on port %s', app.address().port);

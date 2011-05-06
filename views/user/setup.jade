@@ -3,7 +3,6 @@ header
 p It appears this is your first time logging in! Please fill out the remaining below to steup your account
 form#account_setup(method='post')
   ul  
-    - console.log(user)
     li.screen_name
       img.profile_picture(src=account.profile_image_url, alt="Your twitter profile picture")
       h2= account.screen_name

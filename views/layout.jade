@@ -26,13 +26,13 @@ html(lang="en")
         a(href='/',title="Go home")
           em the
           | StatusQuo
-      - if (authenticated)
+      - if (everyauth.loggedIn)
         a#server_add.button(href="/server/new") Add Server
         - if (isFront)
           a.refresh.button(href="javascript:void()") Refresh Dashboard
             span.countdown
       nav#eyebrow
-        - if (authenticated)
+        - if (everyauth.loggedIn)
           img.picture(src=user.picture, alt=user.name)
           span= user.name
           a(href='/') Dashboard

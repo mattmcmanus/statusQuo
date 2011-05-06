@@ -1,17 +1,40 @@
-var OAuth = require('oauth').OAuth
+var everyauth = require('everyauth')
   , util = require('./util')
 
 
 module.exports = function(app){
-  var oa = new OAuth("https://twitter.com/oauth/request_token"
-                ,  "https://twitter.com/oauth/access_token"
-                ,   app.settings.oauthConsumerKey
-                ,   app.settings.oauthConsumerSecret
-                ,  "1.0A", "http://util.it.arcadia.edu:8000/oauth/callback", "HMAC-SHA1");
-                
+  //var oa = new OAuth("https://twitter.com/oauth/request_token"
+  //              ,  "https://twitter.com/oauth/access_token"
+  //              ,   app.settings.oauthConsumerKey
+  //              ,   app.settings.oauthConsumerSecret
+  //              ,  "1.0A", "http://util.it.arcadia.edu:8000/oauth/callback", "HMAC-SHA1");
+  
+  // /auth/twitter
+  everyauth.twitter
+    .myHostname('http://util.it.arcadia.edu:8000')
+    .consumerKey(app.settings.oauthConsumerKey)
+    .consumerSecret(app.settings.oauthConsumerSecret)
+    //.authorizePath('/oauth/authenticate')
+    .findOrCreateUser( function (session, accessToken, accessTokenSecret, twitterUserMetadata) {
+      app.User.findOne({username: twitterUserMetadata.screen_name }, function(err, user) {
+        if (user) {
+          req.flash('success', 'You\'ve successfully logged in!')
+          return user
+        } else {
+          var user = new app.User({
+              username  :  twitterUserMetadata.screen_name
+            , picture   :  twitterUserMetadata.profile_image_url
+          })
+          req.newUser = true
+          return user
+        }
+      });
+    })
+    .redirectPath('/login');
+  
   function authenticateFromLoginToken(req, res, next) {
     var cookie = JSON.parse(req.cookies.logintoken);
-    console.log(cookie)
+    util.log(cookie, "Existing Cookie Info")
     app.LoginToken.findOne({ email: cookie.email,  series: cookie.series,  token: cookie.token }, (function(err, token) {
       
       if (!token) {
@@ -22,7 +45,7 @@ module.exports = function(app){
       }
       app.User.findOne({ email: token.email }, function(err, user) {
         if (user) {
-          req.session.user = user
+          req.user = user
   
           token.token = token.randomToken()
           var loginToken = new app.LoginToken({ email: req.session.user.email })
@@ -44,28 +67,24 @@ module.exports = function(app){
   }
   
   function loadUser(req, res, next) {
-    if (req.session.user) {
+    if (req.user) {
       console.log("loadUser: CurrentUser exists")
+      if (req.newUser === true) {
+        res.redirect('/user/setup')
+      }
       next()
     } else if (req.cookies.logintoken) {
       console.log("loadUser: Hey Look!  A cookie!")
       authenticateFromLoginToken(req, res, next);
     } else {
       console.log("loadUser: To the cloud!")
-      if (!req.session.oauth) req.session.oauth = {}
-      oa.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, results){
-        if (error) new Error(error.data)
-        else {
-          req.session.oauth = { token: oauth_token, token_secret: oauth_token_secret }
-          res.redirect('https://twitter.com/oauth/authenticate?oauth_token='+oauth_token)
-         }
-      });
+      res.redirect('/auth/twitter')
     }
   }
   
   app.get('/login', returnToAfterLogin, loadUser, function(req, res){
-    console.log("Login complete, returning to home")
     var loginToken = new app.LoginToken({ email: req.session.user.email })
+    util.log(loginToken.cookieValue, "loginToken.cookieValue")
     loginToken.save(function() {
       console.log("Writing login token")
       res.cookie('logintoken', loginToken.cookieValue, { expires: new Date(Date.now() + 604800000), path: '/', httpOnly: true });
@@ -73,47 +92,17 @@ module.exports = function(app){
     });
   });
   
-  app.get('/oauth/callback', function(req, res, next){
-    if (req.session.oauth) {
-      req.session.oauth.verifier = req.query.oauth_verifier
-      var oauth = req.session.oauth
-      
-      oa.getOAuthAccessToken(oauth.token,oauth.token_secret,oauth.verifier, 
-        function(error, oauth_access_token, oauth_access_token_secret, results){
-          if (error) new Error(error)
-          req.session.oauth = { access_token: oauth_access_token, access_token_secret: oauth_access_token_secret }
-          app.User.findOne({username: results.screen_name }, function(err, user) {
-            if (user) {
-              req.session.user = user
-              req.flash('success', 'You\'ve successfully logged in!')
-              res.redirect('/login')
-            } else {
-              res.redirect('/user/setup')
-            }
-          });
-        }
-      );
-    } else
-      next(new Error('No OAuth information stored in the session. How did you get here?'))
-  });
-  
   app.get('/user/setup', function(req, res) {
-    oa.get("http://api.twitter.com/1/account/verify_credentials.json", req.session.oauth.access_token, req.session.oauth.access_token_secret, function(error, data) {
-      if (data) {
-        var account = JSON.parse(data)
-        res.render('user/setup', {
-            title:"Welcome! Please verify your information"
-          , account: account
-        });
-      } else {
-        console.log('Unable to verify user')
-      }
+    res.render('user/setup', {
+        title:"Welcome! Please verify your information"
+      , account: req.newUser
     });
   });
   
   app.post('/user/setup', function(req, res) {
     var user = new app.User(req.body.user);
-    req.session.user = user;
+    req.user = user
+    delete req.newUser
     user.save(function(err){
       if (!err) {
         req.flash('success', 'You\'re account has been created!')

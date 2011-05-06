@@ -226,8 +226,9 @@ module.exports = function(app){
       _.each(servers, function(server){
         serverCheck(server)
       })
+      res.send()
     })
-    res.send('')
+    
     
   })
   
