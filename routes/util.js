@@ -1,6 +1,5 @@
-
 exports.isAuthenticated = function(req, res, next) {
-  console.log(req.cookies)
+  log(req.cookies, "isAuthenticated Cookies")
   if (req.session && req.user && req.cookies.logintoken) {
     next()
   } else {
@@ -11,7 +10,7 @@ exports.isAuthenticated = function(req, res, next) {
   }  
 }
 
-exports.log = function(toLog, title) {
+log = exports.log = function(toLog, title) {
   if (title) console.log("\n======================  "+title+"  ============================================")
   console.log(toLog)
   if (title) console.log("======================  /"+title+"  ============================================\n")

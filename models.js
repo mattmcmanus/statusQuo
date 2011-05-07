@@ -1,10 +1,13 @@
 var _ = require('underscore')
+    everyauth = require('everyauth')
+  , Promise = everyauth.Promise
+  , mongooseAuth = require('mongoose-auth')
 
 // Define models
-exports.defineModels = function(mongoose, fn) {
+exports.defineModels = function(mongoose, settings, fn) {
   var Schema = mongoose.Schema
     , ObjectId = Schema.ObjectId
-    , User
+    , UserSchema
     , LoginToken
     , Server
     , Services
@@ -12,53 +15,68 @@ exports.defineModels = function(mongoose, fn) {
 
   //                          Users
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-  User = new Schema({
+  UserSchema = new Schema({
       created       :  { type: Date, default: Date.now }
     , lastLoggedIn  :  { type: Date, default: Date.now }
     , username      :  { type: String, index: { unique: true } }
     , name          :  { type: String, match: /[a-z]/ }
     , email         :  { type: String, index: { unique: true } }
     , picture       :  String
-    , access_token  :  String
-    , access_token_secret: String
-  });
+  })
   
-  User.virtual('id')
+  UserSchema.virtual('id')
     .get(function() {
-      return this._id.toHexString();
-    });
+      return this._id.toHexString()
+    })
   
+  UserSchema.plugin(mongooseAuth, {
+    everymodule: {
+      everyauth: {
+          User: function () {
+            return User
+          }
+      }
+    , twitter: {
+        everyauth: {
+            myHostname: 'http://util.it.arcadia.edu:8000'
+          , consumerKey: settings.defaults.oauthConsumerKey
+          , consumerSecret: settings.defaults.oauthConsumerSecret
+          , redirectPath: '/'
+        }
+      }
+    }  
+  })  
   //                     LoginToken
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
   LoginToken = new Schema({
       email   : { type: String, index: true }
     , series  : { type: String, index: true }
     , token   : { type: String, index: true }
-  });
+  })
 
   LoginToken.method('randomToken', function() {
-    return Math.round((new Date().valueOf() * Math.random())) + '';
-  });
+    return Math.round((new Date().valueOf() * Math.random())) + ''
+  })
 
   LoginToken.pre('save', function(next) {
     // Automatically create the tokens
-    this.token = this.randomToken();
+    this.token = this.randomToken()
 
     if (this.isNew)
-      this.series = this.randomToken();
+      this.series = this.randomToken()
 
-    next();
-  });
+    next()
+  })
 
   LoginToken.virtual('id')
     .get(function() {
-      return this._id.toHexString();
-    });
+      return this._id.toHexString()
+    })
 
   LoginToken.virtual('cookieValue')
     .get(function() {
-      return JSON.stringify({ email: this.email, token: this.token, series: this.series });
-    });  
+      return JSON.stringify({ email: this.email, token: this.token, series: this.series })
+    })  
     
   
   //                     Server Services
@@ -74,8 +92,8 @@ exports.defineModels = function(mongoose, fn) {
   
   Services.virtual('id')
     .get(function() {
-      return this._id.toHexString();
-    });
+      return this._id.toHexString()
+    })
   
   
   //                          Servers
@@ -103,8 +121,8 @@ exports.defineModels = function(mongoose, fn) {
   
   Server.virtual('id')
     .get(function() {
-      return this._id.toHexString();
-    });
+      return this._id.toHexString()
+    })
     
   //                     Status Log
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -122,14 +140,14 @@ exports.defineModels = function(mongoose, fn) {
   
   ServiceResponse.virtual('id')
     .get(function() {
-      return this._id.toHexString();
-    });
+      return this._id.toHexString()
+    })
     
   
-  mongoose.model('User', User);
-  mongoose.model('Server', Server);
-  mongoose.model('LoginToken', LoginToken);
-  mongoose.model('ServiceResponse', ServiceResponse);
+  mongoose.model('User', UserSchema)
+  mongoose.model('Server', Server)
+  mongoose.model('LoginToken', LoginToken)
+  mongoose.model('ServiceResponse', ServiceResponse)
   
-  fn();
+  fn()
 }

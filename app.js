@@ -8,6 +8,7 @@ var sys = require('sys')
   , mongoose = require('mongoose')
   , io = require('socket.io')
   , everyauth = require('everyauth')
+  , mongooseAuth = require('mongoose-auth')
   // Some Basic variables
   , settings = JSON.parse(fs.readFileSync('./config.json', 'utf8'))
   , pub = __dirname + '/public'
@@ -51,15 +52,10 @@ app.configure('production', function() {
   app.use(express.errorHandler());
 });
 
-//                      Dynamic Helpers
-// - - - - - - - - - - - - - - - - - - - - - - - - - - -
-//app.helpers(require('./helpers.js').helpers);
-app.dynamicHelpers(require('./helpers.js').dynamicHelpers);
-everyauth.helpExpress(app);
 
 //                      Models
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
-require('./models').defineModels(mongoose, function() {
+require('./models').defineModels(mongoose, settings, function() {
   app.User = User = mongoose.model('User')
   app.Server = Server = mongoose.model('Server')
   app.LoginToken = LoginToken = mongoose.model('LoginToken')
@@ -83,11 +79,14 @@ app.error(function(err, req, res){
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 require('./routes/user')(app);
 require('./routes/server')(app);
-everyauth.debug = true;
-app.use(everyauth.middleware())
+app.use(mongooseAuth.middleware())
 
-//app.listen( process.env.PORT || '8000' );
-//console.log('Express server started on port %s', app.address().port);
+
+//                     Helpers
+// - - - - - - - - - - - - - - - - - - - - - - - - - - -
+//app.helpers(require('./helpers.js').helpers);
+app.dynamicHelpers(require('./helpers.js').dynamicHelpers);
+mongooseAuth.helpExpress(app);
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - -
