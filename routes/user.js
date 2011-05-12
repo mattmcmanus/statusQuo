@@ -1,7 +1,5 @@
 var everyauth = require('everyauth')
-  , Promise = everyauth.Promise
   , util = require('./util')
-  , mongooseAuth = require('mongoose-auth')
 
 
 module.exports = function(app){
@@ -12,28 +10,36 @@ module.exports = function(app){
   //              ,  "1.0A", "http://util.it.arcadia.edu:8000/oauth/callback", "HMAC-SHA1");
   
   // /auth/twitter
-  //everyauth.twitter
-  //  .myHostname('http://util.it.arcadia.edu:8000')
-  //  .consumerKey(app.settings.oauthConsumerKey)
-  //  .consumerSecret(app.settings.oauthConsumerSecret)
-  //  //.authorizePath('/oauth/authenticate')
-  //  .findOrCreateUser( function (session, accessToken, accessTokenSecret, twitterUserMetadata) {
-  //    var promise = this.Promise();
-  //    util.log(session, "Session")
-  //    app.User.findOne({username: twitterUserMetadata.screen_name }, function(err, user) {
-  //      if (!user) {
-  //        var user = new app.User({
-  //            username  :   twitterUserMetadata.screen_name
-  //          , picture   :   twitterUserMetadata.profile_image_url
-  //          , new       :   true
-  //        })
-  //      }
-  //      promise.fulfill(user);
-  //    });
-  //    
-  //    return promise;
-  //  })
-  //  .redirectPath('/login');
+  
+  everyauth.everymodule.findUserById( function (userId, callback) {
+    User.findById(userId, function(err,user){
+      if (err) new Error("Nope!")
+      else
+        callback(user)
+    });
+    
+  });
+  everyauth.debug = true
+  everyauth.twitter
+    .myHostname('http://util.it.arcadia.edu:8000')
+    .consumerKey(app.settings.oauthConsumerKey)
+    .consumerSecret(app.settings.oauthConsumerSecret)
+    .authorizePath('/oauth/authenticate')
+    .findOrCreateUser( function (session, accessToken, accessTokenSecret, twitterUserMetadata) {
+      var promise = this.Promise();
+      app.User.findOne({username: twitterUserMetadata.screen_name }, function(err, user) {
+        if (!user) {
+          var user = new app.User({
+              username  :   twitterUserMetadata.screen_name
+            , picture   :   twitterUserMetadata.profile_image_url
+            , newUser       :   true
+          })
+        }
+        promise.fulfill(user.toObject());
+      });
+      return promise;
+    })
+    .redirectPath('/login');
   
   function authenticateFromLoginToken(req, res, next) {
     var cookie = JSON.parse(req.cookies.logintoken);
@@ -71,11 +77,11 @@ module.exports = function(app){
   
   function loadUser(req, res, next) {
     util.log(req.user, "User")
-    if (req.user) {
+    if (req.user || (req.session.auth && req.session.auth.loggedIn)) {
       console.log("loadUser: CurrentUser exists")
-      if (req.user.new === true) {
-        res.redirect('/user/setup')
-      }
+      //if (req.user.new === true) {
+      //  res.redirect('/user/setup')
+      //}
       next()
     } else if (req.cookies.logintoken) {
       console.log("loadUser: Hey Look!  A cookie!")
@@ -87,7 +93,7 @@ module.exports = function(app){
   }
   
   app.get('/login', returnToAfterLogin, loadUser, function(req, res){
-    var loginToken = new app.LoginToken({ email: req.session.user.email })
+    var loginToken = new app.LoginToken({ email: req.user.email })
     util.log(loginToken.cookieValue, "loginToken.cookieValue")
     loginToken.save(function() {
       console.log("Writing login token")

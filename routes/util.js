@@ -13,5 +13,5 @@ exports.isAuthenticated = function(req, res, next) {
 log = exports.log = function(toLog, title) {
   if (title) console.log("\n======================  "+title+"  ============================================")
   console.log(toLog)
-  if (title) console.log("======================  /"+title+"  ============================================\n")
+  if (title) console.log("======================  /"+title+"  ===========================================\n")
 }

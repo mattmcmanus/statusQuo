@@ -79,14 +79,14 @@ app.error(function(err, req, res){
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 require('./routes/user')(app);
 require('./routes/server')(app);
-app.use(mongooseAuth.middleware())
+app.use(everyauth.middleware())
 
 
 //                     Helpers
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 //app.helpers(require('./helpers.js').helpers);
 app.dynamicHelpers(require('./helpers.js').dynamicHelpers);
-mongooseAuth.helpExpress(app);
+everyauth.helpExpress(app);
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - -

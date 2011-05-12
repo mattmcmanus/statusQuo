@@ -28,24 +28,6 @@ exports.defineModels = function(mongoose, settings, fn) {
     .get(function() {
       return this._id.toHexString()
     })
-  
-  UserSchema.plugin(mongooseAuth, {
-    everymodule: {
-      everyauth: {
-          User: function () {
-            return User
-          }
-      }
-    , twitter: {
-        everyauth: {
-            myHostname: 'http://util.it.arcadia.edu:8000'
-          , consumerKey: settings.defaults.oauthConsumerKey
-          , consumerSecret: settings.defaults.oauthConsumerSecret
-          , redirectPath: '/'
-        }
-      }
-    }  
-  })  
   //                     LoginToken
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
   LoginToken = new Schema({
@@ -135,7 +117,6 @@ exports.defineModels = function(mongoose, settings, fn) {
     , responseCode    :  String
     , responseMessage :  String
     , responseTime    :  String
-    , pingReponse     :  String 
   })
   
   ServiceResponse.virtual('id')
