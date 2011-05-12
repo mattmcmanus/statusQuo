@@ -1,5 +1,6 @@
 var everyauth = require('everyauth')
   , util = require('./util')
+  , mongooseAuth = require('mongoose-auth');
 
 
 module.exports = function(app){
@@ -11,35 +12,37 @@ module.exports = function(app){
   
   // /auth/twitter
   
-  everyauth.everymodule.findUserById( function (userId, callback) {
-    User.findById(userId, function(err,user){
-      if (err) new Error("Nope!")
-      else
-        callback(user)
-    });
-    
-  });
-  everyauth.debug = true
-  everyauth.twitter
-    .myHostname('http://util.it.arcadia.edu:8000')
-    .consumerKey(app.settings.oauthConsumerKey)
-    .consumerSecret(app.settings.oauthConsumerSecret)
-    .authorizePath('/oauth/authenticate')
-    .findOrCreateUser( function (session, accessToken, accessTokenSecret, twitterUserMetadata) {
-      var promise = this.Promise();
-      app.User.findOne({username: twitterUserMetadata.screen_name }, function(err, user) {
-        if (!user) {
-          var user = new app.User({
-              username  :   twitterUserMetadata.screen_name
-            , picture   :   twitterUserMetadata.profile_image_url
-            , newUser       :   true
-          })
-        }
-        promise.fulfill(user.toObject());
-      });
-      return promise;
-    })
-    .redirectPath('/login');
+  //eryauth.everymodule.findUserById( function (userId, callback) {
+  //app.User.findById(userId, function(err,user){
+  //  if (err) 
+  //    new Error("No user by that ID")
+  //  else
+  //    callback(user)
+  //});
+  //
+  //;
+  //eryauth.debug = true
+  //eryauth.twitter
+  //.myHostname('http://util.it.arcadia.edu:8000')
+  //.consumerKey(app.settings.oauthConsumerKey)
+  //.consumerSecret(app.settings.oauthConsumerSecret)
+  ////.authorizePath('/oauth/authenticate')
+  //.findOrCreateUser( function (session, accessToken, accessTokenSecret, twitterUserMetadata) {
+  //  var promise = this.Promise();
+  //  app.User.findOne({username: twitterUserMetadata.screen_name }, function(err, user) {
+  //    assert.equal(err,null);
+  //    if (!user) {
+  //      var user = new app.User({
+  //          username  :   twitterUserMetadata.screen_name
+  //        , picture   :   twitterUserMetadata.profile_image_url
+  //        , newUser   :   true
+  //      })
+  //    }
+  //    promise.fulfill(user.toObject());
+  //  });
+  //  return promise;
+  //})
+  //.redirectPath('/login');
   
   function authenticateFromLoginToken(req, res, next) {
     var cookie = JSON.parse(req.cookies.logintoken);

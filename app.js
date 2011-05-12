@@ -6,9 +6,9 @@ var sys = require('sys')
   , stylus = require('stylus')
   , RedisStore = require('connect-redis')
   , mongoose = require('mongoose')
+  , mongooseAuth = require('mongoose-auth')
   , io = require('socket.io')
   , everyauth = require('everyauth')
-  , mongooseAuth = require('mongoose-auth')
   // Some Basic variables
   , settings = JSON.parse(fs.readFileSync('./config.json', 'utf8'))
   , pub = __dirname + '/public'
@@ -19,6 +19,7 @@ var sys = require('sys')
   , db
   // Load server and routes
   , app = module.exports = express.createServer();
+  
 //            Default Config settings
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 app.configure(function(){
@@ -55,12 +56,13 @@ app.configure('production', function() {
 
 //                      Models
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
-require('./models').defineModels(mongoose, settings, function() {
-  app.User = User = mongoose.model('User')
-  app.Server = Server = mongoose.model('Server')
-  app.LoginToken = LoginToken = mongoose.model('LoginToken')
-  app.ServiceResponse = ServiceResponse = mongoose.model('ServiceResponse')
+require('./models').defineModels(mongoose, settings, function(models) {
   db = mongoose.connect(app.set('db-uri'))
+  app.User = User = models['User']
+  app.Server = Server = models['Server']
+  app.LoginToken = LoginToken = models['LoginToken']
+  app.ServiceResponse = ServiceResponse = models['ServiceResponse']
+  
 })
 
 //                      Errors
@@ -79,14 +81,14 @@ app.error(function(err, req, res){
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 require('./routes/user')(app);
 require('./routes/server')(app);
-app.use(everyauth.middleware())
+app.use(mongooseAuth.middleware())
 
 
 //                     Helpers
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 //app.helpers(require('./helpers.js').helpers);
 app.dynamicHelpers(require('./helpers.js').dynamicHelpers);
-everyauth.helpExpress(app);
+mongooseAuth.helpExpress(app);
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - -

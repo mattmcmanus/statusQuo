@@ -2,20 +2,18 @@ var _ = require('underscore')
     everyauth = require('everyauth')
   , Promise = everyauth.Promise
   , mongooseAuth = require('mongoose-auth')
+  , fs = require('fs')
+
+everyauth.debug = true;
 
 // Define models
 exports.defineModels = function(mongoose, settings, fn) {
   var Schema = mongoose.Schema
-    , ObjectId = Schema.ObjectId
-    , UserSchema
-    , LoginToken
-    , Server
-    , Services
-    , Log
+    , ObjectId = mongoose.SchemaTypes.ObjectId
 
   //                          Users
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-  UserSchema = new Schema({
+  var UserSchema = new Schema({
       created       :  { type: Date, default: Date.now }
     , lastLoggedIn  :  { type: Date, default: Date.now }
     , username      :  { type: String, index: { unique: true } }
@@ -28,19 +26,37 @@ exports.defineModels = function(mongoose, settings, fn) {
     .get(function() {
       return this._id.toHexString()
     })
+    
+  UserSchema.plugin(mongooseAuth, {
+      everymodule: {
+        everyauth: {
+            User: function () {
+              return User;
+            }
+        }
+      }
+    , twitter: {
+        everyauth: {
+            myHostname: 'http://util.it.arcadia.edu:3000'
+          , consumerKey: settings.defaults.oauthConsumerKey
+          , consumerSecret: settings.defaults.oauthConsumerSecret
+          , redirectPath: '/'
+        }
+      }
+  });
   //                     LoginToken
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-  LoginToken = new Schema({
+  var LoginTokenSchema = new Schema({
       email   : { type: String, index: true }
     , series  : { type: String, index: true }
     , token   : { type: String, index: true }
   })
 
-  LoginToken.method('randomToken', function() {
+  LoginTokenSchema.method('randomToken', function() {
     return Math.round((new Date().valueOf() * Math.random())) + ''
   })
 
-  LoginToken.pre('save', function(next) {
+  LoginTokenSchema.pre('save', function(next) {
     // Automatically create the tokens
     this.token = this.randomToken()
 
@@ -50,12 +66,12 @@ exports.defineModels = function(mongoose, settings, fn) {
     next()
   })
 
-  LoginToken.virtual('id')
+  LoginTokenSchema.virtual('id')
     .get(function() {
       return this._id.toHexString()
     })
 
-  LoginToken.virtual('cookieValue')
+  LoginTokenSchema.virtual('cookieValue')
     .get(function() {
       return JSON.stringify({ email: this.email, token: this.token, series: this.series })
     })  
@@ -63,7 +79,7 @@ exports.defineModels = function(mongoose, settings, fn) {
   
   //                     Server Services
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-  Services = new Schema({
+  var ServicesSchema = new Schema({
       name        :  String
     , type        :  { type: String, index: true }
     , url         :  String
@@ -72,7 +88,7 @@ exports.defineModels = function(mongoose, settings, fn) {
     //, port        :  { type: Number, default: 80}
   })
   
-  Services.virtual('id')
+  ServicesSchema.virtual('id')
     .get(function() {
       return this._id.toHexString()
     })
@@ -80,7 +96,7 @@ exports.defineModels = function(mongoose, settings, fn) {
   
   //                          Servers
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-  Server = new Schema({
+  var ServerSchema = new Schema({
       user         :  { type: ObjectId, index: true }
     , created      :  { type: Date, default: Date.now }
     , updated      :  { type: Date, default: Date.now }
@@ -88,7 +104,7 @@ exports.defineModels = function(mongoose, settings, fn) {
     , name         :  String
     , os           :  String
     , type         :  { type: [String], set: splitTags}
-    , services     :  [Services] 
+    , services     :  [ServicesSchema] 
   })
   
   function splitTags(tags) {
@@ -101,14 +117,14 @@ exports.defineModels = function(mongoose, settings, fn) {
     return tags
   }
   
-  Server.virtual('id')
+  ServerSchema.virtual('id')
     .get(function() {
       return this._id.toHexString()
     })
     
   //                     Status Log
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-  ServiceResponse = new Schema({
+  var ServiceResponseSchema = new Schema({
       serverID        :  { type: ObjectId, index: true }
     , serviceID       :  { type: ObjectId, index: true }
     , timestamp       :  { type: Date, default: Date.now }
@@ -119,16 +135,24 @@ exports.defineModels = function(mongoose, settings, fn) {
     , responseTime    :  String
   })
   
-  ServiceResponse.virtual('id')
+  ServiceResponseSchema.virtual('id')
     .get(function() {
       return this._id.toHexString()
     })
     
+  var Models = [];
   
-  mongoose.model('User', UserSchema)
-  mongoose.model('Server', Server)
-  mongoose.model('LoginToken', LoginToken)
-  mongoose.model('ServiceResponse', ServiceResponse)
+  mongoose.model('User', UserSchema);
+  var User = Models['User'] = mongoose.model('User')
   
-  fn()
+  mongoose.model('Server', ServerSchema)
+  Models['Server'] = mongoose.model('Server')
+  
+  mongoose.model('LoginToken', LoginTokenSchema)
+  Models['LoginToken'] = mongoose.model('LoginToken')
+  
+  mongoose.model('ServiceResponse', ServiceResponseSchema)
+  Models['ServiceResponse'] = mongoose.model('ServiceResponse')
+  
+  fn(Models)
 }

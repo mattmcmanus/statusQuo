@@ -19,7 +19,7 @@
   , "async"             : ">= 0.1"
   , "cluster"           : ">= 0.6"
   , "http-status"       : ">= 0.1"
-  , "connect-mongodb"   : ">= 0.2"
+  , "connect-redis"     : ">= 1"
   , "socket.io"         : ">= 0.6"
   , "request"           : ">= 1.9"
   , "underscore"        : ">= 1.1"
