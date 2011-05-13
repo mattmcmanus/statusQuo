@@ -18,14 +18,6 @@ exports.dynamicHelpers = {
     return (require('url').parse(req.url).pathname == '/')
   },
   
-  authenticated: function(req, res) {
-    return (req.session && req.session.user);
-  },
-  
-  user: function(req, res) {
-    return (req.session && req.session.user) ? req.session.user: {} ;
-  },
-  
   messages: function(req, res){
     var buf = []
       , messages = req.flash()
