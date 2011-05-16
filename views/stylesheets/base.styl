@@ -332,7 +332,6 @@ div.server
 
 //         Server detail!
 //- - - - - - - - - - - - - - - - - - - - 
-
 .server.detail
   width 100%
   max-width 600px
@@ -390,38 +389,6 @@ div.server
   section
     h3
       line-height 1.5em
-    &.services
-      height auto
-      border-right 1px solid #333
-      .service
-        position relative
-        linear-gradient(#292929,#222222)
-        padding 4px 7px
-        div
-          display inline-block
-          padding 2px 4px
-          overflow hidden
-          text-overflow ellipsis
-          white-space nowrap
-        .loader
-          display none
-        .name
-          font-weight 700
-        .url
-          color #666
-          font-size .9em
-          width 200px
-          text-shadow none
-        .message
-          position absolute
-          right 10px
-          top 5px
-          font-weight 700
-        .detail
-          display none
-          clear both
-          display block
-          
     &.ping
       height 100px
       position relative
@@ -438,6 +405,50 @@ div.server
           margin-left 5px
   footer
     clear both
+    
+//         Services
+//- - - - - - - - - - - - - - - - - - - -    
+.services
+  height auto
+  border-right 1px solid #333
+  .service
+    position relative
+    linear-gradient(#292929,#222222)
+    padding 4px 7px
+    div
+      display inline-block
+      padding 2px 4px
+      overflow hidden
+      text-overflow ellipsis
+      white-space nowrap
+    .loader
+      display none
+    .name
+      font-weight 700
+    .url
+      color #666
+      font-size .9em
+      width 200px
+      text-shadow none
+    .message
+      position absolute
+      right 10px
+      top 5px
+      font-weight 700
+      em
+        color #666
+        opacity .5
+        font-weight 400
+        font-size .8em
+        padding 0 2em
+        text-shadow none
+      &:hover em
+        opacity 1
+        
+    .details
+      display none
+      clear both
+      display block
     
     
 .server 
@@ -624,8 +635,6 @@ form.server
   linear-gradient #333333,#222222
     
 #main
-  margin 1em auto
-  
   .psst
     position absolute
     left 142px

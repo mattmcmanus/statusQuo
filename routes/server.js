@@ -53,6 +53,7 @@ module.exports = function(app){
           publicServices.push(_.select(server.services, function(service){ return service.public == true}))
         })
         publicServices = _.flatten(publicServices)
+        publicServices = publicServices.sort(function(s1, s2) { return s1["name"] - s2["name"] })
         res.render('service', {
           title: "Dashboard",
           services: publicServices

@@ -1,7 +1,7 @@
 .service(id=service.id, class=service.lastStatus.toLowerCase())
   .name= service.name
-  .url= service.url
+  .url= service.hostname
   .message
-    em= service.lastStatusTime
+    em= service.lastStatusTimeRelative
     = service.lastStatus
   .details

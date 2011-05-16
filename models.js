@@ -1,5 +1,6 @@
 var _ = require('underscore')
-    everyauth = require('everyauth')
+  , _date = require('underscore.date')
+  , everyauth = require('everyauth')
   , Promise = everyauth.Promise
   , mongooseAuth = require('mongoose-auth')
   , fs = require('fs')
@@ -91,6 +92,14 @@ exports.defineModels = function(mongoose, settings, fn) {
   ServicesSchema.virtual('id')
     .get(function() {
       return this._id.toHexString()
+    })
+  ServicesSchema.virtual('hostname')
+    .get(function() {
+      return require('url').parse(this.url).hostname
+    })
+  ServicesSchema.virtual('lastStatusTimeRelative')
+    .get(function() {
+      return _date.date(this.lastStatusTime).fromNow()
     })
   
   
