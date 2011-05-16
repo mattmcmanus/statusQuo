@@ -1,6 +1,6 @@
 exports.isAuthenticated = function(req, res, next) {
-  log(req.cookies, "isAuthenticated Cookies")
-  if (req.session && req.user && req.cookies.logintoken) {
+  //log(req.cookies, "isAuthenticated Cookies")
+  if (req.session && req.session.auth.loggedIn) {
     next()
   } else {
     res.render('page', {

@@ -2,7 +2,6 @@ var util = require('./util')
   , _ = require('underscore')
   , dns = require('dns')
   , request = require('request')
-  , util   = require('util')
   , async = require('async')
   , spawn = require('child_process').spawn
   , HTTPStatus = require('http-status')
@@ -32,28 +31,39 @@ module.exports = function(app){
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   app.get('/', function(req, res){
     var find = {}
-    if (req.session.user)
-      find.user = req.session.user._id
-    else
-      find.public = true
-    
-    app.Server.find(find).sort('name', 1 ).run(function (err, servers) {
-      var list = {}
-          list.production = _.select(servers, function(server){ return _.include(server.type, "production") })
-        , list.development = _.select(servers, function(server){ return _.include(server.type, "development") })
-        , list.other = _.reject(servers, function(server){
-                          return _.any(server.type, function(type){
-                                    return (type == "development" || type == "production")
-                          })
-                      })
-      res.render('server/index', {
-        title: "Dashboard",
-        servers: list
+    if (req.session.auth && req.session.auth.loggedIn) {
+      app.Server.find({user : req.session.auth.userId}).sort('name', 1 ).run(function (err, servers) {
+        var list = {}
+            list.production = _.select(servers, function(server){ return _.include(server.type, "production") })
+          , list.development = _.select(servers, function(server){ return _.include(server.type, "development") })
+          , list.other = _.reject(servers, function(server){
+                            return _.any(server.type, function(type){
+                                      return (type == "development" || type == "production")
+                            })
+                        })
+        res.render('server/index', {
+          title: "Dashboard",
+          servers: list
+        })
       })
-    })
+    } else {
+      app.Server.find({ 'services.public' : true }).run(function (err, servers) {
+        var publicServices = []
+        _.each(servers, function(server){
+          publicServices.push(_.select(server.services, function(service){ return service.public == true}))
+        })
+        publicServices = _.flatten(publicServices)
+        res.render('service', {
+          title: "Dashboard",
+          services: publicServices
+        })
+      })
+    }
+    
   });
   
   app.get('/server/new', util.isAuthenticated, function(req, res){
+    util.log(req.loggedIn, "Logged in")
     res.render('server/new', {
       server: new app.Server()
     });
@@ -65,7 +75,7 @@ module.exports = function(app){
       , type    : req.body.server.type
       , ip      : req.body.server.ip
       , os      : req.body.server.os
-      , user    : req.session.user._id
+      , user    : req.session.auth.userId
     })
     
     for (var i=0; i < _.size(req.body.server.services); i++) {
@@ -110,6 +120,9 @@ module.exports = function(app){
   
   app.put('/server/:server', function(req, res, next){
     if(!req.server) return next(new Error('That server disappeared!'))
+    
+    util.log(req.server.toObject(),  "Server Pre")
+    
     var server = req.server
       , services = server.services;
     
@@ -136,13 +149,14 @@ module.exports = function(app){
       }
     }
     server.services = services;
+    util.log(server.toObject(),  "Server Post")
     server.save(function(err){
       if (!err) {
         req.flash('success', 'Server updated')
         serverCheck(server)
       } else {
         req.flash('error', 'Err, Something broke when we tried to save your server. Sorry!')
-        console.log("ERROR:" + err)
+        util.log(err, "Server Put Error")
       }
       res.redirect('/')
     });
@@ -156,7 +170,7 @@ module.exports = function(app){
         req.flash('success', 'Server removed')
       } else {
         req.flash('error', 'Err, Something broke when we tried to delete your server. Sorry!')
-        console.log("ERROR:" + err)
+        util.log(err, "Server Delete Error")
       }
       res.redirect('/')
     });

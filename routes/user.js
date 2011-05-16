@@ -2,7 +2,6 @@ var everyauth = require('everyauth')
   , util = require('./util')
   , mongooseAuth = require('mongoose-auth');
 
-
 module.exports = function(app){
 
   function authenticateFromLoginToken(req, res, next) {
