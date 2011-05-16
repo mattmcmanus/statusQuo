@@ -218,7 +218,9 @@ module.exports = function(app){
     async.map(server.services, serviceCheck, function(err, serviceResponses){
       _.each(serviceResponses, function(serviceResponse, key){
         serviceResponse.serverID = server._id
-        server.services[key].lastStatus = serviceResponse.responseStatus
+        // Update the lastStatus value for the service for easy access later. Also, put ok to uppercase....cause it lookes nicer
+        server.services[key].lastStatus = (serviceResponse.responseStatus === 'ok')?'OK':serviceResponse.responseStatus;
+        server.services[key].lastStatusTime = new Date()
         serviceResponse.save(function(err){
           if (err) {
             new Error('Couldnt save the serviceResponse')

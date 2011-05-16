@@ -79,11 +79,12 @@ exports.defineModels = function(mongoose, settings, fn) {
   //                     Server Services
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
   var ServicesSchema = new Schema({
-      name        :  String
-    , type        :  { type: String, index: true }
-    , url         :  String
-    , public      :  { type: Boolean, index: true }
-    , lastStatus  :  String
+      name            :  String
+    , type            :  { type: String, index: true }
+    , url             :  String
+    , public          :  { type: Boolean, index: true }
+    , lastStatus      :  String
+    , lastStatusTime  :  Date
     //, port        :  { type: Number, default: 80}
   })
   
