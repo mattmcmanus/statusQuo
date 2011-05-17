@@ -209,15 +209,17 @@ module.exports = function(app){
         , type            :  service.type
         , responseStatus  :  responseStatus(response.statusCode)
         , responseCode    :  response.statusCode
-        , responseMessage :  (error)?error.message.substr(err.message.indexOf(',')+2):HTTPStatus[response.statusCode]
+        , responseMessage :  (error)?error.message.substr(error.message.indexOf(',')+2):HTTPStatus[response.statusCode]
       })
       fn(null, serviceResponse)
     })
   }
   
   function serverCheck(server) {
+    util.log("- serverCheck: "+server.name)
     async.map(server.services, serviceCheck, function(err, serviceResponses){
       _.each(serviceResponses, function(serviceResponse, key){
+        util.log(serviceResponse, "serviceResponse")
         serviceResponse.serverID = server._id
         // Update the lastStatus value for the service for easy access later. Also, put ok to uppercase....cause it lookes nicer
         server.services[key].lastStatus = (serviceResponse.responseStatus === 'ok')?'OK':serviceResponse.responseStatus;
@@ -255,7 +257,7 @@ module.exports = function(app){
   
   app.get('/server/:server/status', function(req, res){
     var result = {
-        ok: _.size(_.select(req.server.services, function(service){return service.lastStatus == 'ok' }))
+        ok: _.size(_.select(req.server.services, function(service){return service.lastStatus == 'OK' }))
       , warning: _.size(_.select(req.server.services, function(service){return service.lastStatus == 'warning' }))
       , error: _.size(_.select(req.server.services, function(service){return service.lastStatus == 'error' }))
     }

@@ -150,6 +150,7 @@ if(typeof window.statusQuo === "undefined") {
       $.ajax({ url:'/server/' + $(server).attr('id') + '/status/'
         , context:server
         , success: function(data){
+            console.log(data)
             var server = $(this);
             
             $(server).removeClass('checking').find(".services li").remove()

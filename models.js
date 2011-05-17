@@ -5,6 +5,8 @@ var _ = require('underscore')
   , mongooseAuth = require('mongoose-auth')
   , fs = require('fs')
 
+everyauth.debug = true
+
 // Define models
 exports.defineModels = function(mongoose, settings, fn) {
   var Schema = mongoose.Schema
@@ -36,14 +38,15 @@ exports.defineModels = function(mongoose, settings, fn) {
       }
     , twitter: {
         everyauth: {
-            myHostname: 'http://util.it.arcadia.edu:3000'
+            myHostname: settings.defaults.myHostname
           , consumerKey: settings.defaults.oauthConsumerKey
           , consumerSecret: settings.defaults.oauthConsumerSecret
-          , authorizePath: '/oauth/authenticate'
+          //, authorizePath: '/oauth/authenticate'
           , redirectPath: '/'
         }
       }
   });
+  everyauth.twitter.callbackPath()
   //                     LoginToken
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
   var LoginTokenSchema = new Schema({
