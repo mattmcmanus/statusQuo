@@ -16,6 +16,7 @@
   , "everyauth"         : ">= 0.2"
   , "mongoose-auth"     : ">= 0.0.9"
   , "express"           : ">= 2"
+  , "express-mongoose"  : ">= 0.0.2"
   , "stylus"            : ">= 0.9"
   , "oauth"             : ">= 0.9"
   , "async"             : ">= 0.1"
