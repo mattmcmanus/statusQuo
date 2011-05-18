@@ -29,6 +29,15 @@ module.exports = function(app){
   
   //                      Routes
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  function removeThe(w) {
+    return (w.indexOf("the ") !== -1)? w.substr(4) : w
+  }
+  function sortServers(s1, s2) {
+    var x = removeThe(s1["name"].toLowerCase())
+    var y = removeThe(s2["name"].toLowerCase())
+    return ((x < y) ? -1 : ((x > y) ? 1 : 0))
+  }
+  
   app.get('/', function(req, res){
     var find = {}
     if (req.session.auth && req.session.auth.loggedIn) {
@@ -53,7 +62,7 @@ module.exports = function(app){
           publicServices.push(_.select(server.services, function(service){ return service.public == true}))
         })
         publicServices = _.flatten(publicServices)
-        publicServices = publicServices.sort(function(s1, s2) { return s1["name"] - s2["name"] })
+        publicServices = publicServices.sort(sortServers)
         res.render('service', {
           title: "Dashboard",
           services: publicServices
@@ -255,7 +264,7 @@ module.exports = function(app){
   
   app.get('/server/:server/status', function(req, res){
     var result = {
-        ok: _.size(_.select(req.server.services, function(service){return service.lastStatus == 'ok' }))
+        ok: _.size(_.select(req.server.services, function(service){return service.lastStatus == 'OK' }))
       , warning: _.size(_.select(req.server.services, function(service){return service.lastStatus == 'warning' }))
       , error: _.size(_.select(req.server.services, function(service){return service.lastStatus == 'error' }))
     }
