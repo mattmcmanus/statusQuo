@@ -1,10 +1,5 @@
-var util = require('./util')
+var sq = require('../lib/statusquo')
   , _ = require('underscore')
-  , dns = require('dns')
-  , request = require('request')
-  , async = require('async')
-  , spawn = require('child_process').spawn
-  , HTTPStatus = require('http-status')
   , info = [];
 
 module.exports = function(app){
@@ -72,8 +67,8 @@ module.exports = function(app){
     
   });
   
-  app.get('/server/new', util.isAuthenticated, function(req, res){
-    util.log(req.loggedIn, "Logged in")
+  app.get('/server/new', sq.isAuthenticated, function(req, res){
+    sq.debug(req.loggedIn, "Logged in")
     res.render('server/new', {
       server: new app.Server()
     });
@@ -124,49 +119,45 @@ module.exports = function(app){
       res.render('server/show', {server: req.server})
   }); 
     
-  app.get('/server/:server/edit', util.isAuthenticated, function(req, res){
+  app.get('/server/:server/edit', sq.isAuthenticated, function(req, res){
     res.render('server/edit', {server: req.server})
   });
   
   app.put('/server/:server', function(req, res, next){
     if(!req.server) return next(new Error('That server disappeared!'))
     
-    util.log(req.server.toObject(),  "Server Pre")
+    sq.debug(req.server.toObject(),  "Server Pre")
     
-    var server = req.server
-      , services = server.services;
-    
-    server.updated = new Date();
-    server.ip = req.body.server.ip
-    server.name = req.body.server.name
-    server.os = req.body.server.os
-    server.type = req.body.server.type
+    req.server.updated = new Date();
+    req.server.ip = req.body.server.ip
+    req.server.name = req.body.server.name
+    req.server.os = req.body.server.os
+    req.server.type = req.body.server.type
     
     for (var num = _.size(req.body.server.services) - 1; num >= 0; num--){
-      if (services[num]) {
+      if (req.server.services[num]) {
         if (req.body.server.services[num].delete == "true") {
-          server.services.splice(num,1)
+          req.server.services[num].remove()
         } else {
-          services[num].type = req.body.server.services[num].type
-          services[num].name = req.body.server.services[num].name
-          services[num].url = req.body.server.services[num].url
-          services[num].public = (req.body.server.services[num].public)?true:false
+          req.server.services[num].type = req.body.server.services[num].type
+          req.server.services[num].name = req.body.server.services[num].name
+          req.server.services[num].url = req.body.server.services[num].url
+          req.server.services[num].public = (req.body.server.services[num].public)?true:false
         }
       } else {
         // Defer adding new services until the loop finishes
         delete req.body.server.services[num]["delete"]
-        services.push(req.body.server.services[num]);
+        req.server.services.push(req.body.server.services[num]);
       }
     }
-    server.services = services;
-    util.log(server.toObject(),  "Server Post")
-    server.save(function(err){
+    sq.debug(req.server.toObject(),  "Server Post")
+    req.server.save(function(err){
       if (!err) {
         req.flash('success', 'Server updated')
-        serverCheck(server)
+        serverCheck(req.server)
       } else {
-        req.flash('error', 'Err, Something broke when we tried to save your server. Sorry!')
-        util.log(err, "Server Put Error")
+        req.flash('error', 'The changes to your sever could not be made because '+err.message)
+        sq.debug(err, "Server Put Error")
       }
       res.redirect('/')
     });
@@ -180,13 +171,13 @@ module.exports = function(app){
         req.flash('success', 'Server removed')
       } else {
         req.flash('error', 'Err, Something broke when we tried to delete your server. Sorry!')
-        util.log(err, "Server Delete Error")
+        sq.debug(err, "Server Delete Error")
       }
       res.redirect('/')
     });
   });
   
-  app.get('/tag/:tag', util.isAuthenticated, function(req, res){
+  app.get('/tag/:tag', sq.isAuthenticated, function(req, res){
     app.Server.find({}, {type:1}, function(err, servers) {
       if (err) return next(err);
       var tags = _.select(_.uniq(_.flatten(_.pluck(servers,'type')).sort(), true), function(word){
@@ -208,7 +199,7 @@ module.exports = function(app){
   }
   
   function serviceCheck (service, fn) {
-    request({uri:service.url, onResponse:true}, function (error, response, body) {
+    sq.lib.request({uri:service.url, onResponse:true}, function (error, response, body) {
       if (error) {
         var response = {}
         response.statusCode = 500
@@ -225,7 +216,7 @@ module.exports = function(app){
   }
   
   function serverCheck(server) {
-    async.map(server.services, serviceCheck, function(err, serviceResponses){
+    sq.lib.async.map(server.services, serviceCheck, function(err, serviceResponses){
       _.each(serviceResponses, function(serviceResponse, key){
         serviceResponse.serverID = server._id
         // Update the lastStatus value for the service for easy access later. Also, put ok to uppercase....cause it lookes nicer

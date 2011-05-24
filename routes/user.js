@@ -1,12 +1,10 @@
-var everyauth = require('everyauth')
-  , util = require('./util')
-  , mongooseAuth = require('mongoose-auth');
+var sq = require('../lib/statusquo')
 
 module.exports = function(app){
 
   function authenticateFromLoginToken(req, res, next) {
     var cookie = JSON.parse(req.cookies.logintoken);
-    util.log(cookie, "Existing Cookie Info")
+    sq.debug(cookie, "Existing Cookie Info")
     app.LoginToken.findOne({ email: cookie.email,  series: cookie.series,  token: cookie.token }, (function(err, token) {
       
       if (!token) {
@@ -56,7 +54,7 @@ module.exports = function(app){
   
   app.get('/login', returnToAfterLogin, loadUser, function(req, res){
     //var loginToken = new app.LoginToken({ email: req.user.email })
-    //util.log(loginToken.cookieValue, "loginToken.cookieValue")
+    //sq.debug(loginToken.cookieValue, "loginToken.cookieValue")
     //loginToken.save(function() {
     //  console.log("Writing login token")
     //  res.cookie('logintoken', loginToken.cookieValue, { expires: new Date(Date.now() + 604800000), path: '/', httpOnly: true });
@@ -98,7 +96,7 @@ module.exports = function(app){
     res.redirect('/')
   })
   
-  app.get('/user', util.isAuthenticated, function(req, res){
+  app.get('/user', sq.isAuthenticated, function(req, res){
     res.render('user/view', {
       title:"Your Account",
       user:req.session.user

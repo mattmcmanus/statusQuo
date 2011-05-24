@@ -1,16 +1,10 @@
-var _ = require('underscore')
-  , _date = require('underscore.date')
-  , everyauth = require('everyauth')
-  , Promise = everyauth.Promise
-  , mongooseAuth = require('mongoose-auth')
-  , fs = require('fs')
-
-everyauth.debug = true
-
 // Define models
-exports.defineModels = function(mongoose, settings, fn) {
-  var Schema = mongoose.Schema
-    , ObjectId = mongoose.SchemaTypes.ObjectId
+exports.defineModels = function(sq, fn) {
+  sq.lib.everyauth.debug = true
+  
+  var Schema = sq.lib.mongoose.Schema
+    , ObjectId = sq.lib.mongoose.SchemaTypes.ObjectId
+    , mongoose = sq.lib.mongoose //Cheating
 
   //                          Users
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -28,7 +22,7 @@ exports.defineModels = function(mongoose, settings, fn) {
       return this._id.toHexString()
     })
 
-  UserSchema.plugin(mongooseAuth, {
+  UserSchema.plugin(sq.lib.mongooseAuth, {
       everymodule: {
         everyauth: {
             User: function () {
@@ -38,15 +32,23 @@ exports.defineModels = function(mongoose, settings, fn) {
       }
     , twitter: {
         everyauth: {
-            myHostname: settings.defaults.myHostname
-          , consumerKey: settings.defaults.oauthConsumerKey
-          , consumerSecret: settings.defaults.oauthConsumerSecret
+            myHostname: sq.settings.defaults.myHostname
+          , consumerKey: sq.settings.defaults.oauthConsumerKey
+          , consumerSecret: sq.settings.defaults.oauthConsumerSecret
           //, authorizePath: '/oauth/authenticate'
           , redirectPath: '/'
         }
       }
   });
-  everyauth.twitter.callbackPath()
+  
+  UserSchema.pre('save', function(next) {
+    if (!this.username)
+      this.username = this.twit.screenName
+    if (!this.name)
+      this.name = this.twit.name
+      
+    next()
+  })
   //                     LoginToken
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   var LoginTokenSchema = new Schema({
@@ -102,7 +104,7 @@ exports.defineModels = function(mongoose, settings, fn) {
     })
   ServicesSchema.virtual('lastStatusTimeRelative')
     .get(function() {
-      return _date.date(this.lastStatusTime).fromNow()
+      return sq.lib._date.date(this.lastStatusTime).fromNow()
     })
 
 
@@ -121,7 +123,7 @@ exports.defineModels = function(mongoose, settings, fn) {
 
   function splitTags(tags) {
     tags = tags[0].split(',')
-    _.each(tags, function(tag, key){
+    sq.lib._.each(tags, function(tag, key){
       if (tag == ' ') tags.splice(key,1)
       else
         tags[key] = tag.toLowerCase().replace(/^\s+|\s+$/g,"")
