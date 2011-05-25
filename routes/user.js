@@ -1,10 +1,7 @@
-var sq = require('../lib/statusquo')
-
-module.exports = function(app){
+module.exports = function(app, sq){
 
   function authenticateFromLoginToken(req, res, next) {
     var cookie = JSON.parse(req.cookies.logintoken);
-    sq.debug(cookie, "Existing Cookie Info")
     app.LoginToken.findOne({ email: cookie.email,  series: cookie.series,  token: cookie.token }, (function(err, token) {
       
       if (!token) {

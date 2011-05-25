@@ -1,8 +1,7 @@
-var sq = require('../lib/statusquo')
-  , _ = require('underscore')
+var _ = require('underscore')
   , info = [];
 
-module.exports = function(app){
+module.exports = function(app, sq){
   
   //                      PARAMETERS
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -101,7 +100,7 @@ module.exports = function(app){
   });
   
   app.get('/server/lookup/:ip', function(req, res){
-    dns.reverse(req.params.ip, function(err, domains){
+    require('dns').reverse(req.params.ip, function(err, domains){
       if (err) domains = []
       res.send(domains)
     })
@@ -126,28 +125,36 @@ module.exports = function(app){
   app.put('/server/:server', function(req, res, next){
     if(!req.server) return next(new Error('That server disappeared!'))
     
+    // Ligten the code load
+    var s = req.body.server
+    
     sq.debug(req.server.toObject(),  "Server Pre")
     
     req.server.updated = new Date();
-    req.server.ip = req.body.server.ip
-    req.server.name = req.body.server.name
-    req.server.os = req.body.server.os
-    req.server.type = req.body.server.type
+    req.server.ip = s.ip
+    req.server.name = s.name
+    req.server.os = s.os
+    req.server.type = s.type
     
-    for (var num = _.size(req.body.server.services) - 1; num >= 0; num--){
+    for (var num = _.size(s.services) - 1; num >= 0; num--){
+      sq.debug(s, "server")
+      var ss = s.services[num] //Even more now!
+      
       if (req.server.services[num]) {
-        if (req.body.server.services[num].delete == "true") {
-          req.server.services[num].remove()
+        sq.debug(req.server.services.id(ss.id))
+        if (ss.delete == "true") {
+          req.server.services.id(ss.id).remove()
         } else {
-          req.server.services[num].type = req.body.server.services[num].type
-          req.server.services[num].name = req.body.server.services[num].name
-          req.server.services[num].url = req.body.server.services[num].url
-          req.server.services[num].public = (req.body.server.services[num].public)?true:false
+          req.server.services.id(ss.id).type = ss.type
+          req.server.services.id(ss.id).name = ss.name
+          req.server.services.id(ss.id).url = ss.url
+          req.server.services.id(ss.id).public = (ss.public)?true:false
         }
       } else {
         // Defer adding new services until the loop finishes
-        delete req.body.server.services[num]["delete"]
-        req.server.services.push(req.body.server.services[num]);
+        delete ss["delete"] 
+        delete ss["id"]
+        req.server.services.push(ss);
       }
     }
     sq.debug(req.server.toObject(),  "Server Post")
@@ -156,7 +163,7 @@ module.exports = function(app){
         req.flash('success', 'Server updated')
         serverCheck(req.server)
       } else {
-        req.flash('error', 'The changes to your sever could not be made because '+err.message)
+        req.flash('error', 'The changes to your sever could not be made because they "'+err.message+'"')
         sq.debug(err, "Server Put Error")
       }
       res.redirect('/')
@@ -209,7 +216,7 @@ module.exports = function(app){
         , type            :  service.type
         , responseStatus  :  responseStatus(response.statusCode)
         , responseCode    :  response.statusCode
-        , responseMessage :  (error)?error.message.substr(error.message.indexOf(',')+2):HTTPStatus[response.statusCode]
+        , responseMessage :  (error)?error.message.substr(error.message.indexOf(',')+2):sq.lib.HTTPStatus[response.statusCode]
       })
       fn(null, serviceResponse)
     })

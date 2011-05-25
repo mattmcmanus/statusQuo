@@ -91,7 +91,6 @@ exports.defineModels = function(sq, fn) {
     , public          :  { type: Boolean, index: true }
     , lastStatus      :  String
     , lastStatusTime  :  Date
-    //, port        :  { type: Number, default: 80}
   })
 
   ServicesSchema.virtual('id')

@@ -7,7 +7,6 @@ var express = require('express')
   // Load server
   , app = module.exports = express.createServer();
 
-console.log(sq)
 //            Default Config settings
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 sq.settings = JSON.parse(sq.lib.fs.readFileSync('./config.json', 'utf8'))
@@ -27,6 +26,7 @@ app.configure(function(){
   app.use(express.session({ store: new sq.lib.RedisStore, secret: 'qu0'}))
   app.use(app.router)
 });
+
 //            Development Config settings
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 //TODO: Refactor so it's not so verbose and repatative. See: https://github.com/cliftonc/calipso/tree/master/conf
@@ -71,8 +71,8 @@ app.error(function(err, req, res){
 
 //                  The Routes, THE ROUTES!
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
-require('./routes/user')(app);
-require('./routes/server')(app);
+require('./routes/user')(app, sq);
+require('./routes/server')(app, sq);
 app.use(sq.lib.mongooseAuth.middleware())
 
 

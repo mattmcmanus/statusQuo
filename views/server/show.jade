@@ -12,7 +12,7 @@
   section.services
     h3 Services
     - each service in server.services
-      .service(id=service.id, data-server=server.id, class=service.lastStatus.toLowerCase())
+      .service(id=service.id, data-server=server.id, class=(service.lastStatus)?service.lastStatus.toLowerCase():'')
         .loader
         .name= service.name
         .url= service.url
