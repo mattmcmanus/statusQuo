@@ -122,13 +122,15 @@ module.exports = function(app, sq){
     res.render('server/edit', {server: req.server})
   });
   
+  function updateModified(origVal, newVal) {
+    if (origVal !== newVal) origVal = newVal
+  }
+  
   app.put('/server/:server', function(req, res, next){
     if(!req.server) return next(new Error('That server disappeared!'))
     
-    // Ligten the code load
+    // Lighten the code load
     var s = req.body.server
-    
-    sq.debug(req.server.toObject(),  "Server Pre")
     
     req.server.updated = new Date();
     req.server.ip = s.ip
@@ -137,27 +139,23 @@ module.exports = function(app, sq){
     req.server.type = s.type
     
     for (var num = _.size(s.services) - 1; num >= 0; num--){
-      sq.debug(s, "server")
       var ss = s.services[num] //Even more now!
       
-      if (req.server.services[num]) {
-        sq.debug(req.server.services.id(ss.id))
-        if (ss.delete == "true") {
+      if (ss.id && req.server.services.id(ss.id)) {
+        if (ss.delete === "true") {
           req.server.services.id(ss.id).remove()
         } else {
-          req.server.services.id(ss.id).type = ss.type
-          req.server.services.id(ss.id).name = ss.name
-          req.server.services.id(ss.id).url = ss.url
-          req.server.services.id(ss.id).public = (ss.public)?true:false
+          updateModified(req.server.services.id(ss.id).type, ss.type)
+          updateModified(req.server.services.id(ss.id).name, ss.name)
+          updateModified(req.server.services.id(ss.id).url, ss.url)
+          updateModified(req.server.services.id(ss.id).public, (ss.public) ? true:false)
         }
       } else {
-        // Defer adding new services until the loop finishes
-        delete ss["delete"] 
-        delete ss["id"]
+        delete ss["delete"]
         req.server.services.push(ss);
       }
     }
-    sq.debug(req.server.toObject(),  "Server Post")
+    
     req.server.save(function(err){
       if (!err) {
         req.flash('success', 'Server updated')
