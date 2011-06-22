@@ -6,8 +6,7 @@ var express = require('express')
   , views = __dirname + '/views'
   // Load server
   , app = module.exports = express.createServer()
-  
-  var RedisStore = require('connect-redis')(express)
+  , RedisStore = require('connect-redis')(express)
 
 //            Default Config settings
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - 

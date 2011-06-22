@@ -1,7 +1,7 @@
 header
   h1= title
 p It appears this is your first time logging in! Please fill out the remaining below to steup your account
-form#account_setup(method='post')
+form#account_setup(action='/register', method='post')
   ul  
     li.screen_name
       img.profile_picture(src=account.profile_image_url, alt="Your twitter profile picture")
