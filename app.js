@@ -5,7 +5,9 @@ var express = require('express')
   , pub = __dirname + '/public'
   , views = __dirname + '/views'
   // Load server
-  , app = module.exports = express.createServer();
+  , app = module.exports = express.createServer()
+  
+  var RedisStore = require('connect-redis')(express)
 
 //            Default Config settings
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -23,7 +25,7 @@ app.configure(function(){
   app.use(express.cookieParser())
   app.use(express.bodyParser())
   app.use(express.methodOverride())
-  app.use(express.session({ store: new sq.lib.RedisStore, secret: 'qu0'}))
+  app.use(express.session({ store: new RedisStore, secret: 'qu0'}))
   app.use(app.router)
 });
 

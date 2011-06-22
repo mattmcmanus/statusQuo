@@ -1,0 +1,20 @@
+caption always "%{= KW}%-Lw%{= wb}%n %t %{= KW}%+Lw %-=| ${USER}@%H | %M%d %c%{-}"
+
+screen -t
+stuff "source ~/.profile\15"
+
+screen -t server
+stuff "source ~/.profile\15node server.js"
+
+screen -t redis
+stuff "redis-server /usr/local/etc/redis.conf\15"
+
+screen -t mongo /Users/matt/Dropbox/Library/Data/mongo/server
+
+screen -t LogAccess
+stuff "tail -f logs/worker.access.log\15"
+
+screen -t LogError
+stuff "tail -f logs/worker.error.log\15"
+
+select 0

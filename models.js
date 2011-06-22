@@ -103,7 +103,7 @@ exports.defineModels = function(sq, fn) {
     })
   ServicesSchema.virtual('lastStatusTimeRelative')
     .get(function() {
-      return sq.lib._date.date(this.lastStatusTime).fromNow()
+      return sq.lib._date(this.lastStatusTime).fromNow()
     })
 
 
