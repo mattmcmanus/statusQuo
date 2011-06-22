@@ -1,19 +1,26 @@
 header
-  h1= title
+  h1 Register your account
 p It appears this is your first time logging in! Please fill out the remaining below to steup your account
 form#account_setup(action='/register', method='post')
-  ul  
+  ul
     li.screen_name
-      img.profile_picture(src=account.profile_image_url, alt="Your twitter profile picture")
-      h2= account.screen_name
-      input(type="hidden", name="user[username]", value=account.screen_name)
-      input(type="hidden", name="user[picture]", value=account.profile_image_url)
-    li.name
-      label(for="user[name]") Name
-      input(type="text", name="user[name]", value=account.name)
+      img.profile_picture(src=userParams.profileImageUrl, alt="Your twitter profile picture")
+      h2= userParams.screenName
     li.email
-      label(for="user[email]") Email
-      input(type="email", name="user[email]")
+      label(for=everyauth.password.loginFormFieldName) Email
+      input(type='text', name=everyauth.password.loginFormFieldName, value=userParams[everyauth.password.loginFormFieldName])
+    li.password
+      label(for=everyauth.password.passwordFormFieldName) Password
+      input(type='password', name=everyauth.password.passwordFormFieldName)
+    li.name
+      label(for="name") Name
+      input(type="text", name="name", value=userParams.name) 
+    li.phone
+      label(for="phone") Phone
+      input(type="text", name="Phone")
+    li.carrier
+      label(for="carrier") Carrier
+      input(type="text", name="carrier")
     li
       input.button.save(type="submit", value="Create your account")
       a.button.cancel(href="/") Cancel

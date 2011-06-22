@@ -8,14 +8,7 @@ exports.defineModels = function(sq, fn) {
 
   //                          Users
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  var UserSchema = new Schema({
-      created       :  { type: Date, default: Date.now }
-    , lastLoggedIn  :  { type: Date, default: Date.now }
-    , username      :  { type: String, index: { unique: true } }
-    , name          :  { type: String, match: /[a-z]/ }
-    , email         :  { type: String, index: { unique: true } }
-    , picture       :  String
-  })
+  var UserSchema = new Schema({})
 
   UserSchema.virtual('id')
     .get(function() {
@@ -36,9 +29,39 @@ exports.defineModels = function(sq, fn) {
           , consumerKey: sq.settings.defaults.oauthConsumerKey
           , consumerSecret: sq.settings.defaults.oauthConsumerSecret
           //, authorizePath: '/oauth/authenticate'
-          , redirectPath: '/'
+          , redirectPath: '/register'
         }
       }
+    , password: {
+       loginWith: 'email'
+      , extraParams: {
+            phone: String
+          , carrier: String
+          , name: {
+                first: String
+              , last: String
+            }
+        }
+      , everyauth: {
+            getLoginPath: '/login'
+          , postLoginPath: '/login'
+          , loginView: 'user/login.jade'
+          , getRegisterPath: '/register'
+          , postRegisterPath: '/register'
+          , registerView: 'user/register.jade'
+          , loginSuccessRedirect: '/register'
+          , registerSuccessRedirect: '/'
+          , displayRegister: function (req, res) {
+              var user = req.user;
+              var userParams = {};
+              sq.debug(user, "User")
+              if (user && user.twit && user.twit.name) userParams.name = user.twit.name;
+              if (user && user.twit && user.twit.screenName) userParams.screenName = user.twit.screenName;
+              if (user && user.twit && user.twit.profileImageUrl) userParams.profileImageUrl = user.twit.profileImageUrl;
+              res.render('user/register', { userParams: userParams });
+            }
+        }
+    }
   });
   
   UserSchema.pre('save', function(next) {

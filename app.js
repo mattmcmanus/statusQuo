@@ -58,17 +58,6 @@ require('./models').defineModels(sq, function(models) {
   app.ServiceResponse = ServiceResponse = models['ServiceResponse']
 })
 
-//                      Errors
-// - - - - - - - - - - - - - - - - - - - - - - - - - - -
-app.error(function(err, req, res){
-  res.render('500', {
-    status: 500,
-    locals: {
-      title: "Da server asplode",
-      error: err
-    }
-  });
-});
 
 //                  The Routes, THE ROUTES!
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -

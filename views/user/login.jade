@@ -1,1 +1,13 @@
-h1 You need to login
+header
+  h1 You need to login
+form#account_setup(action='/login', method='POST')
+  ul  
+    li.email
+      label(for=everyauth.password.loginFormFieldName) Email
+      input(type='text', name=everyauth.password.loginFormFieldName)
+    li.password
+      label(for=everyauth.password.passwordFormFieldName) Password
+      input(type='password', name=everyauth.password.passwordFormFieldName)
+    li
+      input.button.save(type="submit", value="Login")
+      a.button.cancel(href="/") Cancel

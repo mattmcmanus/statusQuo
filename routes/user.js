@@ -49,40 +49,6 @@ module.exports = function(app, sq){
     }
   }
   
-  app.get('/login', returnToAfterLogin, loadUser, function(req, res){
-    //var loginToken = new app.LoginToken({ email: req.user.email })
-    //sq.debug(loginToken.cookieValue, "loginToken.cookieValue")
-    //loginToken.save(function() {
-    //  console.log("Writing login token")
-    //  res.cookie('logintoken', loginToken.cookieValue, { expires: new Date(Date.now() + 604800000), path: '/', httpOnly: true });
-    //  res.redirect(req.cookies.returnTo || '/');
-    //});
-  });
-  
-  app.get('/user/setup', function(req, res) {
-    res.render('user/setup', {
-        title:"Welcome! Please verify your information"
-      , account: req.newUser
-    });
-  });
-  
-  app.post('/user/setup', function(req, res) {
-    var user = new app.User(req.body.user);
-    req.user = user
-    delete req.newUser
-    user.save(function(err){
-      if (!err) {
-        req.flash('success', 'You\'re account has been created!')
-      } else {
-        req.flash('error', 'Err, Something broke when we tried to save your account')
-        console.log("Error: /user/setup" + err)
-      }
-      res.redirect('/login')
-      
-    });
-    
-  })
-  
   app.get('/logout', function(req, res) {
     if (req.session){
       //app.LoginToken.remove({ email: req.user.email }, function() {});
