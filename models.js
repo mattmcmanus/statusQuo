@@ -29,7 +29,7 @@ exports.defineModels = function(sq, fn) {
           , consumerKey: sq.settings.defaults.oauthConsumerKey
           , consumerSecret: sq.settings.defaults.oauthConsumerSecret
           //, authorizePath: '/oauth/authenticate'
-          , redirectPath: '/register'
+          , redirectPath: '/'
         }
       }
     , password: {
@@ -49,17 +49,18 @@ exports.defineModels = function(sq, fn) {
           , getRegisterPath: '/register'
           , postRegisterPath: '/register'
           , registerView: 'user/register.jade'
-          , loginSuccessRedirect: '/register'
+          , loginSuccessRedirect: '/'
           , registerSuccessRedirect: '/'
           , displayRegister: function (req, res) {
               var user = req.user;
               var userParams = {};
-              sq.debug(user, "User")
+              sq.debug(user, "displayRegister")
               if (user && user.twit && user.twit.name) userParams.name = user.twit.name;
               if (user && user.twit && user.twit.screenName) userParams.screenName = user.twit.screenName;
               if (user && user.twit && user.twit.profileImageUrl) userParams.profileImageUrl = user.twit.profileImageUrl;
               res.render('user/register', { userParams: userParams });
             }
+          
         }
     }
   });
