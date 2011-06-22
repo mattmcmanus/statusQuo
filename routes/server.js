@@ -67,7 +67,6 @@ module.exports = function(app, sq){
   });
   
   app.get('/server/new', sq.isAuthenticated, function(req, res){
-    sq.debug(req.loggedIn, "Logged in")
     res.render('server/new', {
       server: new app.Server()
     });
@@ -81,10 +80,14 @@ module.exports = function(app, sq){
       , os      : req.body.server.os
       , user    : req.session.auth.userId
     })
-    
     for (var i=0; i < _.size(req.body.server.services); i++) {
-      delete req.body.server.services[i]['delete']
-      server.services.push(req.body.server.services[i])
+      if (req.body.server.services[i]['delete'] === "true") {
+          delete req.body.server.services[i]
+      }
+      else {
+        delete req.body.server.services[i]['delete']
+        server.services.push(req.body.server.services[i])
+      }
     }
     
     server.save(function(err){

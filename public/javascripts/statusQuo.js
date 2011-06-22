@@ -74,7 +74,7 @@ if(typeof window.statusQuo === "undefined") {
             service.find(".message").html('Service will be deleted when you save. (<a href="javascript:void(0)" class="undo")>undo?</a>)').show()
             service.find(".confirm").remove();
           } else {
-            service.slideUp(200).delay(500).remove()
+            service.slideUp(200).children("input.delete").val('true');
           }
         }).appendTo(confirmDelete);
         // no
