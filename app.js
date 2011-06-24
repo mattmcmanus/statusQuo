@@ -46,19 +46,6 @@ app.configure('production', function() {
 });
 
 
-//                      Models
-// - - - - - - - - - - - - - - - - - - - - - - - - - - -
-require('./models').defineModels(sq, function(models) {
-  var User, Server, Service, db
-  
-  db = sq.lib.mongoose.connect(app.set('db-uri'))
-  app.User = User = models['User']
-  app.Server = Server = models['Server']
-  app.LoginToken = LoginToken = models['LoginToken']
-  app.ServiceResponse = ServiceResponse = models['ServiceResponse']
-})
-
-
 //                  The Routes, THE ROUTES!
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 require('./routes/user')(app, sq);

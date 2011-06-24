@@ -1,53 +1,83 @@
 module.exports = function(app, sq){
+  
+  sq.lib.everyauth.debug = true
+  
+  var Schema = sq.lib.mongoose.Schema
+    , ObjectId = sq.lib.mongoose.SchemaTypes.ObjectId
+    , mongoose = sq.lib.mongoose
 
-  function authenticateFromLoginToken(req, res, next) {
-    var cookie = JSON.parse(req.cookies.logintoken);
-    app.LoginToken.findOne({ email: cookie.email,  series: cookie.series,  token: cookie.token }, (function(err, token) {
-      
-      if (!token) {
-        console.log("Clearing old cookie")
-        res.clearCookie('logintoken')
-        res.redirect('/login');
-        return;
-      }
-      app.User.findOne({ email: token.email }, function(err, user) {
-        if (user) {
-          req.user = user
-  
-          token.token = token.randomToken()
-          var loginToken = new app.LoginToken({ email: req.session.user.email })
-          token.save(function() {
-            res.cookie('logintoken', token.cookieValue, { expires: new Date(Date.now() + 604800000), path: '/', httpOnly: true });
-            res.redirect(req.cookies.returnTo || '/');
-          });
-        } else {
-          res.redirect('/login');
+  //                          Users
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  var UserSchema = new Schema({})
+    , User
+
+  UserSchema.virtual('id')
+    .get(function() {
+      return this._id.toHexString()
+    })
+
+  UserSchema.plugin(sq.lib.mongooseAuth, {
+      everymodule: {
+        everyauth: {
+            User: function () {
+              return User;
+            }
         }
-      });
-    }));
-  }
-  
-  function returnToAfterLogin(req, res, next) {
-    var returnTo = req.header('Referer') || '/'
-    res.cookie('returnTo', returnTo, { maxAge:604800000, path: '/login', httpOnly: true })
-    next()
-  }
-  
-  function loadUser(req, res, next) {
-    if (req.user || (req.session.auth && req.session.auth.loggedIn)) {
-      console.log("loadUser: CurrentUser exists")
-      //if (req.user.new === true) {
-      //  res.redirect('/user/setup')
-      //}
-      next()
-    } else if (req.cookies.logintoken) {
-      console.log("loadUser: Hey Look!  A cookie!")
-      authenticateFromLoginToken(req, res, next);
-    } else {
-      console.log("loadUser: To the cloud!")
-      res.redirect('/auth/twitter')
+      }
+    , twitter: {
+        everyauth: {
+            myHostname: sq.settings.defaults.myHostname
+          , consumerKey: sq.settings.defaults.oauthConsumerKey
+          , consumerSecret: sq.settings.defaults.oauthConsumerSecret
+          //, authorizePath: '/oauth/authenticate'
+          , redirectPath: '/'
+        }
+      }
+    , password: {
+       loginWith: 'email'
+      , extraParams: {
+            phone: String
+          , carrier: String
+          , name: {
+                first: String
+              , last: String
+            }
+        }
+      , everyauth: {
+            getLoginPath: '/login'
+          , postLoginPath: '/login'
+          , loginView: 'user/login.jade'
+          , getRegisterPath: '/register'
+          , postRegisterPath: '/register'
+          , registerView: 'user/register.jade'
+          , loginSuccessRedirect: '/'
+          , registerSuccessRedirect: '/'
+          , displayRegister: function (req, res) {
+              var user = req.user;
+              var userParams = {};
+              sq.debug(user, "displayRegister")
+              if (user && user.twit && user.twit.name) userParams.name = user.twit.name;
+              if (user && user.twit && user.twit.screenName) userParams.screenName = user.twit.screenName;
+              if (user && user.twit && user.twit.profileImageUrl) userParams.profileImageUrl = user.twit.profileImageUrl;
+              res.render('user/register', { userParams: userParams });
+            }
+          
+        }
     }
-  }
+  })
+  
+  UserSchema.pre('save', function(next) {
+    if (!this.username)
+      this.username = this.twit.screenName
+    if (!this.name)
+      this.name = this.twit.name
+      
+    next()
+  })
+  
+  sq.lib.mongoose.model('User', UserSchema)
+  
+  
   
   app.get('/logout', function(req, res) {
     if (req.session){
@@ -63,6 +93,6 @@ module.exports = function(app, sq){
     res.render('user/view', {
       title:"Your Account",
       user:req.session.user
-    });
-  });
-};
+    })
+  })
+}

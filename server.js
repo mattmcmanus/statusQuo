@@ -2,6 +2,7 @@ var cluster = require('cluster');
 
 cluster('./app')
   .set('socket path','/tmp')
+  .set('workers', 1)
   .use(cluster.logger('logs'))
   .use(cluster.debug())
   .use(cluster.stats())

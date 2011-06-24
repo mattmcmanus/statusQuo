@@ -1,3 +1,5 @@
+defscrollback 1000000
+
 caption always "%{= KW}%-Lw%{= wb}%n %t %{= KW}%+Lw %-=| ${USER}@%H | %M%d %c%{-}"
 
 screen -t
@@ -6,15 +8,9 @@ stuff "source ~/.profile\15"
 screen -t server
 stuff "source ~/.profile\15node server.js"
 
-screen -t redis
-stuff "redis-server /usr/local/etc/redis.conf\15"
-
+screen -t redis redis-server /usr/local/etc/redis.conf
 screen -t mongo /Users/matt/Dropbox/Library/Data/mongo/server
-
-screen -t LogAccess
-stuff "tail -f logs/workers.access.log\15"
-
-screen -t LogError
-stuff "tail -f logs/workers.error.log\15"
+screen -t LogAccess tail -f logs/workers.access.log
+screen -t LogError tail -f logs/workers.error.log
 
 select 0
