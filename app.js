@@ -1,62 +1,95 @@
-var express = require('express')
+
+
+require.paths.unshift(__dirname); //make local paths accessible
+
+var fs = require('fs')
+  , express = require('express')
+  , mongoose = require('mongoose')
   , _ = require('underscore')
   , sq = require('./lib/statusquo')
-  // Some Basic variables
-  , pub = __dirname + '/public'
-  , views = __dirname + '/views'
-  // Load server
   , RedisStore = require('connect-redis')(express)
+
+// Local App Variables
+var path = __dirname
+  , pub = __dirname + '/public'
+  , port = 8000
+  , app
   
-var app = module.exports = express.createServer(
-        express.static(pub)
-      , express.logger({ format: '\x1b[1m:method\x1b[0m \x1b[33m:url\x1b[0m :response-time ms' })
-      , express.cookieParser()
-      , express.bodyParser()
-      , express.methodOverride()
-      , express.session({ store: new RedisStore, secret: 'qu0'})
-      , sq.lib.stylus.middleware({src: views,dest: pub})
-    )
+/**
+ * Initial bootstrapping
+ */
+exports.boot = function(next) {
+
+  //Create our express instance
+  app = express.createServer();
+  app.path = path;
+
+  // Load configuration settings
+  require("./config.js")(app, express);
   
-//            Default Config settings
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-app.configure(function(){
-  // Load default settings from config file
-  _.each(sq.settings.defaults, function(setting, key) { app.set(key, setting) })
-});
+  // Load Models
+  // * Eventually I'll write a dynamic loader. This is just easier for now.
+  mongoose.connect(app.set('db-uri'))
+  require('./models/user.js')(app, sq)
+  require('./models/server.js')(app, sq)
 
-//            Development Config settings
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-//TODO: Refactor so it's not so verbose and repatative. See: https://github.com/cliftonc/calipso/tree/master/conf
-app.configure('development', function() {
-  // Load DEvelopment settings from config file
-  _.each(sq.settings.development, function(setting, key) { app.set(key, setting) })
-  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
-});
+  // Bootstrap application
+  bootApplication(app, function() {
+    next(app);
+  });
 
-//            Prouction Config settings
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-app.configure('production', function() {
-  // Load production settings from config file
-  _.each(sq.settings.production, function(setting, key) { app.set(key, setting) })
-  app.use(express.errorHandler());
-});
+};
+
+/**
+ *  App settings and middleware
+ *  Any of these can be added into the by environment configuration files to
+ *  enable modification by env.
+ */
+function bootApplication(app, next) {
+
+  app.use(express.static(pub))
+  app.use(express.logger({ format: '\x1b[1m:method\x1b[0m \x1b[33m:url\x1b[0m :response-time ms' }))
+  app.use(express.cookieParser())
+  app.use(express.bodyParser())
+  app.use(express.methodOverride())
+  app.use(express.session({ store: new RedisStore, secret: 'qu0'}))
+  app.use(sq.lib.stylus.middleware({src:path+"/views/",dest: pub}))
+  app.use(sq.lib.mongooseAuth.middleware())  
+
+  
+  //                     Routes
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  require('./routes/user')(app, sq);
+  require('./routes/server')(app, sq);
+  
+  //                     Helpers
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  //app.helpers(require('./helpers.js').helpers);
+  app.dynamicHelpers(require('./helpers.js').dynamicHelpers)
+  sq.lib.mongooseAuth.helpExpress(app)
+  
+  next(app)
+}
+
+// allow normal node loading if appropriate
+if (!module.parent) {
+
+  console.log("");
+  console.log("\x1b[36m --------------   StatusQuo  ---------------   \x1b[0m");
+  console.log("");
+
+  exports.boot(function(app) {
+
+    app.listen(port);
+    console.log("\x1b[36m- listening on port: \x1b[0m %d", app.address().port);
+    console.log("\x1b[36m- configured for\x1b[0m %s \x1b[36menvironment\x1b[0m\r\n", global.process.env.NODE_ENV || 'development');
+
+  });
+
+}
 
 
-//                  The Routes, THE ROUTES!
-// - - - - - - - - - - - - - - - - - - - - - - - - - - -
-sq.lib.mongoose.connect(app.set('db-uri'))
-require('./routes/user')(app, sq);
-require('./routes/server')(app, sq);
-app.use(sq.lib.mongooseAuth.middleware())
 
-//                     Helpers
-// - - - - - - - - - - - - - - - - - - - - - - - - - - -
-//app.helpers(require('./helpers.js').helpers);
-app.dynamicHelpers(require('./helpers.js').dynamicHelpers);
-sq.lib.mongooseAuth.helpExpress(app);
-
-app.listen(8000)
-console.log("- - - - Server started - - - - ")
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - -
 //                 socket.io
