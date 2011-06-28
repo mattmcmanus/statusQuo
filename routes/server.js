@@ -65,7 +65,6 @@ module.exports = function(app, sq){
   //                      Route Logic
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   function homePage(req, res){
-    sq.debug(req.user, "req.user")
     if (req.session.auth && req.session.auth.loggedIn) {
       sq.Server.find({user : req.session.auth.userId}).sort('name', 1 ).run(function (err, servers) {
         var list = {}
