@@ -64,7 +64,7 @@ module.exports = function(app, sq){
     })
   ServiceSchema.virtual('lastStatusTimeRelative')
     .get(function() {
-      return _date(this.lastStatusTime).fromNow()
+      return sq.lib._date(this.lastStatusTime).fromNow()
     })
 
 
@@ -146,6 +146,7 @@ module.exports = function(app, sq){
   //                      Route Logic
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   function homePage(req, res){
+    sq.debug(req.user, "req.user")
     if (req.session.auth && req.session.auth.loggedIn) {
       sq.Server.find({user : req.session.auth.userId}).sort('name', 1 ).run(function (err, servers) {
         var list = {}
@@ -163,7 +164,6 @@ module.exports = function(app, sq){
       })
     } else {
       sq.Server.find({ 'services.public' : true }, function (err, servers) {
-        sq.debug('HOME PAGE')
         var publicServices = []
         _.each(servers, function(server){
           publicServices.push(_.select(server.services, function(service){ return service.public == true}))

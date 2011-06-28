@@ -5,27 +5,23 @@ var express = require('express')
   , pub = __dirname + '/public'
   , views = __dirname + '/views'
   // Load server
-  , app = module.exports = express.createServer()
   , RedisStore = require('connect-redis')(express)
-
+  
+var app = module.exports = express.createServer(
+        express.static(pub)
+      , express.logger({ format: '\x1b[1m:method\x1b[0m \x1b[33m:url\x1b[0m :response-time ms' })
+      , express.cookieParser()
+      , express.bodyParser()
+      , express.methodOverride()
+      , express.session({ store: new RedisStore, secret: 'qu0'})
+      , sq.lib.stylus.middleware({src: views,dest: pub})
+    )
+  
 //            Default Config settings
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-sq.settings = JSON.parse(sq.lib.fs.readFileSync('./config.json', 'utf8'))
-
 app.configure(function(){
   // Load default settings from config file
   _.each(sq.settings.defaults, function(setting, key) { app.set(key, setting) })
-  //Set Stylus middle to generate proper CSS files in the proper plac
-  app.use(sq.lib.stylus.middleware({src: views,dest: pub}))
-  // Files
-  app.use(express.static(pub))
-  app.use(express.favicon())
-  app.use(express.logger({ format: '\x1b[1m:method\x1b[0m \x1b[33m:url\x1b[0m :response-time ms' }))
-  app.use(express.cookieParser())
-  app.use(express.bodyParser())
-  app.use(express.methodOverride())
-  app.use(express.session({ store: new RedisStore, secret: 'qu0'}))
-  app.use(app.router)
 });
 
 //            Development Config settings
@@ -48,10 +44,10 @@ app.configure('production', function() {
 
 //                  The Routes, THE ROUTES!
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
+sq.lib.mongoose.connect(app.set('db-uri'))
 require('./routes/user')(app, sq);
 require('./routes/server')(app, sq);
 app.use(sq.lib.mongooseAuth.middleware())
-
 
 //                     Helpers
 // - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -59,47 +55,49 @@ app.use(sq.lib.mongooseAuth.middleware())
 app.dynamicHelpers(require('./helpers.js').dynamicHelpers);
 sq.lib.mongooseAuth.helpExpress(app);
 
+app.listen(8000)
+console.log("- - - - Server started - - - - ")
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - -
 //                 socket.io
 // - - - - - - - - - - - - - - - - - - - - - - - - - -
-var socket = sq.lib.io.listen(app);
-socket.on('connection', function(client){
-  var ping
-  client.on('message', function(commands){
-    _.each(commands,function(item, command){
-      if (command == 'ping') {
-        // Set things up
-        var buffer = []
-          , spawn = require('child_process').spawn
-          , pattern = /(\d+?) bytes from (.+?): icmp_req=(\d+?) ttl=(\d+?) time=(.+) ms/
-          , output
-
-        ping = spawn('ping', [item])
-
-        ping.stdout.on('data', function (data) {
-          data = data.toString().slice(0,-1)
-          var regexOutput = pattern.exec(data)
-          output = (regexOutput) ? {bytes_sent:regexOutput[1], ip: regexOutput[2], icmp_req: regexOutput[3], ttl: regexOutput[4], time: regexOutput[5]} : {}
-          client.send(output)
-        });
-
-        ping.stderr.on('data', function (data) {
-          console.log('stderr: ' + data);
-        });
-
-        ping.on('exit', function (code) {
-          console.log('child process exited with code ' + code);
-        });
-      } else if (command === 'kill' && item === 'ping') {
-        if (ping) ping.kill()
-      }
-
-    });
-  });
-
-  client.on('disconnect', function(){
-    console.log('socket.io: DISCONNECTED!')
-  })
-
-});
+//var socket = sq.lib.io.listen(app);
+//socket.on('connection', function(client){
+//  var ping
+//  client.on('message', function(commands){
+//    _.each(commands,function(item, command){
+//      if (command == 'ping') {
+//        // Set things up
+//        var buffer = []
+//          , spawn = require('child_process').spawn
+//          , pattern = /(\d+?) bytes from (.+?): icmp_req=(\d+?) ttl=(\d+?) time=(.+) ms/
+//          , output
+//
+//        ping = spawn('ping', [item])
+//
+//        ping.stdout.on('data', function (data) {
+//          data = data.toString().slice(0,-1)
+//          var regexOutput = pattern.exec(data)
+//          output = (regexOutput) ? {bytes_sent:regexOutput[1], ip: regexOutput[2], icmp_req: regexOutput[3], ttl: regexOutput[4], time: regexOutput[5]} : {}
+//          client.send(output)
+//        });
+//
+//        ping.stderr.on('data', function (data) {
+//          console.log('stderr: ' + data);
+//        });
+//
+//        ping.on('exit', function (code) {
+//          console.log('child process exited with code ' + code);
+//        });
+//      } else if (command === 'kill' && item === 'ping') {
+//        if (ping) ping.kill()
+//      }
+//
+//    });
+//  });
+//
+//  client.on('disconnect', function(){
+//    console.log('socket.io: DISCONNECTED!')
+//  })
+//
+//});
