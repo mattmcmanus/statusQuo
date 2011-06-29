@@ -79,8 +79,8 @@ if (!module.parent) {
   console.log("");
 
   exports.boot(function(app) {
-
-    app.listen(port);
+    require('socket.io').listen(app)
+    app.listen(port)
     console.log("\x1b[36m- listening on port: \x1b[0m %d", app.address().port);
     console.log("\x1b[36m- configured for\x1b[0m %s \x1b[36menvironment\x1b[0m\r\n", global.process.env.NODE_ENV || 'development');
 

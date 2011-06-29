@@ -7,7 +7,6 @@ if(typeof window.statusQuo === "undefined") {
     this.autoRefreshInterval = params.autoRefreshInterval || 300;
     this.autoRefreshCountdown = this.autoRefreshInterval;
     this.didServerLookup = false;
-    this.socket = new io.Socket(null, {port: 8000, rememberTransport: false});
     //this.getConfig();
   };
   
@@ -150,7 +149,6 @@ if(typeof window.statusQuo === "undefined") {
       $.ajax({ url:'/server/' + $(server).attr('id') + '/status/'
         , context:server
         , success: function(data){
-            console.log(data)
             var server = $(this);
             
             $(server).removeClass('checking').find(".services li").remove()
@@ -168,11 +166,7 @@ if(typeof window.statusQuo === "undefined") {
       $.get('/server/'+$(server).attr('id'), function(server){
         context.curtainOpen(server);
         var server_id = $(server).attr('id');
-        context.socket.connect();
         context.serverPing(server_id)
-        //$('#'+server_id+' .service').each(function(){
-        //  context.serviceCheck(this)
-        //})
       });
     },
     
@@ -180,6 +174,7 @@ if(typeof window.statusQuo === "undefined") {
       var context = this
         , server = $('#'+server_id);
       $(server).addClass("pinging");
+      context.socket = io.connect('http://local.host:8000');
       var smoothie = new SmoothieChart({ grid: { strokeStyle: 'rgb(45, 45, 45)', fillStyle: 'rgb(34, 34, 34)', lineWidth: 1, millisPerLine: 500, verticalSections: 3 } });
       smoothie.streamTo(document.getElementById("ping_graph"), 750);
       var ping = new TimeSeries();

@@ -10,15 +10,15 @@ li.service(id=service.id || '')
       ul
         li
           label
-            input(type="radio", name='server[services]['+indexInCollection +'][type]', value="http", checked=(service.type == 'http')?'checked':'') 
+            input(type="radio", name='server[services]['+indexInCollection +'][type]', value="http", checked=(service.type == 'http')?'checked':false) 
             | http
         li
           label
-            input(type="radio", name='server[services]['+indexInCollection +'][type]', disabled="disabled", value="port", checked=(service.type == 'port')?'checked':'') 
+            input(type="radio", name='server[services]['+indexInCollection +'][type]', disabled="disabled", value="port", checked=(service.type == 'port')?'checked':false) 
             | port
     li.checkboxes.public
       label
-        input(type="checkbox", name='server[services]['+indexInCollection +'][public]', value="true", checked=(service.public)?'checked':'') 
+        input(type="checkbox", name='server[services]['+indexInCollection +'][public]', value="true", checked=(service.public)?'checked':false) 
         | Public
     li.name
       input(type="text", placeholder="Service Name", name='server[services]['+indexInCollection +'][name]', value=service.name||'')

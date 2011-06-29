@@ -98,12 +98,12 @@ module.exports = function(app, sq){
   
   function createServerForm(req, res){
     res.render('server/new', {
-      server: new Server()
+      server: new sq.Server()
     });
   }
   
   function createServer(req, res){
-    var server = new Server({
+    var server = new sq.Server({
         name    : req.body.server.name
       , type    : req.body.server.type
       , ip      : req.body.server.ip
@@ -122,7 +122,7 @@ module.exports = function(app, sq){
     
     server.save(function(err){
       if (!err) {
-        ServerCheck(server)
+        checkServer(req, res)
         req.flash('success', 'You\'re server has been created')
       } else {
         req.flash('error', 'Err, Something broke when we tried to save your server. Sorry!')
@@ -152,7 +152,7 @@ module.exports = function(app, sq){
   }
   
   function showServerByTag(req, res){
-    Server.find({}, {type:1}, function(err, servers) {
+    sq.Server.find({}, {type:1}, function(err, servers) {
       if (err) return next(err);
       var tags = _.select(_.uniq(_.flatten(_.pluck(servers,'type')).sort(), true), function(word){
         return (word.indexOf(req.params.tag) != -1)?true:false
@@ -166,45 +166,66 @@ module.exports = function(app, sq){
   }
   
   function updateServer(req, res, next){
-    if(!req.server) return next(new Error('That server disappeared!'))
+    var server = req.server
+      , serviceChanges = []
+    
+    if(!server) return next(new Error('That server disappeared!'))
     
     // Lighten the code load
     var s = req.body.server
     
-    req.server.updated = new Date();
-    req.server.ip = s.ip
-    req.server.name = s.name
-    req.server.os = s.os
-    req.server.type = s.type
+    server.updated = new Date();
+    server.ip = s.ip
+    server.name = s.name
+    server.os = s.os
+    server.type = s.type
     
     for (var num = _.size(s.services) - 1; num >= 0; num--){
       var ss = s.services[num] //Even more now (ligtening the code)!
       
-      if (ss.id && req.server.services.id(ss.id)) {
+      if (ss.id && server.services.id(ss.id)) {
         if (ss.delete === "true") {
-          req.server.services.id(ss.id).remove()
+          serviceChanges.push({server: server.id, action: "delete", service: ss.id})
         } else {
-          updateModified(req.server.services.id(ss.id).type, ss.type)
-          updateModified(req.server.services.id(ss.id).name, ss.name)
-          updateModified(req.server.services.id(ss.id).url, ss.url)
-          updateModified(req.server.services.id(ss.id).public, (ss.public) ? true:false)
+          updateModified(server.services.id(ss.id).type, ss.type)
+          updateModified(server.services.id(ss.id).name, ss.name)
+          updateModified(server.services.id(ss.id).url, ss.url)
+          updateModified(server.services.id(ss.id).public, (ss.public) ? true:false)
         }
       } else {
-        delete ss["delete"]
-        req.server.services.push(ss);
+        serviceChanges.push({server: server.id, action: "add", service: ss})
       }
     }
-    
-    req.server.save(function(err){
+    sq.debug(server.toObject(), "Edited Server")
+    server.save(function(err){
       if (!err) {
         req.flash('success', 'Server updated')
-        serverCheck(req.server)
+        // We need to sepereate out the adding and removing of services 
+        // to avoid Mongo's conflicting modification errors
+        sq.lib.async.forEachSeries(serviceChanges, updateService, function(err){
+          checkServer(req, res)
+          res.redirect('/')
+        })
       } else {
         req.flash('error', 'The changes to your sever could not be made because they "'+err.message+'"')
         sq.debug(err, "Server Put Error")
+        res.redirect('/')
       }
-      res.redirect('/')
     });
+  }
+  
+  function updateService(s, fn) {
+    sq.Server.findById(s.server, function(err, server) {
+      if (err) return next(err)
+      
+      if (s.action == "add")
+        server.services.push(s.service)
+      
+      if (s.action == "delete")
+        server.services.id(s.service).remove()
+      
+      server.save(fn(err))
+    })
   }
   
   function deleteServer(req, res, next){
@@ -224,7 +245,7 @@ module.exports = function(app, sq){
   //                      Services Logic
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   function checkServers(req, res){ //4dbb1ef58797f3e47f000001
-    Server.find({user:req.query.user}, function(err, servers){
+    sq.Server.find({user:req.query.user}, function(err, servers){
       _.each(servers, function(server){
         serverCheck(server)
       })
@@ -235,10 +256,10 @@ module.exports = function(app, sq){
   function checkServer(req, res) {
     sq.lib.async.map(req.server.services, checkService, function(err, serviceResponses){
       _.each(serviceResponses, function(serviceResponse, key){
-        serviceResponse.serverID = server._id
+        serviceResponse.serverID = req.server._id
         // Update the lastStatus value for the service for easy access later. Also, put ok to uppercase....cause it lookes nicer
-        server.services[key].lastStatus = (serviceResponse.responseStatus === 'ok')?'OK':serviceResponse.responseStatus;
-        server.services[key].lastStatusTime = new Date()
+        req.server.services[key].lastStatus = (serviceResponse.responseStatus === 'ok')?'OK':serviceResponse.responseStatus;
+        req.server.services[key].lastStatusTime = new Date()
         serviceResponse.save(function(err){
           if (err) {
             new Error('Couldnt save the serviceResponse')
@@ -246,7 +267,7 @@ module.exports = function(app, sq){
           } 
         });
       })
-      server.save(function(err){
+      req.server.save(function(err){
         if (err) {
           new Error('Updated server')
           console.log(err)
@@ -261,12 +282,12 @@ module.exports = function(app, sq){
         var response = {}
         response.statusCode = 500
       }
-      var sr = new sq.ServiceResponse({
+      var sr = new sq.ServiceReponse({
           serviceID       :  service._id
         , type            :  service.type
         , responseStatus  :  responseStatus(response.statusCode)
         , responseCode    :  response.statusCode
-        , responseMessage :  (error)?error.message.substr(error.message.indexOf(',')+2):lib.HTTPStatus[response.statusCode]
+        , responseMessage :  (error)?error.message.substr(error.message.indexOf(',')+2):sq.lib.HTTPStatus[response.statusCode]
       })
       fn(null, sr)
     })

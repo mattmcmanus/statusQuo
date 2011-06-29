@@ -1,3 +1,4 @@
+var _ = require('underscore')
 module.exports = function(app, sq) {  
   var Schema = sq.lib.mongoose.Schema
     , ObjectId = sq.lib.mongoose.SchemaTypes.ObjectId
@@ -42,6 +43,7 @@ module.exports = function(app, sq) {
 
   function splitTags(tags) {
     tags = tags[0].split(',')
+    sq.debug(tags, "Model SplitTags")
     _.each(tags, function(tag, key){
       if (tag == ' ') tags.splice(key,1)
       else

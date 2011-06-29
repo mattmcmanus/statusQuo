@@ -1,8 +1,7 @@
 *.haml
 *.css
 lib/*
-public/javascripts/*
-public/images/*
+public/*
 node_modules/*
 .git/*
 *.swp
