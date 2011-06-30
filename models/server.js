@@ -30,6 +30,21 @@ module.exports = function(app, sq) {
 
   //                          Servers
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  function splitTags(tags) {
+    sq.debug(tags, "SplitTags")
+    if (tags.length === 1) {
+      tags = tags[0].split(',')
+      _.each(tags, function(tag, key){
+        if (tag == ' ') tags.splice(key,1)
+        else {
+          tags[key] = tag.toLowerCase().replace(/^\s+|\s+$/g,"")
+        }
+      })
+    } 
+    
+    return tags
+  }
+  
   var ServerSchema = new sq.lib.mongoose.Schema({
       user         :  { type: ObjectId, index: true }
     , created      :  { type: Date, default: Date.now }
@@ -37,24 +52,23 @@ module.exports = function(app, sq) {
     , ip           :  { type: String, index: { unique: true } }
     , name         :  String
     , os           :  String
-    , type         :  { type: [String], set: splitTags}
+    , type         :  { type: [String], set: splitTags }
     , services     :  [ServiceSchema]
   })
-
-  function splitTags(tags) {
-    tags = tags[0].split(',')
-    sq.debug(tags, "Model SplitTags")
-    _.each(tags, function(tag, key){
-      if (tag == ' ') tags.splice(key,1)
-      else
-        tags[key] = tag.toLowerCase().replace(/^\s+|\s+$/g,"")
-    })
-    return tags
-  }
 
   ServerSchema.virtual('id')
     .get(function() {
       return this._id.toHexString()
+    })
+  ServerSchema.virtual('typeList')
+    .get(function(){
+      return this.type.join(', ')
+    })
+  ServerSchema.virtual('typeListPretty')
+    .get(function(){
+      var context = this.type
+      _.each(context, function(type, key){ context[key] = '<span class="type '+type+'">'+type+'</span>' })
+      return context.join('')
     })
 
   //                     Status Log

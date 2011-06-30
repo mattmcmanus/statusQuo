@@ -50,9 +50,6 @@ module.exports = function(app, sq){
     var y = removeThe(s2["name"].toLowerCase())
     return ((x < y) ? -1 : ((x > y) ? 1 : 0))
   }
-  function updateModified(origVal, newVal) {
-    if (origVal !== newVal) origVal = newVal
-  }
   function responseStatus(statusCode) {
     if (statusCode >= 300 && statusCode < 400) 
       return "warning"
@@ -140,9 +137,6 @@ module.exports = function(app, sq){
   }
   
   function showServerByID(req, res){
-    _.each(req.server.type, function(type, key){ req.server.type[key] = '<span class="type '+type+'">'+type+'</span>' })
-    req.server.type = req.server.type.join('')
-    
     if (req.params.format === 'json')
       res.send(req.server.toObject())
     else if (req.xhr)
@@ -168,12 +162,11 @@ module.exports = function(app, sq){
   function updateServer(req, res, next){
     var server = req.server
       , serviceChanges = []
+      , s = req.body.server
     
     if(!server) return next(new Error('That server disappeared!'))
     
     // Lighten the code load
-    var s = req.body.server
-    
     server.updated = new Date();
     server.ip = s.ip
     server.name = s.name
@@ -187,10 +180,10 @@ module.exports = function(app, sq){
         if (ss.delete === "true") {
           serviceChanges.push({server: server.id, action: "delete", service: ss.id})
         } else {
-          updateModified(server.services.id(ss.id).type, ss.type)
-          updateModified(server.services.id(ss.id).name, ss.name)
-          updateModified(server.services.id(ss.id).url, ss.url)
-          updateModified(server.services.id(ss.id).public, (ss.public) ? true:false)
+          server.services.id(ss.id).type = ss.type
+          server.services.id(ss.id).name = ss.name
+          server.services.id(ss.id).url = ss.url
+          server.services.id(ss.id).public = (ss.public) ? true:false
         }
       } else {
         serviceChanges.push({server: server.id, action: "add", service: ss})
