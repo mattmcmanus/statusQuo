@@ -119,13 +119,16 @@ module.exports = function(app, sq){
     
     server.save(function(err){
       if (!err) {
-        checkServer(req, res)
+        checkServerServices(server, function(){
+          res.redirect('/')
+        })
         req.flash('success', 'You\'re server has been created')
       } else {
         req.flash('error', 'Err, Something broke when we tried to save your server. Sorry!')
         console.log("Mongoose ERROR:" + err)
+        res.redirect('/')
       }
-      res.redirect('/')
+      
     });
   }
   
@@ -189,15 +192,16 @@ module.exports = function(app, sq){
         serviceChanges.push({server: server.id, action: "add", service: ss})
       }
     }
-    sq.debug(server.toObject(), "Edited Server")
     server.save(function(err){
       if (!err) {
         req.flash('success', 'Server updated')
         // We need to sepereate out the adding and removing of services 
         // to avoid Mongo's conflicting modification errors
         sq.lib.async.forEachSeries(serviceChanges, updateService, function(err){
-          checkServer(req, res)
-          res.redirect('/')
+          checkServerServices(server, function(){
+            res.redirect('/')
+          })
+          
         })
       } else {
         req.flash('error', 'The changes to your sever could not be made because they "'+err.message+'"')
@@ -239,20 +243,26 @@ module.exports = function(app, sq){
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   function checkServers(req, res){ //4dbb1ef58797f3e47f000001
     sq.Server.find({user:req.query.user}, function(err, servers){
-      _.each(servers, function(server){
-        serverCheck(server)
-      })
-      res.send()
+      sq.lib.async.forEachSeries(servers, checkServerServices, function(err, serversReponse){
+        res.send("DONE")
+      })    
     })
   }
   
   function checkServer(req, res) {
-    sq.lib.async.map(req.server.services, checkService, function(err, serviceResponses){
+    checkServerServices(req.server, function(){
+      showServerStatus(req, res)
+    })
+  }
+  
+  function checkServerServices(server, fn){
+    sq.debug('- Checking server: '+server.name)
+    sq.lib.async.map(server.services, checkService, function(err, serviceResponses){
       _.each(serviceResponses, function(serviceResponse, key){
-        serviceResponse.serverID = req.server._id
+        serviceResponse.serverID = server._id
         // Update the lastStatus value for the service for easy access later. Also, put ok to uppercase....cause it lookes nicer
-        req.server.services[key].lastStatus = (serviceResponse.responseStatus === 'ok')?'OK':serviceResponse.responseStatus;
-        req.server.services[key].lastStatusTime = new Date()
+        server.services[key].lastStatus = (serviceResponse.responseStatus === 'ok')?'OK':serviceResponse.responseStatus;
+        server.services[key].lastStatusTime = new Date()
         serviceResponse.save(function(err){
           if (err) {
             new Error('Couldnt save the serviceResponse')
@@ -260,16 +270,19 @@ module.exports = function(app, sq){
           } 
         });
       })
-      req.server.save(function(err){
+      server.save(function(err){
         if (err) {
-          new Error('Updated server')
+          new Error('Updating server status failed')
           console.log(err)
         }
+        
+        fn()
       });
     })
   }
   
   function checkService(service, fn) {
+    sq.debug('\t-: '+service.name)
     sq.lib.request({uri:service.url, onResponse:true}, function (error, response, body) {
       if (error) {
         var response = {}

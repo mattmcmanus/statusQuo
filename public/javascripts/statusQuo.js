@@ -34,7 +34,7 @@ if(typeof window.statusQuo === "undefined") {
       
       //Bind server refresh action
       $('.server a.refresh')
-        .bind('click', function(){ context.serverCheck($(this).parents('.server')); return false });
+        .bind('click', function(){ context.serverStatus($(this).parents('.server'), "check"); return false });
       
       // Add a service button
       $('.server a.add')
@@ -127,7 +127,7 @@ if(typeof window.statusQuo === "undefined") {
       var context = this;
       if (context.autoRefresh) context.autoRefreshCountdown = context.autoRefreshInterval;
       $('.server').each(function(){
-        context.serverCheck($(this))
+        context.serverStatus($(this))
       })
     },
     
@@ -141,12 +141,15 @@ if(typeof window.statusQuo === "undefined") {
       $(".countdown").html("Refresh in <strong>" + sq.autoRefreshCountdown + "</strong> seconds");
     },
     
-    serverCheck: function(server) {
+    // Type is null or status to do a read only status check. Type is "check" to do a manual check
+    serverStatus: function(server, type) {
       if (typeof event != "undefined") event.stopPropagation();
+      if (!type) type = "status"
+      
       var context = this;
       $(server).addClass("checking").find('.loader').show()
       
-      $.ajax({ url:'/server/' + $(server).attr('id') + '/status/'
+      $.ajax({ url:'/server/' + $(server).attr('id') + '/'+ type +'/'
         , context:server
         , success: function(data){
             var server = $(this);

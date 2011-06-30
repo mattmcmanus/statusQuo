@@ -31,7 +31,6 @@ module.exports = function(app, sq) {
   //                          Servers
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   function splitTags(tags) {
-    sq.debug(tags, "SplitTags")
     if (tags.length === 1) {
       tags = tags[0].split(',')
       _.each(tags, function(tag, key){
