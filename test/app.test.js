@@ -3,10 +3,6 @@ var assert = require('assert')
   , mongoose = require('mongoose');
 
 
-process.env.NODE_ENV = 'test';
-
-
-
 /**
  * Simple expresso tests for the AppController
  */
