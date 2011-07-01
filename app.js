@@ -59,8 +59,8 @@ function bootApplication(app, next) {
   
   //                     Routes
   // - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  require('./routes/user')(app, sq);
-  require('./routes/server')(app, sq);
+  require('./lib/user')(app, sq);
+  require('./lib/server')(app, sq);
   
   //                     Helpers
   // - - - - - - - - - - - - - - - - - - - - - - - - - - -
