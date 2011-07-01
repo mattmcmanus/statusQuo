@@ -18,4 +18,9 @@ module.exports = function(app,express) {
     app.set('db-uri', 'mongodb://localhost/statusquo-prod')
     app.use(express.errorHandler());
   })
+  
+  app.configure('test', function() {
+    app.set('db-uri', 'mongodb://localhost/statusquo-prod')
+    app.use(express.errorHandler({ dumpExceptions: false, showStack: false }));
+  })
 }
