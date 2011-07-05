@@ -5,6 +5,7 @@ pids/*
 tmp/*
 logs/*
 node_modules/*
+lib-cov/*
 config.json
 .DS_Store
 *.swp
