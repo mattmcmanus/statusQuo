@@ -1,7 +1,7 @@
 TESTS = test/*.js
 
 test:
-	@NODE_ENV=test expresso \
+	@NODE_ENV=test expresso -s \
 		-I lib \
 		$(TESTS)
 
