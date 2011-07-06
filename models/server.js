@@ -1,4 +1,6 @@
 var _ = require('underscore')
+  , _date = require('underscore.date')
+  
 module.exports = function(app, sq) {  
   var Schema = sq.lib.mongoose.Schema
     , ObjectId = sq.lib.mongoose.SchemaTypes.ObjectId
@@ -24,9 +26,8 @@ module.exports = function(app, sq) {
     })
   ServiceSchema.virtual('lastStatusTimeRelative')
     .get(function() {
-      return sq.lib._date(this.lastStatusTime).fromNow()
+      return _date(this.lastStatusTime).fromNow()
     })
-
 
   //                          Servers
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

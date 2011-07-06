@@ -15,7 +15,7 @@
   "dependencies": {
     "jade"              : ">=0.9.1"
   , "mongoose"          : ">= 1.0"
-  , "everyauth"         : ">= 0.2"
+  , "everyauth"         : "0.2.14"
   , "mongoose-auth"     : ">= 0.0.9"
   , "express"           : ">= 2"
   , "stylus"            : ">= 0.9"
