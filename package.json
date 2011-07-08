@@ -28,6 +28,7 @@
   , "request"           : ">= 1.9"
   , "underscore"        : ">= 1.1"
   , "underscore.date"   : ">= 0.4"
+  , "cluster"           : "0.6.x"
   },
   "devDependencies": {
     "expresso": ">=0.7.3",

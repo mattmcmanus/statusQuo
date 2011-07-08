@@ -175,14 +175,22 @@ if(typeof window.statusQuo === "undefined") {
     
     serverPing: function(server_id) {
       var context = this
-        , server = $('#'+server_id);
-      $(server).addClass("pinging");
-      context.socket = io.connect('http://local.host:8000');
+        , server = $('#'+server_id)
+        , context.socket = io.connect();
+        
+      var socket = context.socket
+      
       var smoothie = new SmoothieChart({ grid: { strokeStyle: 'rgb(45, 45, 45)', fillStyle: 'rgb(34, 34, 34)', lineWidth: 1, millisPerLine: 500, verticalSections: 3 } });
-      smoothie.streamTo(document.getElementById("ping_graph"), 750);
-      var ping = new TimeSeries();
-      context.socket.send({'ping':$(server).data('ip')});
-      context.socket.on('message', function(output){
+
+      socket.emit('ping', $(server).data('ip'), function(status){
+        if (status) {
+          $(server).addClass("pinging")
+          smoothie.streamTo(document.getElementById("ping_graph"), 750);
+          var ping = new TimeSeries();
+        }
+      });
+
+      socket.on('response', function(output){
         $('.ping .responseTime').delay(1000).html(output.time + "<em>ms</em>")
         ping.append(new Date().getTime(), parseFloat(output.time))
       });
