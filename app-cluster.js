@@ -3,9 +3,6 @@ var cluster = require('cluster')
   , path = __dirname
   , app;
 
-/**
- * Create an instance of calipso via the normal App.
- */
 require('./app').boot(function(app) {
 
   /**
@@ -36,7 +33,7 @@ require('./app').boot(function(app) {
       .listen(port);
 
     console.log('======================================================================')
-    console.log('         StatusQuo Server successfully started on port '+port+'     ')
+    console.log('   StatusQuo Server ('+app.set('environment')+') started on port '+port+'     ')
     console.log('======================================================================')
 
 });
