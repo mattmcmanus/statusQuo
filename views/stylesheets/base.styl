@@ -392,8 +392,12 @@ div.server
     &.services
       height auto
     &.ping
-      height 100px
+      height 0
       position relative
+      transition height 200ms ease-out
+      #ping_graph
+        opacity 0
+        transition opacity 200ms ease-out
       .responseTime
         z-index 100
         position absolute
@@ -407,6 +411,12 @@ div.server
           margin-left 5px
   footer
     clear both
+
+.server.detail.pinging
+  .ping
+    height 100px
+    #ping_graph
+      opacity 1
     
 //         Services
 //- - - - - - - - - - - - - - - - - - - -    

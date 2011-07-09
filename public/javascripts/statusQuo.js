@@ -114,8 +114,8 @@ if(typeof window.statusQuo === "undefined") {
       var context = this
         , curtain = $("#curtain");
       
-      if (curtain.has('.server.detail').length)
-        context.socket.send({'kill':'ping'});
+      if (context.socket)
+        delete context.socket
       
       curtain.fadeOut(200).children().remove()
     },
@@ -176,21 +176,21 @@ if(typeof window.statusQuo === "undefined") {
     serverPing: function(server_id) {
       var context = this
         , server = $('#'+server_id)
-        , context.socket = io.connect();
+        , socket = context.socket = io.connect()
+        , smoothie = new SmoothieChart({ grid: { strokeStyle: 'rgb(45, 45, 45)', fillStyle: 'rgb(34, 34, 34)', lineWidth: 1, millisPerLine: 500, verticalSections: 3 } })
+        , ping = new TimeSeries()
         
-      var socket = context.socket
-      
-      var smoothie = new SmoothieChart({ grid: { strokeStyle: 'rgb(45, 45, 45)', fillStyle: 'rgb(34, 34, 34)', lineWidth: 1, millisPerLine: 500, verticalSections: 3 } });
-
+        smoothie.streamTo(document.getElementById("ping_graph"), 750);
+        
       socket.emit('ping', $(server).data('ip'), function(status){
         if (status) {
           $(server).addClass("pinging")
-          smoothie.streamTo(document.getElementById("ping_graph"), 750);
-          var ping = new TimeSeries();
-        }
+        } else
+          console.error("Ping did not start successfully")
       });
 
       socket.on('response', function(output){
+        console.log(output)
         $('.ping .responseTime').delay(1000).html(output.time + "<em>ms</em>")
         ping.append(new Date().getTime(), parseFloat(output.time))
       });

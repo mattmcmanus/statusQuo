@@ -23,9 +23,13 @@ exports.boot = function(next) {
   //Create our express instance
   app = express.createServer();
   app.path = path;
-
+  
+  //                     Socket.io
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  sq.io = require('socket.io').listen(app);
+  
   // Load configuration settings
-  require("./config.js")(app, express);
+  require("./config.js")(app, sq, express);
   
   // Load Models
   // * Eventually I'll write a dynamic loader. This is just easier for now.
@@ -57,10 +61,6 @@ function bootApplication(app, next) {
   app.use(sq.lib.mongooseAuth.middleware())  
 
   
-  //                     Socket.io
-  // - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  sq.io = require('socket.io').listen(app);
-
   //                     Routes
   // - - - - - - - - - - - - - - - - - - - - - - - - - - -
   require('./lib/user')(app, sq);
