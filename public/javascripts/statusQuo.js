@@ -115,6 +115,7 @@ if(typeof window.statusQuo === "undefined") {
         , curtain = $("#curtain");
       
       if (context.socket)
+        context.socket.emit('kill-ping')
         delete context.socket
       
       curtain.fadeOut(200).children().remove()
@@ -189,13 +190,17 @@ if(typeof window.statusQuo === "undefined") {
           console.error("Ping did not start successfully")
       });
 
-      socket.on('response', function(output){
+      socket.on('ping-response', function(output){
         console.log(output)
         $('.ping .responseTime').delay(1000).html(output.time + "<em>ms</em>")
         ping.append(new Date().getTime(), parseFloat(output.time))
       });
       smoothie.addTimeSeries(ping, { strokeStyle:'rgb(200, 200, 200)', fillStyle:'rgba(255, 255, 255, 0.1)', lineWidth:2 })
         
+    },
+    
+    serverPingKill: function(){
+      
     },
     
     //                  Services
