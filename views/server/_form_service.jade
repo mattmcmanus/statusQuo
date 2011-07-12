@@ -7,7 +7,7 @@ li.service(id=service.id || '')
   .message
   ul
     // Display slightly different if it's the default ping service
-    - if (service.type = 'ping')
+    - if (service.type == 'ping')
       li.name Ping
     - else
       li.checkboxes.type

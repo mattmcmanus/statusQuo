@@ -14,7 +14,7 @@ module.exports = function(app, sq) {
     , public          : { type: Boolean, index: true }
     , delta           : Number
     , enabled         : { type: Boolean, default: true }
-    , lastStatus      : Number
+    , lastStatus      : String
     , lastStatusTime  : Date
   })
 
