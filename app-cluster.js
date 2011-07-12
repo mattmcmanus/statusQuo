@@ -19,17 +19,17 @@ require('./app').boot(function(app) {
       .use(cluster.debug())
       .use(cluster.repl(8888))
       .use(cluster.cli())
-      .use(cluster.reload(['app.js','helpers.js','models','lib','node_modules']))
+      .use(cluster.reload(['app-cluster.js','app.js','helpers.js','models','lib','node_modules']))
     .in('test')
       .use(cluster.logger(path+'/logs', 'warning'))
     .in('production')
       .use(cluster.logger(path+'/logs', 'error'))
     .in('all')
-      .set('workers','4')
+      .set('workers','2')
       .listen(port);
 
-    console.log('======================================================================')
-    console.log('   StatusQuo Server ('+app.set('environment')+') started on port '+port+'     ')
-    console.log('======================================================================')
+    console.log('\x1b[36m======================================================================')
+    console.log('\x1b[0m   StatusQuo Server ('+app.set('environment')+') started on port '+port+'     ')
+    console.log('\x1b[36m======================================================================')
 
 });

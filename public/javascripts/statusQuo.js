@@ -199,10 +199,6 @@ if(typeof window.statusQuo === "undefined") {
         
     },
     
-    serverPingKill: function(){
-      
-    },
-    
     //                  Services
     // - - - - - - - - - - - - - - - - - - - - - - - - -
     serviceCheck: function(service){

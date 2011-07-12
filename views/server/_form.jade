@@ -11,9 +11,11 @@ ul
   li.type
     label(for='server[type]') Server Type
     input(type="text", name='server[type]', value=server.typeList)
+
 h2 Services to monitor
 ul.services
   !=partial('_form_service',  { collection: server.services, as: 'service' })
+
 ul  
   li
     a.add(href='javascript:void(0)') Add Service

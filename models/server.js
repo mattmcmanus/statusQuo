@@ -8,12 +8,14 @@ module.exports = function(app, sq) {
   //                     Server Services
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   var ServiceSchema = new sq.lib.mongoose.Schema({
-      name            :  String
-    , type            :  { type: String, index: true }
-    , url             :  String
-    , public          :  { type: Boolean, index: true }
-    , lastStatus      :  String
-    , lastStatusTime  :  Date
+      name            : String
+    , type            : { type: String, index: true, default: 'http' }
+    , url             : String
+    , public          : { type: Boolean, index: true }
+    , delta           : Number
+    , enabled         : { type: Boolean, default: true }
+    , lastStatus      : Number
+    , lastStatusTime  : Date
   })
 
   ServiceSchema.virtual('id')
@@ -79,9 +81,13 @@ module.exports = function(app, sq) {
     , timestamp       :  { type: Date, default: Date.now }
     , type            :  { type: String, index: true }
     , responseStatus  :  { type: String, index: true } //OK, warning, error
-    , responseCode    :  String
+    , responseCode    :  Number
     , responseMessage :  String
     , responseTime    :  String
+    , pingPacketLoss  :  Number
+    , pingTimeMin     :  Number
+    , pingTimeMax     :  Number
+    , pingTimeAvg     :  Number
   })
 
   ServiceResponseSchema.virtual('id')
