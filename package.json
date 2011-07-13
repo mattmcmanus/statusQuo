@@ -1,7 +1,7 @@
 {
   "name": "statusQuo",
   "description": "The status quo of things",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "repository": "git://github.com/mattmcmanus/statusQuo.git",
   "author": "Matthew McManus <mattmcmanus@gmail.com> (http://mattmcman.us)",
   "directories": {
@@ -10,28 +10,28 @@
   , "models": "./models"
   },
   "engines": {
-    "node": ">= 0.4.0"
+    "node": "0.4.x"
   },
   "dependencies": {
-    "jade"              : ">=0.9.1"
-  , "mongoose"          : ">= 1.0"
+    "jade"              : "0.9.x"
+  , "mongoose"          : "1.x"
   , "everyauth"         : "0.2.14"
-  , "mongoose-auth"     : ">= 0.0.9"
-  , "express"           : ">= 2"
-  , "stylus"            : ">= 0.9"
-  , "oauth"             : ">= 0.9"
-  , "async"             : ">= 0.1"
-  , "cluster"           : ">= 0.6"
-  , "http-status"       : ">= 0.1"
-  , "connect-redis"     : ">= 1"
-  , "socket.io"         : ">= 0.6"
-  , "request"           : ">= 1.9"
-  , "underscore"        : ">= 1.1"
-  , "underscore.date"   : ">= 0.4"
+  , "mongoose-auth"     : "0.0.x"
+  , "express"           : "2.x"
+  , "stylus"            : "0.9.x"
+  , "oauth"             : "0.9.x"
+  , "async"             : "0.1.x"
+  , "cluster"           : "0.6.x"
+  , "http-status"       : "0.x"
+  , "connect-redis"     : "1.x"
+  , "socket.io"         : "0.7.x"
+  , "request"           : "1.x"
+  , "underscore"        : "1.1.x"
+  , "underscore.date"   : "0.4.x"
   , "cluster"           : "0.6.x"
   },
   "devDependencies": {
-    "expresso": ">=0.7.3",
-    "should": ">=0.1.0"
+    "expresso": "0.7.x",
+    "should": "0.1.x"
   }
 }
