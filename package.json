@@ -13,12 +13,12 @@
     "node": "0.4.x"
   },
   "dependencies": {
-    "jade"              : "0.9.x"
+    "jade"              : "0.x"
   , "mongoose"          : "1.x"
   , "everyauth"         : "0.2.14"
   , "mongoose-auth"     : "0.0.x"
   , "express"           : "2.x"
-  , "stylus"            : "0.9.x"
+  , "stylus"            : "0.x"
   , "oauth"             : "0.9.x"
   , "async"             : "0.1.x"
   , "cluster"           : "0.6.x"
@@ -27,8 +27,7 @@
   , "socket.io"         : "0.7.x"
   , "request"           : "1.x"
   , "underscore"        : "1.1.x"
-  , "underscore.date"   : "0.4.x"
-  , "cluster"           : "0.6.x"
+  , "underscore.date"   : "0.5.x"
   },
   "devDependencies": {
     "expresso": "0.7.x",
