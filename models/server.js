@@ -28,7 +28,8 @@ module.exports = function(app, sq) {
     })
   ServiceSchema.virtual('lastStatusTimeRelative')
     .get(function() {
-      return _date(this.lastStatusTime).fromNow()
+      var time = _date(this.lastStatusTime).fromNow()
+      return time
     })
 
   //                          Servers
