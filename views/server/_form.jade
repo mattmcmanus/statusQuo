@@ -14,7 +14,8 @@ ul
 
 h2 Services to monitor
 ul.services
-  !=partial('_form_service',  { collection: server.services, as: 'service' })
+  - var services = (server.services) ? server.services : {}
+  !=partial('_form_service',  { collection: services, as: 'service' })
 
 ul  
   li

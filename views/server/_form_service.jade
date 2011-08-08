@@ -2,7 +2,7 @@
 
 li.service(id=service.id || '')
   input.delete(type="hidden", name="server[services]["+indexInCollection +"][delete]", value="false")
-  if(service.id)
+  - if(service.id)
     input.id(type="hidden",name="server[services]["+indexInCollection +"][id]", value=service.id)
   .message
   ul

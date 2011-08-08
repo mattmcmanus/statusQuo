@@ -8,14 +8,16 @@ html(lang="en")
     | <meta name="viewport" content="initial-scale=1.0, width=device-width, maximum-scale=1.0"/>
     
     // Javscripts
-    script(type = "text/javascript", src = "http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js")
+    script(type = "text/javascript", src = "//ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js")
     script
       window.jQuery || document.write("<script src='js/libs/jquery-1.6.2.min.js'/>")
     
     script(type = "text/javascript", src = "http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js")
     script(type = "text/javascript", src = "http://ajax.cdnjs.com/ajax/libs/modernizr/1.7/modernizr-1.7.min.js")
-    script(type = "text/javascript", src = "http://ajax.cdnjs.com/ajax/libs/underscore.js/1.1.4/underscore-min.js")
+    //script(type = "text/javascript", src = "http://ajax.cdnjs.com/ajax/libs/underscore.js/1.1.4/underscore-min.js")
     script(type = "text/javascript", src = "/socket.io/socket.io.js")
+    script(type = "text/javascript", src = "/javascripts/libs/events.js")
+    script(type = "text/javascript", src = "/javascripts/libs/caustic.min.js")
     script(type = "text/javascript", src = "/javascripts/libs/smoothie.js")
     script(type = "text/javascript", src = "/javascripts/statusQuo.js")
     // Stylesheets
@@ -42,3 +44,8 @@ html(lang="en")
           a(href='/user') Account Settings
           a(href="/logout") Log Out
     #main!= body
+    
+    script#server-form-template(type="text/template")
+      !=partial('server/_form',  { object: {}, as: 'server' })
+    script#service-form-template(type="text/template")
+      !=partial('server/_form_service',  { object: {}, as: 'service' })
