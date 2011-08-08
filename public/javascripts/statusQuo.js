@@ -1,6 +1,7 @@
 if(typeof window.statusQuo === "undefined") {
   var statusQuo = function (params) {
     this.servers = null;
+    this.socket = params.socket || false;
     this.checkOnLoad = params.checkOnLoad || false;
     this.autoRefresh = true;
     this.autoRefreshFunction = null;
@@ -115,8 +116,7 @@ if(typeof window.statusQuo === "undefined") {
         , curtain = $("#curtain");
       
       if (context.socket)
-        context.socket.emit('kill-ping')
-        delete context.socket
+        context.socket.emit('ping-kill')
       
       curtain.fadeOut(200).children().remove()
     },
@@ -170,14 +170,14 @@ if(typeof window.statusQuo === "undefined") {
       $.get('/server/'+$(server).attr('id'), function(server){
         context.curtainOpen(server);
         var server_id = $(server).attr('id');
-        context.serverPing(server_id)
+        if (context.socket) context.serverPing(server_id)
       });
     },
     
     serverPing: function(server_id) {
       var context = this
         , server = $('#'+server_id)
-        , socket = context.socket = io.connect()
+        , socket = context.socket
         , smoothie = new SmoothieChart({ grid: { strokeStyle: 'rgb(45, 45, 45)', fillStyle: 'rgb(34, 34, 34)', lineWidth: 1, millisPerLine: 500, verticalSections: 3 } })
         , ping = new TimeSeries()
         
@@ -242,6 +242,7 @@ if(typeof window.statusQuo === "undefined") {
 $(document).ready(function() {
   sq = new statusQuo({
     "checkOnLoad":true
+  , socket:false // io.connect();
   });
   
   sq.setupPage();
