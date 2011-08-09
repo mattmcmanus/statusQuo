@@ -20,22 +20,27 @@ html(lang="en")
     script(type = "text/javascript", src = "/javascripts/libs/caustic.min.js")
     script(type = "text/javascript", src = "/javascripts/libs/smoothie.js")
     script(type = "text/javascript", src = "/javascripts/statusQuo.js")
+    
     // Stylesheets
     link(rel="stylesheet", type='text/css', href="http://fonts.googleapis.com/css?family=Droid+Sans+Mono")
     link(rel="stylesheet", type='text/css', href="/stylesheets/base.css")
+  
   body(class = body_classes)
     #curtain
+    
     !=messages
+    
     header#top
       h1#logo.ok
         a(href='/',title="Go home")
           em the
           | StatusQuo
       - if (everyauth.loggedIn)
-        a#server_add.button(href="/server/new") Add Server
-        - if (isFront)
-          a.refresh.button(href="javascript:void()") Refresh Dashboard
-            span.countdown
+        .buttons
+          a#server_add.button.transparent(href="/server/new") Add Server
+          - if (isFront)
+            a.refresh.button.transparent(href="javascript:void()") Refresh Dashboard
+              span.countdown
       nav#eyebrow
         - if (everyauth.loggedIn)
           img.picture(src=everyauth.twitter.user.profile_image_url, alt=everyauth.twitter.user.screen_name)
@@ -43,9 +48,12 @@ html(lang="en")
           a(href='/') Dashboard
           a(href='/user') Account Settings
           a(href="/logout") Log Out
+    
     #main!= body
     
-    script#server-form-template(type="text/template")
-      !=partial('server/_form',  { object: {}, as: 'server' })
+    
+    script#new-server-form-template(type="text/template")
+      !=partial('server/new',  { object: {}, as: 'server' })
+      
     script#service-form-template(type="text/template")
       !=partial('server/_form_service',  { object: {}, as: 'service' })

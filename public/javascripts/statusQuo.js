@@ -27,13 +27,22 @@ if(typeof window.statusQuo === "undefined") {
     // - - - - - - - - - - - - - - - - - - - - - - - - -
     bindButtons: function() {
       var context = this;
+      // Add a server button
+      $('#server_add').click(function(){
+        var form = View('new-server-form')
+        form.appendTo('#curtain')
+        context.curtainOpen()
+        return false
+      })
+      // Refresh the dashboard view
       $('.front #refresh')
         .click(function(){ context.dashboardRefresh() });
 
+      // View the detail of a server
       $('.front .server')
         .bind('click', function(){ context.serverDetail($(this)) });
       
-      //Bind server refresh action
+      //Refresh an individual servers status
       $('.server a.refresh')
         .bind('click', function(){ context.serverStatus($(this).parents('.server'), "check"); return false });
       
@@ -92,33 +101,36 @@ if(typeof window.statusQuo === "undefined") {
     
     bindEvents: function() {
       var context = this;
+      
       $('form.new .ip input').blur(function(){
-        if ($(this).val().match(/(?:\d{1,3}\.){3}\d{1,3}/) !== null 
-          && (context.didServerLookup === false || 
-          (!$(this).data('lastIP') || $(this).data('lastIP') !== $(this).val()))) 
+        if ($(this).val().match(/(?:\d{1,3}\.){3}\d{1,3}/) !== null //Does this equal a full IP. Ex: 192.168.1.1
+          && (context.didServerLookup === false || // and did we already look up services for this already
+          (!$(this).data('lastIP') || $(this).data('lastIP') !== $(this).val()))) // OR is this different from the last IP
             context.serverLookup(this)
         
         $(this).data('lastIP',$(this).val())
       })
       
+      $('#curtain div').click( function(event) { event.stopPropagation() })
       $('#curtain').click(function(){context.curtainClose()})
+      
     },
     
     
     //                     The Curtain
     // - - - - - - - - - - - - - - - - - - - - - - - - -
     curtainOpen: function(modal){
-      $('#curtain').append(modal). height(window.innerHeight).fadeIn(200);
+      if (modal) $('#curtain').append(modal)
+      $('#curtain').height(window.innerHeight).fadeIn(200);
     },
     
     curtainClose: function(){
       var context = this
-        , curtain = $("#curtain");
       
       if (context.socket)
         context.socket.emit('ping-kill')
       
-      curtain.fadeOut(200).children().remove()
+      $("#curtain").fadeOut(200).children().remove()
     },
     
     
@@ -134,7 +146,7 @@ if(typeof window.statusQuo === "undefined") {
     
     autoDashboardRefresh: function() {
       var context = this;
-      sq.autoRefreshCountdown--
+      sq.autoRefreshCountdown-- 
       if (context.autoRefreshCountdown == 0)   {
          sq.dashboardRefresh()
          return;

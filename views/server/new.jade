@@ -1,8 +1,9 @@
-header
-  h1 Add a server
 form.server.new(method='post')
-  !=partial('_form')
-  ul
-    li.buttons
-      input.button(type="submit", value="Add Server")
-      a.button.cancel(href="/") Cancel
+  header
+    h2 Add a server
+  section.form
+    !=partial('_form')
+    ul
+      li.buttons
+        input.button(type="submit", value="Add Server")
+        a.button.cancel(href="/") Cancel

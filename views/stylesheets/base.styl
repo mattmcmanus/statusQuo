@@ -4,19 +4,10 @@
 // Variables
 sprites = url(../images/icons.png)
 
-hightlight = #19e
 
-//Status Colors
-ok = #090
-warning = #990
-error = #900
 
-ok_text = lighten(ok, 90%)
-warning_text = lighten(warning, 90%)
-error_text = lighten(error, 90%)
-
-//  Typography presets
-//  -----------------
+//                Typography
+// - - - - - - - - - - - - - - - - - - - - - - -
 body
   font  14px/1.5 Helvetica, Arial, sans-serif
 
@@ -55,7 +46,21 @@ selection
 -moz-selection
   background rgb(255,255,0)
   
-  
+
+//               Color Presets
+// - - - - - - - - - - - - - - - - - - - - - - -
+
+hightlight = #19e
+
+//Status Colors
+ok = #090
+warning = #990
+error = #900
+
+ok_text = lighten(ok, 90%)
+warning_text = lighten(warning, 90%)
+error_text = lighten(error, 90%)
+
 .s200, .ok
   color ok + #ccc
   text-shadow ok 0 0 3px
@@ -76,7 +81,12 @@ a, a:link
 a:hover
   text-decoration underline
 
+
+//               Buttons
+// - - - - - - - - - - - - - - - - - - - - - - -
 .button
+  border 1px solid #222
+  border-radius 6px
   color #fff
   font-size .9em
   font-weight 700
@@ -85,8 +95,6 @@ a:hover
   display inline-block
   margin 3px 10px 3px 0
   padding 5px 15px
-  border 1px solid #222
-  border-radius 6px
   text-align center
   text-shadow 0 -1px 1px rgba(34,34,34,.3)
   linear-gradient #262626,#060606
@@ -104,19 +112,47 @@ a:hover
     linear-gradient #114411,#002200
     &:hover 
       linear-gradient #226622,#114411
+    
+.button.transparent
+  background transparent no-repeat center center
+  border none
+  display block
+  height 14px
+  width 15px
+  margin 2px
+  opacity .25
+  padding 5px 3px
+  text-indent -9999px
+  transition(opacity,.25s)
+  &:hover
+    opacity 1
+    background-repeat no-repeat
+    background-position center center
+    
+.buttons
+  position absolute
+  top 0
+  left 0
+  .button
+    display inline-block
+    
+// Specfic repeating button classes
+.button
   &.refresh
-    background-image url(/images/server_refresh.png) 
+    background-image url(/images/server_refresh.png)
+
 a.cancel
   color #aaa
   linear-gradient #444,#333 
   font-size .75em
+
 a.delete, .confirm .yes
   color #fff
   linear-gradient #500,#300 
   border-color #400
   box-shadow(0 2px 7px rgba(64,0,0,.5))
   &:hover
-    linear-gradient #700,#500 
+    linear-gradient #700,#500
   
 /*
   Default 5-column, 768 px layout for iPads, netbooks, and IE
@@ -144,7 +180,6 @@ body
   z-index 100
 
 #messages
-  position relative
   margin 0 auto
   max-width 500px
   z-index 1000
@@ -166,12 +201,13 @@ body
       li
         error_text()
 
+
+//                Page Header
+// - - - - - - - - - - - - - - - - - - - - - - - 
 header#top
-  background #515151  /* old browsers */
-  background -moz-linear-gradient(top, #515151 0%, #262626 51%, #1c1c1c 52%, #0e0e0e 100%)  /* firefox */
-  background -webkit-gradient(linear, left top, left bottom, color-stop(0%,#515151), color-stop(51%,#262626), color-stop(52%,#1c1c1c), color-stop(100%,#0e0e0e))  /* webkit */
+  linear-gradient #444444,#0e0e0e
   box-shadow 0 1px 2px rgba(255,255,255,.1)
-  padding 10px 1em 8px
+  padding 10px 1em 3px
   border-bottom 1px solid #161616
   position relative
   a,a:link
@@ -212,137 +248,59 @@ header#top
   #login
     height 24px
     width 151px
-  
-  .button
-    width 10px
-    height 13px
-    text-indent -9999px
-    background-repeat no-repeat
-    background-position center center
-    position absolute
-    top 5px
-    &:hover
-      background-repeat no-repeat
-      background-position center center
-      
-  #server_add
+  .buttons
     left 120px
-    background-image url(/images/add.png) 
+    top 6px
+    #server_add
+      background-image url(/images/add.png) 
     
-  .refresh
-    left 170px
-    overflow visible
-    &:hover .countdown
-      display inline
+    .refresh
+      overflow visible
+      &:hover .countdown
+        display inline
       
   .countdown
     display none
     position absolute
-    top 2px
-    left 41px
+    top 5px
+    left 50px
     width 150px
     color #999
     text-indent 0
     font-weight 400
     strong
       color #eee
-    
+
+
+//                Front page dash
+// - - - - - - - - - - - - - - - - - - - - - - -    
 .front
-  h2
+  #main h2
     background none
     color rgba(225,225,225,.2)
     text-shadow -1px -1px 2px rgba(0,0,0,.3)
     clear both
-    
-div.server
-  float left
-  color #fff
-  margin 1em
-  width 200px
-  border-radius 7px
+
+
+//               A Server
+// - - - - - - - - - - - - - - - - - - - - - - -
+.server
   box-shadow(0 2px 7px rgba(0,0,0,.25))
   border 1px solid #262626
+  width 100%
+  max-width 600px
+  border-radius 7px
+  margin 2em auto
+  linear-gradient #333333,#222222
   transition box-shadow 200ms ease-in
-  &:hover
-    box-shadow(0 3px 15px rgba(0,0,0,.6))
-    cursor pointer
+  color #fff
   
   header
+    height auto
     border-top-radius 7px
     linear-gradient #222222,#161616
     padding 1px 5px
-    height 25px
-    position relative
-   
-    h3
-      margin 7px 5px
-      padding 0
-      font-size 1em
-      line-height 1em
-      font-weight 700
-      text-shadow 0 -1px 2px #111
-    .buttons
-      position absolute 
-      right 2px 
-      top 5px
-      a.refresh
-        display block
-        position relative
-        text-indent -9999px
-        height 14px
-        width 15px
-        background transparent url(../images/server_refresh.png) no-repeat center center
-        margin 2px
-        opacity .25
-        transition(opacity,.25s)
-        &:hover
-          opacity 1
-  section.info
-    display none
-   
-  section
-    &:last-child
-      border-bottom-radius 7px
-    &.services
-      border-top 1px solid #2c2c2c
-      border-bottom 1px solid #222
-      linear-gradient(#292929,#222222)
-      position relative
-      height 30px
-      .loader
-        opacity 0
-        position absolute
-        top 0 
-        left 0
-        width 100%
-        height 29px
-        z-index 50
-        background rgba(34,34,34,.75) url(../images/ajax-loader.gif) no-repeat center center
-        transition opacity .25s ease-in-out
-      li
-        display inline-block
-        text-align  center
-        font-weight 700
-        font-size 1.2em
-        text-overflow ellipsis-word
-        padding 2px 15px
-        .count
-          font-weight 700
-          margin-right 5px
-
-//         Server detail!
-//- - - - - - - - - - - - - - - - - - - - 
-.server.detail
-  width 100%
-  max-width 600px
-  margin 2em auto
-  float none
-  linear-gradient #2c2c2c, #222222
-  box-shadow(0 2px 7px rgba(0,0,0,.75))
-  &:hover
-    box-shadow(0 3px 15px rgba(0,0,0,.75))
-  header
-    height auto
+    
     h2, .types, .tyoe
       display inline-block
     h2
@@ -378,14 +336,13 @@ div.server
       right 0
       .button
         margin 5px
-        display inline-block
         &.refresh
-          padding 0
           top 3px
         &.edit
           text-indent 0
           &:hover
             linear-gradient #444444,#222222
+            
   section
     h3
       line-height 1.5em
@@ -412,11 +369,67 @@ div.server
   footer
     clear both
 
-.server.detail.pinging
+.server.pinging
   .ping
     height 100px
     #ping_graph
       opacity 1
+      
+.server.thumb
+    width 200px
+    margin 1em
+    float left
+    &:hover
+      box-shadow(0 3px 15px rgba(0,0,0,.6))
+      cursor pointer
+
+  header
+    height 25px
+
+    h3
+      margin 5px
+      padding 0
+      font-size 1em
+      line-height 1em
+      font-weight 700
+      text-shadow 0 -1px 2px #111
+    .buttons
+      right 2px
+      top -3px
+      left auto
+
+  section.info
+    display none
+
+  section
+    &:last-child
+      border-bottom-radius 7px
+    &.services
+      border-top 1px solid #2c2c2c
+      border-bottom 1px solid #222
+      linear-gradient(#292929,#222222)
+      position relative
+      height 30px
+      .loader
+        opacity 0
+        position absolute
+        top 0 
+        left 0
+        width 100%
+        height 29px
+        z-index 50
+        background rgba(34,34,34,.75) url(../images/ajax-loader.gif) no-repeat center center
+        transition opacity .25s ease-in-out
+      li
+        display inline-block
+        text-align  center
+        font-weight 700
+        font-size 1.2em
+        text-overflow ellipsis-word
+        padding 2px 15px
+        .count
+          font-weight 700
+          margin-right 5px
     
 //         Services
 //- - - - - - - - - - - - - - - - - - - -    
@@ -559,7 +572,6 @@ form
     position relative
     border-radius 0 0 7px 7px
     padding 12px 18px
-    position relative
     .delete, .confirm
       position absolute
       right 8px
@@ -639,14 +651,6 @@ form.server
     display none
       
 
-.page #main
-  width 600px
-  border-radius 7px
-  margin 1em auto
-  box-shadow(0 2px 7px rgba(0,0,0,.25))
-  border 1px solid #262626
-  linear-gradient #333333,#222222
-    
 #main
   .psst
     position absolute

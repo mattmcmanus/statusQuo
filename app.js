@@ -51,13 +51,13 @@ exports.boot = function(next) {
  */
 function bootApplication(app, next) {
 
-  app.use(express.static(pub))
   app.use(express.logger({ format: '\x1b[1m:method\x1b[0m \x1b[33m:url\x1b[0m :response-time ms' }))
   app.use(express.cookieParser())
   app.use(express.bodyParser())
   app.use(express.methodOverride())
   app.use(express.session({ store: new RedisStore, secret: 'qu0'}))
   app.use(sq.lib.stylus.middleware({src:path+"/views/",dest: pub}))
+  app.use(express.static(pub))
   app.use(sq.lib.mongooseAuth.middleware())  
 
   
