@@ -29,9 +29,7 @@ if(typeof window.statusQuo === "undefined") {
       var context = this;
       // Add a server button
       $('#server_add').click(function(){
-        var form = View('new-server-form')
-        form.appendTo('#curtain')
-        context.curtainOpen()
+        context.serverAdd()
         return false
       })
       // Refresh the dashboard view
@@ -110,9 +108,18 @@ if(typeof window.statusQuo === "undefined") {
         
         $(this).data('lastIP',$(this).val())
       })
+      $('#curtain div, #curtain form, #curtain li').bind('click', function(event) { 
+        event.stopPropagation(); 
+        console.log("CLICK")
+      })
+      //$('#curtain').bind('click', function(event) { event.stopPropagation();context.curtainClose()})
       
-      $('#curtain div').click( function(event) { event.stopPropagation() })
-      $('#curtain').click(function(){context.curtainClose()})
+      // Bind keyboard shortcuts
+      $(window).keydown(function(event) {
+        if (event.which == 27) //Escape key!
+          context.curtainClose()
+      });
+      
       
     },
     
@@ -129,8 +136,7 @@ if(typeof window.statusQuo === "undefined") {
       
       if (context.socket)
         context.socket.emit('ping-kill')
-      
-      $("#curtain").fadeOut(200).children().remove()
+      $("#curtain:visible").fadeOut(200).children().remove()
     },
     
     
@@ -139,7 +145,7 @@ if(typeof window.statusQuo === "undefined") {
     dashboardRefresh: function() {
       var context = this;
       if (context.autoRefresh) context.autoRefreshCountdown = context.autoRefreshInterval;
-      $('.server').each(function(){
+      $('#main .server').each(function(){
         context.serverStatus($(this))
       })
     },
@@ -176,6 +182,27 @@ if(typeof window.statusQuo === "undefined") {
           }
       })
     },
+    
+    serverAdd: function(){
+      var context = this;
+      $.get('/server/new', function(server){
+        context.curtainOpen(server)
+      })
+    },
+    
+    serverAddService: function(url){
+      var servicesNum = $('.service').size()-1,
+      service = $('.default .service').clone();
+      service.find('input').each(function(i){
+              $(this).attr('name', $(this).attr('name').replace("index",servicesNum));
+            })
+      if (url) {
+        service.find('.name input').val(url)
+        service.find('.url input').val('http://'+url);
+      }
+      service.appendTo('.services').slideDown(200)
+    },
+    
     
     serverDetail: function(server){
       var context = this;
@@ -234,19 +261,6 @@ if(typeof window.statusQuo === "undefined") {
         })
         context.didServerLookup = true;
       }});
-    },
-    
-    serverAddService: function(url){
-      var servicesNum = $('.service').size()-1,
-      service = $('.default .service').clone();
-      service.find('input').each(function(i){
-              $(this).attr('name', $(this).attr('name').replace("index",servicesNum));
-            })
-      if (url) {
-        service.find('.name input').val(url)
-        service.find('.url input').val('http://'+url);
-      }
-      service.appendTo('.services').slideDown(200)
     }
   }
 };

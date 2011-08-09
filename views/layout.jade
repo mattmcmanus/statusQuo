@@ -51,9 +51,5 @@ html(lang="en")
     
     #main!= body
     
-    
-    script#new-server-form-template(type="text/template")
-      !=partial('server/new',  { object: {}, as: 'server' })
-      
     script#service-form-template(type="text/template")
       !=partial('server/_form_service',  { object: {}, as: 'service' })
