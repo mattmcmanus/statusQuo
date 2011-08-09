@@ -1,16 +1,17 @@
 - if (!service.id) indexInCollection = "index"
+- var i = indexInCollection
 
 li.service(id=service.id || '')
-  input.delete(type="hidden", name="server[services]["+indexInCollection +"][delete]", value="false")
+  
   - if(service.id)
-    input.id(type="hidden",name="server[services]["+indexInCollection +"][id]", value=service.id)
+    input.id(type="hidden",name="server[services]["+i+"][id]", value=service.id)
   .message
   ul
     // Display slightly different if it's the default ping service
     - if (service.type == 'ping')
-      input.type(type="hidden",name="server[services]["+indexInCollection +"][name]", value=service.name)
-      input.type(type="hidden",name="server[services]["+indexInCollection +"][type]", value=service.type)
-      input.type(type="hidden",name="server[services]["+indexInCollection +"][public]", value=false)
+      input.type(type="hidden",name="server[services]["+i+"][name]", value=service.name)
+      input.type(type="hidden",name="server[services]["+i+"][type]", value=service.type)
+      input.type(type="hidden",name="server[services]["+i+"][public]", value=false)
       li.name Ping
     - else
       li.checkboxes.type
@@ -18,27 +19,29 @@ li.service(id=service.id || '')
         ul
           li
             label
-              input(type="radio", name='server[services]['+indexInCollection +'][type]', value="http", checked=(service.type == 'http')?'checked':false) 
+              input(type="radio", name='server[services]['+i+'][type]', value="http", checked=(service.type == 'http' || i == 'index')?'checked':false) 
               | http
           li
             label
-              input(type="radio", name='server[services]['+indexInCollection +'][type]', disabled="disabled", value="port", checked=(service.type == 'port')?'checked':false) 
+              input(type="radio", name='server[services]['+i+'][type]', disabled="disabled", value="port", checked=(service.type == 'port')?'checked':false) 
               | port
       li.checkboxes.public
         label
-          input(type="checkbox", name='server[services]['+indexInCollection +'][public]', value="true", checked=(service.public)?'checked':false) 
+          input(type="checkbox", name='server[services]['+i+'][public]', value="true", checked=(service.public  || i == 'index')?'checked':false) 
           | Public
       li.name
-        input(type="text", placeholder="Service Name", name='server[services]['+indexInCollection +'][name]', value=service.name||'')
+        input(type="text", placeholder="Service Name", name='server[services]['+i+'][name]', value=service.name||'')
       li.url
-        input(type="url", placeholder="URL", name='server[services]['+indexInCollection +'][url]', value=service.url||'')
+        input(type="url", placeholder="URL", name='server[services]['+i+'][url]', value=service.url||'')
     // /else
     
     li.delta
-      input(type="number", name='server[services]['+indexInCollection +'][delta]', value=service.delta||'0', size=2, maxlength=2)
+      input(type="number", name='server[services]['+i+'][delta]', value=service.delta||'0', size=2, maxlength=2)
     li.checkboxes.enabled
       label
-        input(type="checkbox", name='server[services]['+indexInCollection +'][enabled]', value="true", checked=(service.enabled)?'checked':false) 
+        input(type="checkbox", name='server[services]['+i+'][enabled]', value="true", checked=(service.enabled  || i == 'index')?'checked':false) 
         | Enabled
-    li.delete
-      a(href="javascript:void(0)") Delete Service
+    - if (service.type != 'ping')
+      li.delete
+        a.button.transparent.delete(href="javascript:void(0)") Delete Service
+        input.delete(type="hidden", name="server[services]["+i+"][delete]", value="false")

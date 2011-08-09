@@ -50,6 +50,5 @@ html(lang="en")
           a(href="/logout") Log Out
     
     #main!= body
-    
-    script#service-form-template(type="text/template")
-      !=partial('server/_form_service',  { object: {}, as: 'service' })
+.default
+  !=partial('server/_form_service',  { object: {}, as: 'service' })

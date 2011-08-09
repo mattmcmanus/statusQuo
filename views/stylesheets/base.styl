@@ -126,6 +126,7 @@ a:hover
   transition(opacity,.25s)
   &:hover
     opacity 1
+    background-color transparent
     background-repeat no-repeat
     background-position center center
     
@@ -135,24 +136,27 @@ a:hover
   left 0
   .button
     display inline-block
+  a.delete, .confirm .yes
+    color #fff
+    linear-gradient #500,#300 
+    border-color #400
+    box-shadow(0 2px 7px rgba(64,0,0,.5))
+    &:hover
+      linear-gradient #700,#500
     
 // Specfic repeating button classes
 .button
   &.refresh
     background-image url(/images/server_refresh.png)
+  &.transparent
+    &.delete
+      background-image url(/images/delete.png)
+      width 30px
 
 a.cancel
   color #aaa
   linear-gradient #444,#333 
   font-size .75em
-
-a.delete, .confirm .yes
-  color #fff
-  linear-gradient #500,#300 
-  border-color #400
-  box-shadow(0 2px 7px rgba(64,0,0,.5))
-  &:hover
-    linear-gradient #700,#500
   
 /*
   Default 5-column, 768 px layout for iPads, netbooks, and IE
@@ -440,8 +444,8 @@ header#top
   border-right 1px solid #333
   .service
     position relative
-    linear-gradient(#292929,#222222)
-    padding 4px 7px
+    linear-gradient #333333,#292929
+    padding 4px 18px
     div
       display inline-block
       padding 2px 4px
@@ -542,11 +546,12 @@ form
   input[type=text],input[type=email],input[type=url],input[type=password],input[type=number]
     width 225px
     border 1px solid #444
-    linear-gradient #ccc, #eee
+    background #ccc
     border-radius 6px
     line-height 1.5em
     padding .25em .5em
     box-shadow(0 1px 1px rgba(255,255,255,.3))
+    transition(background,.5s, ease-out)
     &:focus
       background #fff
       outline none
@@ -570,7 +575,6 @@ form
     color white
     margin 0 0 0 .25em
   .buttons
-    linear-gradient #333333,#292929
     position relative
     border-radius 0 0 7px 7px
     padding 12px 18px
@@ -634,23 +638,15 @@ form.server
     .type.checkboxes
       .label
         width auto
+    .delta
+      display none
     .delete 
-      padding 0
-      margin 0
-      a
-        opacity .35
-        display inline-block
-        text-indent -9999px
-        background url(/images/delete.png) no-repeat center center
-        box-shadow none
-        width 30px
-        &:hover
-          background-color none
-          opacity 1
+      position absolute
+      top 3px
+      right 0
 
-.type-server
-  .default
-    display none
+.default
+  display none
       
 
 #main

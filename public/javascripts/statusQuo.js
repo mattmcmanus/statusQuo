@@ -45,8 +45,8 @@ if(typeof window.statusQuo === "undefined") {
         .bind('click', function(){ context.serverStatus($(this).parents('.server'), "check"); return false });
       
       // Add a service button
-      $('.server a.add')
-        .click(function(){ context.serverAddService() });
+      $('.server a.addService')
+        .live('click', function(){ context.serverAddService() });
       
       var confirmDialog = $('<div class="confirm">Whoa! Are you sure?</div>').hide()
         , yes = $('<a class="button yes">Yes</a>')
@@ -186,21 +186,22 @@ if(typeof window.statusQuo === "undefined") {
     serverAdd: function(){
       var context = this;
       $.get('/server/new', function(server){
-        context.curtainOpen(server)
+        context.curtainOpen(server);
       })
     },
     
     serverAddService: function(url){
       var servicesNum = $('.service').size()-1,
-      service = $('.default .service').clone();
+      service = $('.default .service').clone().hide();
       service.find('input').each(function(i){
-              $(this).attr('name', $(this).attr('name').replace("index",servicesNum));
-            })
+        $(this).attr('name', $(this).attr('name').replace("index",servicesNum));
+      })
       if (url) {
         service.find('.name input').val(url)
         service.find('.url input').val('http://'+url);
+        service.find('.delta input').val(servicesNum)
       }
-      service.appendTo('.services').slideDown(200)
+      service.appendTo('form.server .services').slideDown(200)
     },
     
     
