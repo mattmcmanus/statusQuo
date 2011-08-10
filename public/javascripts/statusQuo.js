@@ -50,7 +50,7 @@ if(typeof window.statusQuo === "undefined") {
             $(this).attr('name', $(this).attr('name').replace("$n",i));
           })
         })
-        console.log($('form.server').serializeArray())
+        $('form.server').submit()
       })
       
       // Add a service button
