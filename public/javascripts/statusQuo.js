@@ -47,6 +47,9 @@ if(typeof window.statusQuo === "undefined") {
       $('.server a.addService')
         .live('click', function(){ context.serverAddService() });
       
+      $('form.server .service .delete').bind("click",function(event){
+        context.serverDeleteService(event)
+      })
       
       $('form.server .buttons .delete').bind("click",function(event){
         event.preventDefault()
@@ -160,7 +163,7 @@ if(typeof window.statusQuo === "undefined") {
           if (service.attr("id") != "") {
             service.removeClass('confirming')
                    .addClass('deleted')
-                   .children("input.delete").val('true');
+                   .find("input.delete").val('true');
             service.find(".message").html('Service will be deleted when you save. (<a href="javascript:void(0)" class="undo")>undo?</a>)').show()
             service.find(".confirm").remove();
           } else {
