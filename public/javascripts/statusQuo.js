@@ -42,6 +42,16 @@ if(typeof window.statusQuo === "undefined") {
       //Refresh an individual servers status
       $('.server a.refresh')
         .bind('click', function(){ context.serverStatus($(this).parents('.server'), "check"); return false });
+        
+      $('form.server .submit').bind('click', function(event){
+        event.preventDefault()
+        $('.service').each(function(i){
+          $(this).find('input').each( function(){
+            $(this).attr('name', $(this).attr('name').replace("$n",i));
+          })
+        })
+        console.log($('form.server').serializeArray())
+      })
       
       // Add a service button
       $('.server a.addService')
