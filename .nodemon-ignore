@@ -2,6 +2,7 @@
 *.css
 lib/*
 public/*
+public/javascripts/statusQuo.js
 node_modules/*
 .git/*
 *.swp

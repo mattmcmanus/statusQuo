@@ -7,7 +7,6 @@ if(typeof window.statusQuo === "undefined") {
     this.autoRefreshFunction = null;
     this.autoRefreshInterval = params.autoRefreshInterval || 300;
     this.autoRefreshCountdown = this.autoRefreshInterval;
-    this.didServerLookup = false;
     //this.getConfig();
   };
   
@@ -51,64 +50,20 @@ if(typeof window.statusQuo === "undefined") {
       
       $('form.server .buttons .delete').bind("click",function(event){
         event.preventDefault()
-        View('confirm')
-          //.css('display', 'none')
-          .question('Whoa! Are you sure you want to delete this server?')
-          .no(function(){
-            this.remove()
-            $('.confirm').remove()
-            $('.buttons').removeClass('confirming') 
-          })
-          .yes(function(){ 
-            $("form.delete").submit()
-          })
-          .appendTo('.buttons')
         $('.buttons').addClass('confirming');
-        
-      });
-      
-      $('.service .delete ').live("click",function(){
-        var confirmDelete = confirmDialog.clone();
-        // yess
-        yes.clone().click(function(){
-          var service = $(this).parents(".service")
-          if (service.attr("id") != "") {
-            service.removeClass('confirming')
-                   .addClass('deleted')
-                   .children("input.delete").val('true');
-            service.find(".message").html('Service will be deleted when you save. (<a href="javascript:void(0)" class="undo")>undo?</a>)').show()
-            service.find(".confirm").remove();
-          } else {
-            service.slideUp(200).children("input.delete").val('true');
-          }
-        }).appendTo(confirmDelete);
-        // no
-        no.clone().click(function(){
-          var service = $(this).parents(".service");
-          service.removeClass('confirming')
-                 .find(".confirm").remove();
-        }).appendTo(confirmDelete);
-        
-        $(this).parents('.service').addClass('confirming').append(confirmDelete);
-        $(".confirm").fadeIn(400)
-        return false;
+        View('confirm')
+          .question('Whoa! Are you sure you want to delete this server?')
+          .no(function(){ this.remove(); $('.confirm').remove();  $('.buttons').removeClass('confirming') })
+          .yes(function(){ $("form.delete").submit() })
+          .appendTo('.form-submit')
       });
     },
     
     bindEvents: function() {
       var context = this;
       
-      $('form.new .ip input').blur(function(){
-        if ($(this).val().match(/(?:\d{1,3}\.){3}\d{1,3}/) !== null //Does this equal a full IP. Ex: 192.168.1.1
-          && (context.didServerLookup === false || // and did we already look up services for this already
-          (!$(this).data('lastIP') || $(this).data('lastIP') !== $(this).val()))) // OR is this different from the last IP
-            context.serverLookup(this)
-        
-        $(this).data('lastIP',$(this).val())
-      })
       $('#curtain div, #curtain form, #curtain li').bind('click', function(event) { 
-        event.stopPropagation(); 
-        console.log("CLICK")
+        event.stopPropagation();
       })
       //$('#curtain').bind('click', function(event) { event.stopPropagation();context.curtainClose()})
       
@@ -189,19 +144,32 @@ if(typeof window.statusQuo === "undefined") {
     },
     
     serverAddService: function(url){
-      var servicesNum = $('.service').size()-1,
-      service = $('.default .service').clone().hide();
-      service.find('input').each(function(i){
-        $(this).attr('name', $(this).attr('name').replace("index",servicesNum));
-      })
-      if (url) {
-        service.find('.name input').val(url)
-        service.find('.url input').val('http://'+url);
-        service.find('.delta input').val(servicesNum)
-      }
-      service.appendTo('form.server .services').slideDown(200)
+      var context = this
+      View('service-form')
+        .delete(function(e){ context.serverDeleteService(e) })
+        .appendTo('form.server .services')
     },
     
+    serverDeleteService: function(e) {
+      var service = $(e.currentTarget).parents('.service')
+      service.addClass('confirming')
+      View('confirm')
+        .question('Whoa! Are you sure you want to delete this service?')
+        .no(function(){ service.removeClass('confirming').find('.confirm').remove() })
+        .yes(function(){
+          if (service.attr("id") != "") {
+            service.removeClass('confirming')
+                   .addClass('deleted')
+                   .children("input.delete").val('true');
+            service.find(".message").html('Service will be deleted when you save. (<a href="javascript:void(0)" class="undo")>undo?</a>)').show()
+            service.find(".confirm").remove();
+          } else {
+            service.slideUp(200)
+            setTimeout(function(){service.remove()},200)
+          }
+        })
+        .appendTo(service)
+    },
     
     serverDetail: function(server){
       var context = this;
@@ -247,23 +215,14 @@ if(typeof window.statusQuo === "undefined") {
         if ($(this).siblings('.service:not(.checking)').length == $(this).siblings('.service').length)
           $(this).parents(".server").removeClass("checking");
       }});
-    },
-    
-    //                Server Form
-    // - - - - - - - - - - - - - - - - - - - - - - - - -
-    serverLookup: function(input) {
-      var context = this;
-      if ($(input).data('lastIP') && $(input).data('lastIP') !== $(input).val()) $('.service').not('.default').slideUp(200).remove()
-      $.ajax({ url:'/server/lookup/'+$(input).val(), success: function(data){
-        $.each(data, function(key,url){
-          context.serverAddService(url)
-        })
-        context.didServerLookup = true;
-      }});
     }
   }
 };
 
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//              Ready, Go!!
+// - - - - - - - - - - - - - - - - - - - - - - - - - - -
 $(document).ready(function() {
   sq = new statusQuo({
     "checkOnLoad":true
@@ -317,3 +276,4 @@ $(document).ready(function() {
   
   $('#messages .success').delay(3000).slideUp(100)
 });
+

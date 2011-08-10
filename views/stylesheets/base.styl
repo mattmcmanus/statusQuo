@@ -136,13 +136,14 @@ a:hover
   left 0
   .button
     display inline-block
-  a.delete, .confirm .yes
-    color #fff
-    linear-gradient #500,#300 
-    border-color #400
-    box-shadow(0 2px 7px rgba(64,0,0,.5))
-    &:hover
-      linear-gradient #700,#500
+
+.buttons a.delete, .confirm .yes
+  color #fff
+  linear-gradient #700,#500 
+  border-color #400
+  box-shadow(0 2px 7px rgba(64,0,0,.5))
+  &:hover
+    linear-gradient #700,#500
     
 // Specfic repeating button classes
 .button
@@ -417,7 +418,7 @@ header#top
     &.services
       border-top 1px solid #2c2c2c
       border-bottom 1px solid #222
-      linear-gradient(#292929,#222222)
+      linear-gradient #292929,#222222
       position relative
       height 30px
       .loader
@@ -525,7 +526,7 @@ header#top
 //- - - - - - - - - - - - - - - - - - - - 
 
 form
-  li
+  ul li
     padding .75em 18px 1em
     linear-gradient #333333,#292929
     position relative
@@ -534,14 +535,14 @@ form
         display inline-block
       & > ul > li label
         width auto
+    &.confirming, &.deleted, &.confirming.service
+      linear-gradient #300 #200 !important
+      li, & > a, & > input
+        opacity .1
     li
       padding .5em 0
       margin-right 1em
       background transparent
-    &.confirming, &.deleted
-      linear-gradient #300 #200
-      li, & > a, & > input
-        opacity .1
   label,.label
     display inline-block
     font-size .9em
@@ -621,16 +622,18 @@ form.server
       .confirm,.message
         position absolute
         top 19px
-        left 140px
+        left 0
+        width 100%
+        text-align center
       .message
         font-weight 700
         top 26px
         text-shadow 0px 1px 5px rgba(34,34,34,.75)
     ul li
       display inline-block
-    .public
-      clear right
-      width 300px
+    .type
+      text-transform capitalize
+      font-weight 700
     .name, .url
       input
         width 205px
@@ -639,12 +642,16 @@ form.server
     .port
       input
         width 35px
-    .type.checkboxes
-      .label
+    .checkboxes
+      width 300px
+      .label, label
         width auto
+        margin 0 .5em
     .delta
       display none
-    .delete 
+    .deleteService
+      padding 0
+      margin 0
       position absolute
       top 3px
       right 0
