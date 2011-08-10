@@ -50,5 +50,12 @@ html(lang="en")
           a(href="/logout") Log Out
     
     #main!= body
+
 .default
   !=partial('server/_form_service',  { object: {}, as: 'service' })
+  
+script#confirm-template(type="text/template")
+  div.confirm
+    p.question
+    a.yes.button Yes
+    a.no.button No

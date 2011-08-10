@@ -16,7 +16,6 @@ h2 Services to monitor
 ul.services
   - var services = (server.services) ? server.services : {}
   !=partial('_form_service',  { collection: services, as: 'service' })
-
 ul  
   li
     a.add.addService(href='javascript:void(0)') Add Service

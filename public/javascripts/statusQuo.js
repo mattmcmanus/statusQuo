@@ -29,8 +29,8 @@ if(typeof window.statusQuo === "undefined") {
       var context = this;
       // Add a server button
       $('#server_add').click(function(){
-        context.serverAdd()
-        return false
+        //context.serverAdd()
+        //return false
       })
       // Refresh the dashboard view
       $('.front #refresh')
@@ -48,25 +48,23 @@ if(typeof window.statusQuo === "undefined") {
       $('.server a.addService')
         .live('click', function(){ context.serverAddService() });
       
-      var confirmDialog = $('<div class="confirm">Whoa! Are you sure?</div>').hide()
-        , yes = $('<a class="button yes">Yes</a>')
-        , no = $('<a class="button no">No</a>');
       
-      
-      $('.buttons .delete').live("click",function(){
-        var confirmDelete = confirmDialog.clone();
-        // yes button
-        yes.clone().click(function(){
-          $("form.delete").submit();
-        }).appendTo(confirmDelete);
-        // No button
-        no.clone().click(function(){
-          $(".confirm").remove();
-          $('.buttons').removeClass('confirming')
-        }).appendTo(confirmDelete);
+      $('form.server .buttons .delete').bind("click",function(event){
+        event.preventDefault()
+        View('confirm')
+          //.css('display', 'none')
+          .question('Whoa! Are you sure you want to delete this server?')
+          .no(function(){
+            this.remove()
+            $('.confirm').remove()
+            $('.buttons').removeClass('confirming') 
+          })
+          .yes(function(){ 
+            $("form.delete").submit()
+          })
+          .appendTo('.buttons')
         $('.buttons').addClass('confirming');
-        $(this).after(confirmDelete).next().fadeIn(400)
-        return false;
+        
       });
       
       $('.service .delete ').live("click",function(){
