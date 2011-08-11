@@ -42,7 +42,8 @@ if(typeof window.statusQuo === "undefined") {
       //Refresh an individual servers status
       $('.server a.refresh')
         .bind('click', function(){ context.serverStatus($(this).parents('.server'), "check"); return false });
-        
+      
+      // For submission   
       $('form.server .submit').bind('click', function(event){
         event.preventDefault()
         $('.service').each(function(i){
