@@ -67,7 +67,7 @@ if(typeof window.statusQuo === "undefined") {
         $('.buttons').addClass('confirming');
         View('confirm')
           .question('Whoa! Are you sure you want to delete this server?')
-          .no(function(){ this.remove(); $('.confirm').remove();  $('.buttons').removeClass('confirming') })
+          .no(function(){ $('.confirm').remove();  $('.buttons').removeClass('confirming') })
           .yes(function(){ $("form.delete").submit() })
           .appendTo('.form-submit')
       });

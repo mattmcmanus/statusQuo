@@ -19,7 +19,6 @@ li.service(id=service.id || '')
     // Display slightly different if it's the default ping service
     - if (service.type == 'ping')
       input.type(type="hidden",name="server[services]["+i+"][name]", value=service.name)
-      input.type(type="hidden",name="server[services]["+i+"][type]", value=service.type)
       input.type(type="hidden",name="server[services]["+i+"][public]", value=false)
     - else
       li.name
