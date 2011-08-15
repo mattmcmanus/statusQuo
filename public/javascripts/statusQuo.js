@@ -33,7 +33,7 @@ if(typeof window.statusQuo === "undefined") {
       })
       
       $('#announcement_add')
-        .click(function(){ context.announcementAdd(); return false; });
+        .click(function(e){ e.preventDefault(); context.announcementAdd(); return false; });
         
       $('#curtain a.cancel, #curtain a.close')
         .live('click', function(){context.curtainClose(); return false})
@@ -117,8 +117,12 @@ if(typeof window.statusQuo === "undefined") {
     // - - - - - - - - - - - - - - - - - - - - - - - - -
     announcementAdd: function() {
       var context = this
-        , announcement = View('announcement-form').appendTo('#curtain')
-        
+        , announcement = View('announcement-form')
+      announcement.appendTo('#curtain')
+      announcement.submit.json(function(res){
+          console.log(announcement.form.method + 'ed JSON to ' + announcement.form.action);
+      });
+      
       context.curtainOpen()
     },
     

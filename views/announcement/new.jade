@@ -1,9 +1,9 @@
-form.annoucement.new(method='post')
+form.announcement.new(method='post', action="/announcement/new")
   header
     h2 Add an annoucement
   section.form
     !=partial('_form')
     ul
       li.buttons.form-submit
-        input.button.submit(type="submit", value="Post")
+        input.submitButton.button(type="submit", value="Post")
         a.cancel.button(href="/") Cancel
