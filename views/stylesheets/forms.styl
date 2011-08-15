@@ -1,0 +1,137 @@
+//              Form Defaults
+//- - - - - - - - - - - - - - - - - - - - - - - - 
+form
+  ul li
+    padding .75em 18px 1em
+    linear-gradient #333333,#292929
+    position relative
+    &.checkboxes
+      ul, li
+        display inline-block
+      & > ul > li label
+        width auto
+    &.confirming, &.deleted, &.confirming.service
+      linear-gradient #300 #200 !important
+      li, & > a, & > input
+        opacity .1
+    li
+      padding .5em 0
+      margin-right 1em
+      background transparent
+  label,.label
+    display inline-block
+    font-size .9em
+    font-weight 700
+    width 125px
+  input[type=text],input[type=email],input[type=url],input[type=password],input[type=number]
+    width 225px
+    border 1px solid #444
+    background #ccc
+    border-radius 6px
+    line-height 1.5em
+    padding .25em .5em
+    box-shadow(0 1px 1px rgba(255,255,255,.3))
+    transition(background,.5s, ease-out)
+    &:focus
+      background #fff
+      outline none
+      border-color #19e
+  input[type=checkbox], input[type=radio]
+    display: inline-block;
+    line-height: 1em;
+    margin: 0 0.25em 0 0;
+    padding: 0;
+    width: 1.25em;
+    height: 1.25em;
+    vertical-align: text-top;
+  
+  h2
+    font-size 18px  
+    
+  a.add
+    display inline-block
+    background url(/images/add.png) no-repeat 0 center
+    padding 3px 5px 3px 20px
+    color white
+    margin 0 0 0 .25em
+  .buttons
+    position relative
+    border-radius 0 0 7px 7px
+    padding 12px 18px
+    .delete, .confirm
+      position absolute
+      right 8px
+      top 12px
+  .confirm
+    font-weight 700
+    .yes
+      margin-left 8px
+
+.ui-autocomplete
+  width 225px !important
+  linear-gradient #444444, #333333
+  li
+    padding 1px 8px
+
+
+ //             Account Setup Form
+//- - - - - - - - - - - - - - - - - - - - - - - -      
+form#account_setup
+  .screen_name
+    padding 1em 18px
+    .profile_picture
+      display inline-block
+      padding 3px
+      background rgba(255,255,255,.1)
+      border 1px solid #555
+    h2
+      font-weight 700
+      position absolute
+      top 27px
+      left 70px
+      background transparent
+
+//              Server Form
+//- - - - - - - - - - - - - - - - - - - - - - - -
+form.server
+  .services
+    .service
+      position relative
+      .message
+        display none
+      .confirm,.message
+        position absolute
+        top 19px
+        left 0
+        width 100%
+        text-align center
+      .message
+        font-weight 700
+        top 26px
+        text-shadow 0px 1px 5px rgba(34,34,34,.75)
+    ul li
+      display inline-block
+    .type
+      text-transform capitalize
+      font-weight 700
+    .name, .url
+      input
+        width 205px
+    .name
+      clear left
+    .port
+      input
+        width 35px
+    .checkboxes
+      width 300px
+      .label, label
+        width auto
+        margin 0 .5em
+    .delta
+      display none
+    .deleteService
+      padding 0
+      margin 0
+      position absolute
+      top 3px
+      right 0
