@@ -35,6 +35,7 @@ exports.boot = function(next) {
   // * Eventually I'll write a dynamic loader. This is just easier for now.
   mongoose.connect(app.set('db-uri'))
   require('./models/user.js')(app, sq)
+  require('./models/announcement.js')(app, sq)
   require('./models/server.js')(app, sq)
 
   // Bootstrap application
@@ -64,6 +65,7 @@ function bootApplication(app, next) {
   //                     Routes
   // - - - - - - - - - - - - - - - - - - - - - - - - - - -
   require('./lib/user')(app, sq);
+  require('./lib/announcement')(app, sq);
   require('./lib/server')(app, sq);
   
   //                     Helpers
