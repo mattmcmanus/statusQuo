@@ -31,13 +31,20 @@ if(typeof window.statusQuo === "undefined") {
         //context.serverAdd()
         //return false
       })
+      
+      $('#announcement_add')
+        .click(function(){ context.announcementAdd(); return false; });
+        
+      $('#curtain a.cancel, #curtain a.close')
+        .live('click', function(){context.curtainClose(); return false})
+      
       // Refresh the dashboard view
       $('.front #refresh')
         .click(function(){ context.dashboardRefresh() });
 
       // View the detail of a server
       $('.front .server')
-        .bind('click', function(){ context.serverDetail($(this)) });
+        .click(function(){ context.serverDetail($(this)) });
       
       //Refresh an individual servers status
       $('.server a.refresh')
@@ -104,6 +111,15 @@ if(typeof window.statusQuo === "undefined") {
       if (context.socket)
         context.socket.emit('ping-kill')
       $("#curtain:visible").fadeOut(200).children().remove()
+    },
+    
+    //                  Announcements
+    // - - - - - - - - - - - - - - - - - - - - - - - - -
+    announcementAdd: function() {
+      var context = this
+        , announcement = View('announcement-form').appendTo('#curtain')
+        
+      context.curtainOpen()
     },
     
     

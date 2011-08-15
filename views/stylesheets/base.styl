@@ -124,6 +124,7 @@ a:hover
   padding 5px 3px
   text-indent -9999px
   transition(opacity,.25s)
+  position relative
   &:hover
     opacity 1
     background-color transparent
@@ -149,6 +150,8 @@ a:hover
 .button
   &.refresh
     background-image url(/images/server_refresh.png)
+  &#announcement_add
+    background-image url(/images/announcement.png)
   &.transparent
     &.delete
       background-image url(/images/delete.png)
@@ -273,8 +276,8 @@ header#top
   .countdown
     display none
     position absolute
-    top 5px
-    left 50px
+    top 2px
+    left 20px
     width 150px
     color #999
     text-indent 0
@@ -292,14 +295,12 @@ header#top
     text-shadow -1px -1px 2px rgba(0,0,0,.3)
     clear both
 
-
-//               A Server
+//              Modal/Page Defaults
 // - - - - - - - - - - - - - - - - - - - - - - -
-.server
+form, .server
   box-shadow(0 2px 15px rgba(0,0,0,.5))
   border 1px solid #262626
   width 100%
-  max-width 600px
   border-radius 7px
   margin 2em auto
   linear-gradient #333333,#222222
@@ -312,7 +313,7 @@ header#top
     linear-gradient #222222,#161616
     padding 1px 5px
     
-    h2, .types, .tyoe
+    & > *
       display inline-block
     h2
       color #fff
@@ -324,6 +325,21 @@ header#top
         color #666
         margin-left 8px
         text-shadow 0px -1px 1px rgba(0,0,0,.25)
+
+//               An Announcement
+// - - - - - - - - - - - - - - - - - - - - - - -
+.annoucement  
+  max-width 300px
+  input[type=text], textarea
+    width 250px
+  textarea
+    height 75px
+
+//               A Server
+// - - - - - - - - - - - - - - - - - - - - - - -
+.server
+  max-width 600px
+  header
     .types
       position relative
       top -2px

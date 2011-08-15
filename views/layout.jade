@@ -38,6 +38,7 @@ html(lang="en")
       - if (everyauth.loggedIn)
         .buttons
           a#server_add.button.transparent(href="/server/new") Add Server
+          a#announcement_add.button.transparent(href="/announcement/new") Add an Announcement
           - if (isFront)
             a.refresh.button.transparent(href="javascript:void()") Refresh Dashboard
               span.countdown
@@ -52,7 +53,10 @@ html(lang="en")
     #main!= body
 
 script#service-form-template(type="text/template")
-  !=partial('server/_form_service',  { object: {}, as: 'service' })
+  !=partial('server/_form_service', { object: {}, as: 'service' })
+
+script#announcement-form-template(type="text/template")
+  !=partial('announcement/new',  { object: {}, as: 'announcement' })
   
 script#confirm-template(type="text/template")
   div.confirm

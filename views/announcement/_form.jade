@@ -1,0 +1,10 @@
+ul
+  li.announcement
+    textarea(type="text", name='announcement[message]', 'autofocus', value=announcement.message)
+  li.related_service
+    label(for='announcement[service]') About
+    input(type="text", name='announcement[service]', rows="4",value=announcement.service)
+  li.share.checkboxes
+    label(for='announcement[twitter]') Post to Twitter?
+    input(type="checkbox", name='announcement[twitter]', value='true')
+    
