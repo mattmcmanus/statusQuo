@@ -287,7 +287,29 @@ header#top
 
 
 //                Front page dash
-// - - - - - - - - - - - - - - - - - - - - - - -    
+// - - - - - - - - - - - - - - - - - - - - - - -
+#main
+  position relative
+  .psst
+    position absolute
+    left 142px
+    top 40px
+  
+  header
+    border-top-radius 7px
+    linear-gradient #222222,#161616
+    padding 1px 5px
+    position relative
+    
+    h1
+      font-size 1.4em
+      text-shadow 0 1px 2px rgba(255,255,255,.5)
+      padding .25em 18px
+      font-weight 700
+  
+  .content
+    padding .5em 1em
+    
 .front
   #main h2
     background none
@@ -328,12 +350,32 @@ form, .server
 
 //               An Announcement
 // - - - - - - - - - - - - - - - - - - - - - - -
-.announcement  
-  max-width 300px
-  input[type=text], textarea
-    width 250px
-  textarea
-    height 75px
+#main.withAnnouncements
+  padding-right 250px
+#announcements
+  position absolute
+  top 0
+  right 0
+  width 250px
+  border-left 1px solid #666
+  
+  .announcement
+    position relative
+    padding 18px 10px
+    border-bottom 1px solid #222
+    linear-gradient #333, #262626
+    .buttons
+      right 0
+      left auto
+    p
+      font-size 12px
+      line-height 14px
+    .time
+      font-size 10px
+      color #555
+      position abosolute
+      right 0
+      botton 0
 
 //               A Server
 // - - - - - - - - - - - - - - - - - - - - - - -
@@ -544,23 +586,4 @@ form, .server
 @import "forms"
       
 
-#main
-  .psst
-    position absolute
-    left 142px
-    top 40px
-  
-  header
-    border-top-radius 7px
-    linear-gradient #222222,#161616
-    padding 1px 5px
-    position relative
-    
-    h1
-      font-size 1.4em
-      text-shadow 0 1px 2px rgba(255,255,255,.5)
-      padding .25em 18px
-      font-weight 700
-  
-  .content
-    padding .5em 1em
+

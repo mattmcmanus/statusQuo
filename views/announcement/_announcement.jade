@@ -1,0 +1,9 @@
+li.announcement(class=(announcement.twitter)?"twitter":false)
+  .buttons
+    a.edit(href="/announcement/"+announcement.id) Edit
+    a.delete Delete
+  p.message= announcement.message
+  - if (announcement.service)
+    a.service(href="#"+announcement.service.id)= announcement.service.name
+  .time= announcement.updatedAt    
+    

@@ -15,11 +15,16 @@ if(typeof window.statusQuo === "undefined") {
       var context = this
       this.bindButtons()
       this.bindEvents()
-      if (this.checkOnLoad && $('body').hasClass('front')) {
-        if (this.autoRefresh)
-          this.autoRefreshFunction = setInterval("sq.autoDashboardRefresh()", 1000)
-        this.dashboardRefresh()
-      } 
+      if ($('body').hasClass('front')) {
+        if (this.checkOnLoad) {
+          if (this.autoRefresh) this.autoRefreshFunction = setInterval("sq.autoDashboardRefresh()", 1000)
+          this.dashboardRefresh()
+        } 
+        this.announcementsLoad()
+        
+      };
+      
+      
     },
     
     //              Binding Buttons & Events
@@ -120,10 +125,17 @@ if(typeof window.statusQuo === "undefined") {
         , announcement = View('announcement-form')
       announcement.appendTo('#curtain')
       announcement.submit.json(function(res){
-          console.log(announcement.form.method + 'ed JSON to ' + announcement.form.action);
+        context.curtainClose()
+        context.announcementsLoad()
       });
       
       context.curtainOpen()
+    },
+    
+    announcementsLoad: function() {
+      $.get('announcements', function(announcements) {
+        $('#announcements ul').html(announcements)
+      })
     },
     
     

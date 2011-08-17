@@ -6,7 +6,7 @@ screen -t
 stuff "source ~/.profile\15"
 
 screen -t server
-stuff "source ~/.profile\15node server.js"
+stuff "source ~/.profile\15nodemon app.js"
 
 screen -t redis redis-server /usr/local/etc/redis.conf
 screen -t mongo /Users/matt/Dropbox/Library/Data/mongo/server
