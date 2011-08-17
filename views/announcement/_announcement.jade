@@ -5,5 +5,6 @@ li.announcement(class=(announcement.twitter)?"twitter":false)
   p.message= announcement.message
   - if (announcement.service)
     a.service(href="#"+announcement.service.id)= announcement.service.name
-  .time= announcement.updatedAt    
-    
+  p.time 
+    | Posted 
+    time.timeago(datetime=announcement.updatedHuman)= announcement.updatedHuman

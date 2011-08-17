@@ -1,13 +1,13 @@
 - if (servers.production.length)
-  h2 Production
+  h2.section Production
   !=partial('_server', servers.production)
 
 - if (servers.development.length)
-  h2 Development
+  h2.section Development
   !=partial('_server', servers.development)
   
 - if (servers.other.length)
-  h2 Other
+  h2.section Other
   !=partial('_server', servers.other)
 
 - if (servers.length == 0)  

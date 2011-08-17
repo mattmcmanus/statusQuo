@@ -1,3 +1,6 @@
+var _ = require('underscore')
+  , _date = require('underscore.date')
+
 module.exports = function(app, sq) {  
   var Schema = sq.lib.mongoose.Schema
     , ObjectId = sq.lib.mongoose.SchemaTypes.ObjectId
@@ -20,6 +23,12 @@ module.exports = function(app, sq) {
   AnnouncementSchema.virtual('id')
     .get(function() {
       return this._id.toHexString()
+    })
+    
+  AnnouncementSchema.virtual('updatedHuman')
+    .get(function() {
+      var time = _date(this.updatedAt).format("YYYY-MM-DD HH:mm:ss");
+      return time
     })
   
   // Let's get initializing!

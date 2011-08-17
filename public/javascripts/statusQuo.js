@@ -23,8 +23,7 @@ if(typeof window.statusQuo === "undefined") {
         this.announcementsLoad()
         
       };
-      
-      
+      $('time').timeago()
     },
     
     //              Binding Buttons & Events
@@ -135,6 +134,7 @@ if(typeof window.statusQuo === "undefined") {
     announcementsLoad: function() {
       $.get('announcements', function(announcements) {
         $('#announcements ul').html(announcements)
+        $('.announcement time').timeago()
       })
     },
     
