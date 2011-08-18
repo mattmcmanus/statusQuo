@@ -24,13 +24,7 @@ module.exports = function(app, sq) {
     .get(function() {
       return this._id.toHexString()
     })
-    
-  AnnouncementSchema.virtual('updatedHuman')
-    .get(function() {
-      var time = _date(this.updatedAt).format("YYYY-MM-DD HH:mm:ss");
-      return time
-    })
-  
+
   // Let's get initializing!
   sq.lib.mongoose.model( 'Announcement', AnnouncementSchema )
   sq.Announcement = sq.lib.mongoose.model('Announcement')  

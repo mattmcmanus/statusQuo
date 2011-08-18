@@ -70,7 +70,7 @@ function bootApplication(app, next) {
   
   //                     Helpers
   // - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  //app.helpers(require('./helpers.js').helpers);
+  app.helpers(require('./helpers.js').helpers);
   app.dynamicHelpers(require('./helpers.js').dynamicHelpers)
   sq.lib.mongooseAuth.helpExpress(app)
   

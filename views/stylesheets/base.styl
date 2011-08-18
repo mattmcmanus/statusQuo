@@ -311,11 +311,12 @@ header#top
     padding .5em 1em
     
 .front
-  #main h2.section
-    background none
-    color rgba(225,225,225,.2)
-    text-shadow -1px -1px 2px rgba(0,0,0,.3)
-    clear both
+  #main
+    h2.section
+      background none
+      color rgba(225,225,225,.2)
+      text-shadow -1px -1px 2px rgba(0,0,0,.3)
+      clear both
 
 //              Modal/Page Defaults
 // - - - - - - - - - - - - - - - - - - - - - - -
@@ -357,16 +358,23 @@ form, .server
   top 0
   right 0
   width 250px
-  border-left 1px solid #333
-  
+  border-left 1px solid #111
+  header
+    padding 5px 12px
+    h2
+      padding 0
+      font-size 18px
   .announcement
     position relative
-    padding 18px 10px
+    padding 10px 12px
     border-bottom 1px solid #222
     linear-gradient #333, #262626
     .buttons
+      display none
       right 0
       left auto
+    &:hover .buttons
+      display block
     p
       font-size 12px
       line-height 14px

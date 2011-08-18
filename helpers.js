@@ -1,3 +1,13 @@
+var _ = require('underscore')
+  , _date = require('underscore.date')
+
+exports.helpers = {
+  timeago: function(time) {
+    var time = _date(time).format("YYYY-MM-DD HH:mm:ss");
+    return '<time class="timeago" datetime="'+time+'">'+time+'</time>'
+  }
+}
+
 exports.dynamicHelpers = {
   body_classes: function(req, res) {
     var classes = []
