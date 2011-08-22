@@ -1,5 +1,6 @@
 @import "reset.css"
 @import "css3"
+@import "helpers"
 
 // Variables
 sprites = url(../images/icons.png)
@@ -371,8 +372,10 @@ form, .server
     linear-gradient #333, #262626
     .buttons
       display none
-      right 0
+      bottom 3px
+      right 3px
       left auto
+      top auto
     &:hover .buttons
       display block
     p
@@ -385,6 +388,14 @@ form, .server
       right 0
       botton 0
       margin 0
+    .twitter
+      position absolute
+      top 0
+      right 0
+      width 30px
+      height 30px
+      ir()
+      background-image url(/images/twitter-overlay.png)
 
 //               A Server
 // - - - - - - - - - - - - - - - - - - - - - - -

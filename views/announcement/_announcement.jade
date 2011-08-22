@@ -1,10 +1,13 @@
-li.announcement(class=(announcement.twitter)?"twitter":false)
+li.announcement
   .buttons
     a.edit(href="/announcement/"+announcement.id) Edit
     a.delete Delete
   p.message= announcement.message
-  - if (announcement.service)
+  - if (announcement.service && announcement.service.id)
     a.service(href="#"+announcement.service.id)= announcement.service.name
   p.time 
     | Posted
     !=timeago(announcement.updatedAt)
+  -if (announcement.twitter)
+    p.twitter
+      |Posted to twitter
