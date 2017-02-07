@@ -13,24 +13,24 @@
     "node": "0.4.x"
   },
   "dependencies": {
-    "jade"              : "0.x"
-  , "mongoose"          : "1.x"
-  , "everyauth"         : "0.2.14"
+    "jade"              : "^1.11.0"
+  , "mongoose"          : "^4.8.1"
+  , "everyauth"         : "0.4.9"
   , "mongoose-auth"     : "0.0.x"
-  , "express"           : "2.x"
+  , "express"           : "^4.14.1"
   , "stylus"            : "0.x"
   , "oauth"             : "0.9.x"
-  , "async"             : "0.1.x"
-  , "cluster"           : "0.6.x"
-  , "http-status"       : "0.x"
-  , "connect-redis"     : "1.x"
-  , "socket.io"         : "0.7.x"
-  , "request"           : "1.x"
-  , "underscore"        : "1.1.x"
-  , "underscore.date"   : "0.5.x"
+  , "async"             : "~2.1.4"
+  , "cluster"           : "~0.7.7"
+  , "http-status"       : "^1.0.1"
+  , "connect-redis"     : "^3.2.0"
+  , "socket.io"         : "~1.7.2"
+  , "request"           : "^2.79.0"
+  , "underscore"        : "~1.8.3"
+  , "underscore.date"   : "~0.6.1"
   },
   "devDependencies": {
-    "expresso": "0.7.x",
-    "should": "0.1.x"
+    "expresso": "~0.9.2",
+    "should": "~11.2.0"
   }
 }
